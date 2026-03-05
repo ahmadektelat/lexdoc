@@ -17,40 +17,19 @@ body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;background:#070d1a;-w
 ::-webkit-scrollbar-thumb{background:rgba(100,116,139,0.4);border-radius:3px}
 input,select,textarea,button{font-family:inherit;}
 @media(max-width:768px){input,select,textarea{font-size:16px!important;}}
-#loader{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#60a5fa;}
 </style>
 </head>
 <body>
-<div id="loader">
-  <div style="font-size:48px;margin-bottom:16px;">📊</div>
-  <div style="font-size:20px;font-weight:700;margin-bottom:8px;">MisradPro</div>
-  <div style="font-size:13px;color:#64748b;">טוען...</div>
-</div>
-<div id="root" style="display:none;min-height:100vh;"></div>
+<div id="root" style="min-height:100vh;"></div>
 <script>
-document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('loader').style.display='none';
-  document.getElementById('root').style.display='block';
-});
-</script>
-<script>
-
 (function(global) {
   'use strict';
-  
-  // React must be loaded separately via CDN
-  const React = global.React;
-  const ReactDOM = global.ReactDOM;
-  if (!React || !ReactDOM) {
-    console.error('React not found!');
-    return;
-  }
-  
-  const useState = React.useState;
-  const useEffect = React.useEffect;
-  const useRef = React.useRef;
-  
-  // React globals — provided by window.React
+  var React = global.React;
+  var ReactDOM = global.ReactDOM;
+  var useState = React.useState;
+  var useEffect = React.useEffect;
+  var useRef = React.useRef;
+
 var THEMES = {
     dark: {
         name: "dark", label: "כהה",
@@ -3779,14 +3758,461 @@ function ExportPanel(p) {
         "     "));
 }
 
-  
-  // Mount app
-  const container = document.getElementById('root');
-  container.innerHTML = '';
-  ReactDOM.createRoot(container).render(React.createElement(Root));
-  
-})(window);
+function App(p) { var firm = p.firm; useEffect(function () { var s = window.document.createElement("style"); s.id = "lexdoc-css"; if (!window.document.getElementById("lexdoc-css")) {
+    s.textContent = "tr:hover td{background:#1e293b!important}.fade{animation:fi .15s ease}@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}table{width:100%;table-layout:fixed}@media(max-width:768px){table th:nth-child(n+4),table td:nth-child(n+4){display:none}}";
+    window.document.head.appendChild(s);
+} }, []); var [view, setView] = useState("dash"); var [client, setClient] = useState(null); var [search, setSearch] = useState(""); var [notif, setNotif] = useState(null); var isMobile = useIsMobile(); var [collapsed, setCollapsed] = useState(function () { return window.innerWidth < 768; }); var [mobileMenuOpen, setMobileMenuOpen] = useState(false); var days = daysLeft(firm.expiry); function toast(msg) { setNotif(msg); setTimeout(function () { setNotif(null); }, 3000); } var filtered = search.length > 0 ? CLIENTS.filter(function (c) { return c.name.toLowerCase().indexOf(search.toLowerCase()) >= 0 || c.caseNum.indexOf(search) >= 0; }) : null; var nav = [["dash", "לוח בקרה", "H"], ["clients", "לקוחות", "C"], ["crm", "פניות ומשימות", "T"], ["staff", "עובדים", "P"], ["filings", "הגשות", "F"], ["reports", "דוחות", "R"], ["messaging", "תקשורת", "M"], ["importexport", "ייבוא/ייצוא", "I"], ["permissions", "הרשאות", "X"], ["audit", "ביקורת", "A"], ["backup", "גיבוי", "B"],]; return (React.createElement("div", { dir: "rtl", style: { fontFamily: "'Segoe UI',sans-serif", background: BG, minHeight: "100vh", color: TXT, display: "flex", flexDirection: "column" } },
+    "       ",
+    React.createElement("header", { style: { height: 58, background: "linear-gradient(135deg,#0d3060 0%,#1a5296 50%,#1e6ab8 100%)", borderBottom: "1px solid rgba(100,180,255,0.2)", display: "flex", alignItems: "center", padding: "0 12px", gap: 10, flexShrink: 0, boxShadow: "0 2px 12px rgba(0,0,0,0.4)" } },
+        "         ",
+        React.createElement("button", { onClick: function () { if (isMobile) {
+                setMobileMenuOpen(function (x) { return !x; });
+            }
+            else {
+                setCollapsed(function (x) { return !x; });
+            } }, style: { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, cursor: "pointer", color: "rgba(200,230,255,0.8)", fontSize: 16, width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, "≡"),
+        "         ",
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+            "           ",
+            React.createElement("div", { style: { width: 34, height: 34, borderRadius: 9, overflow: "hidden", background: "linear-gradient(135deg,#1a6fb5,#4a9eff)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#fff", fontSize: 15, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" } },
+                "             ",
+                firm.logo ? React.createElement("img", { src: firm.logo, style: { width: "100%", height: "100%", objectFit: "cover" }, alt: "" }) : "L",
+                "           "),
+            "           ",
+            React.createElement("span", { style: { fontWeight: 800, fontSize: 15, color: "#ffffff", letterSpacing: 0.3 } }, firm.firmName),
+            "         "),
+        "         ",
+        !isMobile && React.createElement("div", { style: { flex: 1, maxWidth: 420 } },
+            "           ",
+            React.createElement("input", { value: search, onChange: function (e) { setSearch(e.target.value); }, placeholder: "\u05D7\u05D9\u05E4\u05D5\u05E9 \u05DC\u05E7\u05D5\u05D7\u05D5\u05EA...", style: { width: "100%", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "#fff", outline: "none", fontFamily: "inherit" } }),
+            "         "),
+        "         ",
+        isMobile && React.createElement("div", { style: { flex: 1 } }),
+        "         ",
+        React.createElement("div", { style: { marginRight: "auto", display: "flex", gap: 8, alignItems: "center" } },
+            "           ",
+            days <= 30 && days > 0 && React.createElement(Bdg, { color: "amber" }, days + " ימים נותרו"),
+            "           ",
+            React.createElement(ThemePicker, { current: p.theme || "sky", onChange: function (tid) { if (p.onTheme)
+                    p.onTheme(tid); } }),
+            "           ",
+            React.createElement("button", { onClick: p.onLogout, style: { background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#fca5a5", padding: "6px 13px", borderRadius: 8, fontSize: 12, cursor: "pointer", fontWeight: 600 } }, "התנתק"),
+            "         "),
+        "       "),
+    "        ",
+    React.createElement("div", { style: { display: "flex", flex: 1, overflow: "hidden", height: "calc(100vh - 54px)" } },
+        "         ",
+        isMobile && mobileMenuOpen && React.createElement("div", { onClick: function () { setMobileMenuOpen(false); }, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 199 } }),
+        "         ",
+        React.createElement("aside", { style: { width: isMobile ? (mobileMenuOpen ? 240 : 0) : (collapsed ? 58 : 200), background: "linear-gradient(180deg,#0d2d5e 0%,#0f3670 40%,#0e3268 100%)", borderLeft: "1px solid rgba(100,180,255,0.12)", display: "flex", flexDirection: "column", padding: "12px 0 8px", flexShrink: 0, overflow: "hidden", boxShadow: "2px 0 16px rgba(0,0,0,0.3)", position: isMobile ? "fixed" : "relative", top: isMobile ? 58 : 0, right: 0, bottom: 0, zIndex: isMobile ? 200 : 1, transition: "width 0.25s" } },
+            "           ",
+            !collapsed && (React.createElement("div", { style: { padding: "0 14px 14px", borderBottom: "1px solid rgba(100,180,255,0.1)", marginBottom: 8 } },
+                "               ",
+                React.createElement("p", { style: { fontSize: 11, color: "rgba(150,200,255,0.5)", letterSpacing: 1.5, fontWeight: 600, textTransform: "uppercase" } }, "תפריט"),
+                "             ")),
+            "           ",
+            nav.map(function (item) { var isAct = view === item[0] || (view === "client" && item[0] === "clients"); var icons = { "dash": "🏠", "clients": "👥", "crm": "📌", "staff": "👤", "filings": "📋", "reports": "📊", "messaging": "✉", "importexport": "📂", "permissions": "🔐", "audit": "🔍", "backup": "💾" }; return (React.createElement("button", { key: item[0], onClick: function () { setView(item[0]); setMobileMenuOpen(false); }, style: { display: "flex", alignItems: "center", gap: 10, padding: collapsed ? "12px 0" : "10px 14px", justifyContent: collapsed ? "center" : "flex-start", fontSize: 14, fontWeight: isAct ? 700 : 500, color: isAct ? "#ffffff" : "rgba(180,220,255,0.65)", background: isAct ? "rgba(255,255,255,0.13)" : "transparent", borderRight: "3px solid " + (isAct ? "#7ec8f0" : "transparent"), border: "none", textAlign: "right", width: "100%", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s", marginBottom: 2, borderRadius: collapsed ? "0" : "0 0 0 0" } },
+                "                 ",
+                React.createElement("span", { style: { fontSize: 17, minWidth: 22, textAlign: "center", lineHeight: 1 } }, icons[item[0]] || "•"),
+                "                 ",
+                !collapsed && React.createElement("span", { style: { fontSize: 14, letterSpacing: 0.2 } }, item[1]),
+                "                 ",
+                !collapsed && isAct && React.createElement("span", { style: { marginRight: "auto", width: 6, height: 6, borderRadius: "50%", background: "#7ec8f0", flexShrink: 0 } }),
+                "               ")); }),
+            "           ",
+            !collapsed && (React.createElement("div", { style: { marginTop: "auto", padding: "12px 14px", borderTop: "1px solid rgba(100,180,255,0.1)" } },
+                "               ",
+                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 } },
+                    "                 ",
+                    React.createElement("div", { style: { width: 28, height: 28, borderRadius: 7, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "#7ec8f0" } }, firm.firmName && firm.firmName[0]),
+                    "                 ",
+                    React.createElement("div", { style: { flex: 1, overflow: "hidden" } },
+                        "                   ",
+                        React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "rgba(200,230,255,0.9)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, firm.firmName),
+                        "                   ",
+                        React.createElement("p", { style: { fontSize: 10, color: "rgba(150,200,255,0.5)" } }, firm.planLabel || "מנוי פעיל"),
+                        "                 "),
+                    "               "),
+                "               ",
+                React.createElement("div", { style: { background: "rgba(255,255,255,0.08)", borderRadius: 999, height: 4, overflow: "hidden" } },
+                    "                 ",
+                    React.createElement("div", { style: { width: Math.min(100, Math.max(5, days / 365 * 100)) + "%", height: "100%", background: "linear-gradient(90deg,#4a9eff,#7ec8f0)", borderRadius: 999 } }),
+                    "               "),
+                "               ",
+                React.createElement("p", { style: { fontSize: 10, color: "rgba(150,200,255,0.5)", marginTop: 4 } }, days + " ימים נותרים"),
+                "             ")),
+            "         "),
+        "          ",
+        React.createElement("main", { style: { flex: 1, overflow: "auto", padding: isMobile ? 12 : 22 } },
+            "           ",
+            filtered && (React.createElement("div", { className: "fade" },
+                "               ",
+                React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 14 } },
+                    "                 ",
+                    React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, color: TXT } }, "חיפוש: " + search),
+                    "                 ",
+                    React.createElement("button", { onClick: function () { setSearch(""); }, style: { background: "none", border: "none", color: MUT, cursor: "pointer", fontSize: 17 } }, "x"),
+                    "               "),
+                "               ",
+                filtered.length === 0 ? React.createElement("p", { style: { color: MUT } }, "אין תוצאות") : filtered.map(function (c) { return (React.createElement("div", { key: c.id, onClick: function () { setClient(c); setView("client"); setSearch(""); }, style: { background: CARD, border: "1px solid " + BDR, borderRadius: 9, padding: 14, marginBottom: 8, cursor: "pointer", display: "flex", gap: 12, alignItems: "center" } },
+                    "                   ",
+                    React.createElement("div", { style: { width: 36, height: 36, borderRadius: 9, background: ACCLO, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, color: ACC } }, c.name[0]),
+                    "                   ",
+                    React.createElement("div", { style: { flex: 1 } },
+                        React.createElement("p", { style: { fontWeight: 700, color: TXT } }, c.name),
+                        React.createElement("p", { style: { fontSize: 12, color: MUT } }, c.caseNum)),
+                    "                   ",
+                    React.createElement("span", { style: { color: ACC, fontSize: 13 } }, "פתח"),
+                    "                 ")); }),
+                "             ")),
+            "           ",
+            (function () { var ls = getLicenseStatus(); if (ls.status === "trial") {
+                return React.createElement("div", { style: { background: AMB + "18", border: "1px solid " + AMB + "44", borderRadius: 10, padding: "9px 14px", marginBottom: 12, display: "flex", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", gap: 6 } },
+                    "                 ",
+                    React.createElement("span", { style: { fontSize: 13, color: AMB, fontWeight: 700 } }, "⏳ תקופת ניסיון — נותרו " + ls.daysLeft + " ימים מתוך 30"),
+                    "                 ",
+                    React.createElement("span", { style: { fontSize: 12, color: MUT } }, "לרישיון שנתי: " + _SUPPORT_PHONE),
+                    "               ");
+            } return null; })(),
+            "           ",
+            !filtered && view === "dash" && React.createElement(DashView, { firm: firm, days: days, setView: setView, setClient: setClient }),
+            "           ",
+            !filtered && view === "clients" && React.createElement(ClientsView, { setClient: setClient, setView: setView, toast: toast }),
+            "           ",
+            !filtered && view === "client" && client && React.createElement(ClientView, { client: client, firm: firm, toast: toast }),
+            "           ",
+            !filtered && view === "crm" && React.createElement(CrmView, { toast: toast }),
+            "           ",
+            !filtered && view === "importexport" && React.createElement(ImportExportView, { toast: toast }),
+            "           ",
+            !filtered && view === "messaging" && React.createElement(MessagingView, { firm: firm, toast: toast }),
+            "           ",
+            !filtered && view === "permissions" && React.createElement(PermissionsView, { toast: toast }),
+            "           ",
+            !filtered && view === "staff" && React.createElement(StaffView, { toast: toast }),
+            "           ",
+            !filtered && view === "filings" && React.createElement(FilingsView, { toast: toast }),
+            "           ",
+            !filtered && view === "reports" && React.createElement(ReportsView, { toast: toast }),
+            "           ",
+            !filtered && view === "backup" && React.createElement(BackupView, { firm: firm, toast: toast }),
+            "           ",
+            !filtered && view === "audit" && React.createElement(AuditView, null),
+            "         "),
+        "       "),
+    "       ",
+    notif && React.createElement(Toast, { msg: notif }),
+    "     ")); }
+function DashView(p) { var firm = p.firm; var days = daysLeft(firm && firm.expiry ? firm.expiry : "2026-12-31"); return (React.createElement("div", { className: "fade" },
+    "       ",
+    React.createElement("h1", { style: { fontSize: 20, fontWeight: 800, color: TXT, marginBottom: 4 } }, "ברוך הבא, " + firm.firmName),
+    "       ",
+    React.createElement("p", { style: { color: MUT, fontSize: 13, marginBottom: 18 } }, firm.city + " | ח.פ. " + firm.regNum),
+    "        ",
+    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 18 } },
+        "         ",
+        [[String(CLIENTS.filter(function (c) { return c.status === "פעיל"; }).length), "לקוחות פעילים"], [String(Object.keys(BILLING).reduce(function (s, k) { return s + BILLING[k].filter(function (e) { return e.status === "ממתין"; }).length; }, 0)), "חיובים ממתינים"], [String(getOpenTasks().length), "משימות פתוחות"], [String(getOpenTasks().filter(function (t) { return t.dueDate < new Date().toISOString().slice(0, 10); }).length), "משימות באיחור"]].map(function (s) { return (React.createElement("div", { key: s[1], style: { background: CARD, border: "1px solid " + BDR, borderRadius: 11, padding: 14 } },
+            "             ",
+            React.createElement("p", { style: { fontSize: 24, fontWeight: 800, color: TXT } }, s[0]),
+            "             ",
+            React.createElement("p", { style: { fontSize: 12, color: MUT, marginTop: 2 } }, s[1]),
+            "           ")); }),
+        "       "),
+    "       ",
+    React.createElement("div", { style: { background: CARD, border: "1px solid " + BDR, borderRadius: 11, padding: 16 } },
+        "         ",
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 12 } },
+            React.createElement("h2", { style: { fontSize: 14, fontWeight: 700, color: TXT } }, "Recent Clients"),
+            React.createElement("button", { onClick: function () { p.setView("clients"); }, style: { background: "none", border: "none", color: ACC, fontSize: 12, cursor: "pointer" } }, "הכל")),
+        "         ",
+        CLIENTS.slice(0, 4).map(function (c) { return (React.createElement("div", { key: c.id, onClick: function () { p.setClient(c); p.setView("client"); }, style: { display: "flex", alignItems: "center", gap: 9, padding: "8px 5px", borderRadius: 7, cursor: "pointer", marginBottom: 3 } },
+            "             ",
+            React.createElement("div", { style: { width: 30, height: 30, borderRadius: 7, background: ACCLO, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: ACC, flexShrink: 0 } }, c.name[0]),
+            "             ",
+            React.createElement("div", { style: { flex: 1 } },
+                React.createElement("p", { style: { fontSize: 13, fontWeight: 600, color: TXT } }, c.name),
+                React.createElement("p", { style: { fontSize: 12, color: MUT } }, c.caseNum + " | " + c.last)),
+            "             ",
+            c.monthlyFee > 0 && React.createElement("span", { style: { fontSize: 12, color: GRN, background: GRNLO, padding: "2px 7px", borderRadius: 999 } }, fmtMoney(c.monthlyFee) + "/חודש"),
+            "           ")); }),
+        "       "),
+    "       ",
+    days <= 60 && (React.createElement("div", { style: { background: "linear-gradient(135deg,#0d2550,#1a3f7a)", border: "1px solid rgba(100,180,255,0.2)", borderRadius: 12, padding: "12px 18px", marginTop: 14, display: "flex", justifyContent: "space-between", alignItems: "center" } },
+        "           ",
+        React.createElement("div", null,
+            "             ",
+            React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#7ec8f0", marginBottom: 2 } }, "מנוי " + firm.planLabel + " - פעיל"),
+            "             ",
+            React.createElement("p", { style: { fontSize: 12, color: "rgba(150,200,255,0.6)" } }, days + " ימים נותרים | עד " + fmtDate(firm.expiry)),
+            "           "),
+        "           ",
+        React.createElement("button", { style: { background: "linear-gradient(135deg,#1a6fb5,#4a9eff)", border: "none", borderRadius: 8, padding: "7px 16px", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "חידוש מנוי"),
+        "         ")),
+    "     ")); }
+function StaffPicker(p) { var [open, setOpen] = useState(false); var [assigned, setAssigned] = useState(function () { return getClientStaff(p.clientId); }); var staffName = assigned ? getClientStaffName(p.clientId) : null; function assign(staffId) { setClientStaff(p.clientId, staffId); setAssigned(staffId); setOpen(false); if (p.onAssign)
+    p.onAssign(staffId); } function unassign() { CLIENT_STAFF[p.clientId] = null; setAssigned(null); setOpen(false); if (p.onAssign)
+    p.onAssign(null); } return (React.createElement("div", { style: { position: "relative", display: "inline-block" } },
+    "       ",
+    React.createElement("button", { onClick: function () { setOpen(function (x) { return !x; }); }, style: { background: assigned ? ACCLO : SUB, border: "1px solid " + (assigned ? ACC : BDR), borderRadius: 7, padding: "4px 10px", fontSize: 12, color: assigned ? ACC : MUT, cursor: "pointer", fontWeight: assigned ? 700 : 400, display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" } },
+        "         ",
+        assigned ? (React.createElement("span", { style: { display: "flex", alignItems: "center", gap: 5 } },
+            "             ",
+            React.createElement("span", { style: { width: 18, height: 18, borderRadius: "50%", background: ACC, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff", flexShrink: 0 } }, staffName && staffName[0]),
+            "             ",
+            staffName,
+            "           ")) : "+ שייך עובד",
+        "         ",
+        React.createElement("span", { style: { fontSize: 9, color: MUT } }, "v"),
+        "       "),
+    "       ",
+    open && (React.createElement("div", { style: { position: "absolute", top: "calc(100% + 4px)", right: 0, background: SURF, border: "1px solid " + BDR, borderRadius: 10, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", zIndex: 200, minWidth: 160, padding: 4 } },
+        "           ",
+        STAFF.map(function (s) { var sel = assigned === s.id; return (React.createElement("button", { key: s.id, onClick: function () { assign(s.id); }, style: { display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 12px", background: sel ? ACCLO : "transparent", border: "none", borderRadius: 7, cursor: "pointer", textAlign: "right" } },
+            "                 ",
+            React.createElement("span", { style: { width: 22, height: 22, borderRadius: "50%", background: sel ? ACC : BDR, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: sel ? "#fff" : MUT, flexShrink: 0 } }, s.name[0]),
+            "                 ",
+            React.createElement("div", { style: { textAlign: "right", flex: 1 } },
+                "                   ",
+                React.createElement("p", { style: { fontSize: 12, fontWeight: sel ? 700 : 400, color: sel ? ACC : TXT } }, s.name),
+                "                   ",
+                React.createElement("p", { style: { fontSize: 10, color: MUT } }, s.role),
+                "                 "),
+            "                 ",
+            sel && React.createElement("span", { style: { fontSize: 11, color: ACC } }, "v"),
+            "               ")); }),
+        "           ",
+        assigned && (React.createElement("button", { onClick: unassign, style: { display: "flex", alignItems: "center", gap: 6, width: "100%", padding: "7px 12px", background: "transparent", border: "none", borderRadius: 7, cursor: "pointer", borderTop: "1px solid " + BDR, marginTop: 4, paddingTop: 8 } },
+            "               ",
+            React.createElement("span", { style: { fontSize: 11, color: RED } }, "x"),
+            "               ",
+            React.createElement("span", { style: { fontSize: 12, color: RED } }, "הסר שיוך"),
+            "             ")),
+        "         ")),
+    "     ")); }
+function ClientTypePicker(p) { var c = p.client; var [open, setOpen] = useState(false); var types = ["פטור", "עצמאי", "חברה", "עמותה", "כלכלי"]; var cur = c.clientType || c.type || ""; function pick(t) { for (var i = 0; i < CLIENTS.length; i++) {
+    if (CLIENTS[i].id === c.id) {
+        CLIENTS[i].clientType = t;
+        break;
+    }
+} c.clientType = t; setOpen(false); if (p.onUpdate)
+    p.onUpdate(); } return (React.createElement("div", { style: { position: "relative", display: "inline-block" } },
+    "       ",
+    React.createElement("button", { onClick: function () { setOpen(function (x) { return !x; }); }, style: { background: cur ? ACCLO : SUB, border: "1px solid " + (cur ? ACC : BDR), borderRadius: 7, padding: "3px 10px", fontSize: 12, color: cur ? ACC : MUT, cursor: "pointer", fontWeight: cur ? 700 : 400, whiteSpace: "nowrap" } },
+        "         ",
+        cur || "+ הגדר",
+        "       "),
+    "       ",
+    open && (React.createElement("div", { style: { position: "absolute", top: "calc(100% + 4px)", right: 0, background: SURF, border: "1px solid " + BDR, borderRadius: 10, boxShadow: "0 12px 36px rgba(0,0,0,0.5)", zIndex: 9999, minWidth: 150, padding: 4 } },
+        "           ",
+        types.map(function (t) { var sel = cur === t; var typeColors = { "פטור": "#64748b", "עצמאי": "#3b82f6", "חברה": "#f59e0b", "עמותה": "#10b981", "כלכלי": "#ef4444" }; var tc = typeColors[t] || ACC; return (React.createElement("button", { key: t, onClick: function () { pick(t); }, style: { display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 12px", background: sel ? "rgba(255,255,255,0.06)" : "transparent", border: "none", borderRadius: 7, cursor: "pointer", textAlign: "right" } },
+            "                 ",
+            React.createElement("span", { style: { width: 8, height: 8, borderRadius: "50%", background: tc, flexShrink: 0, display: "inline-block" } }),
+            "                 ",
+            React.createElement("span", { style: { fontSize: 13, fontWeight: sel ? 700 : 400, color: sel ? TXT : MUT } }, t),
+            "                 ",
+            sel && React.createElement("span", { style: { marginRight: "auto", fontSize: 11, color: ACC } }, "v"),
+            "               ")); }),
+        "         ")),
+    "     ")); }
+function clientTypeColor(t) { if (t === "פטור")
+    return "gray"; if (t === "עצמאי")
+    return "blue"; if (t === "חברה")
+    return "amber"; if (t === "עמותה")
+    return "green"; if (t === "כלכלי")
+    return "red"; return "gray"; }
+function ClientsView(p) { var [filter, setFilter] = useState("all"); var [showNew, setShowNew] = useState(false); var [clients, setClients] = useState(CLIENTS.slice()); var list = filter === "all" ? clients : clients.filter(function (c) { return c.status === (filter === "פעיל" ? "פעיל" : "ארכיון"); }); function handleSave(nc) { setClients(CLIENTS.slice()); setShowNew(false); p.toast("לקוח " + nc.name + " נוסף"); } return (React.createElement("div", { className: "fade" },
+    "       ",
+    showNew && React.createElement(NewClientModal, { onClose: function () { setShowNew(false); }, onSave: handleSave }),
+    "       ",
+    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 16 } },
+        "         ",
+        React.createElement("h1", { style: { fontSize: 20, fontWeight: 800, color: TXT } }, "לקוחות"),
+        "         ",
+        React.createElement("div", { style: { display: "flex", gap: 7 } },
+            "           ",
+            [["all", "הכל"], ["פעיל", "פעילים"], ["ארכיון", "ארכיון"]].map(function (f) { return (React.createElement("button", { key: f[0], onClick: function () { setFilter(f[0]); }, style: { padding: "5px 11px", borderRadius: 7, fontSize: 12, background: filter === f[0] ? ACCLO : CARD, border: "1px solid " + (filter === f[0] ? ACC : BDR), color: filter === f[0] ? ACC : MUT, cursor: "pointer" } }, f[1])); }),
+            "           ",
+            React.createElement(Btn, { onClick: function () { setShowNew(true); }, pad: "6px 14px", fs: 12 }, "+ New Client"),
+            "         "),
+        "       "),
+    "       ",
+    React.createElement("div", { style: { background: CARD, border: "1px solid " + BDR, borderRadius: 11, overflowX: "auto" } },
+        "         ",
+        React.createElement("table", { style: { width: "100%", borderCollapse: "collapse" } },
+            "           ",
+            React.createElement("thead", null,
+                React.createElement("tr", { style: { background: BG } }, ["לקוח", "עובד אחראי", "תיק", "סוג לקוח", "שכט", "סטטוס", "עדכון", ""].map(function (h) { return React.createElement("th", { key: h, style: { padding: "9px 12px", textAlign: "right", fontSize: 12, fontWeight: 600, color: MUT } }, h); }))),
+            "           ",
+            React.createElement("tbody", null,
+                "             ",
+                list.map(function (c) { return (React.createElement("tr", { key: c.id, onClick: function () { p.setClient(c); p.setView("client"); }, style: { borderBottom: "1px solid " + BDR, cursor: "pointer" } },
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px" } },
+                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+                            React.createElement("div", { style: { width: 28, height: 28, borderRadius: 6, background: ACCLO, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: ACC } }, c.name[0]),
+                            React.createElement("span", { style: { fontSize: 13, fontWeight: 600, color: TXT } }, c.name))),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px" }, onClick: function (e) { e.stopPropagation(); } },
+                        React.createElement(StaffPicker, { clientId: c.id, onAssign: function () { setClients(CLIENTS.slice()); } })),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px", fontSize: 12, color: MUT } }, c.caseNum),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px" }, onClick: function (e) { e.stopPropagation(); } },
+                        React.createElement(ClientTypePicker, { client: c, onUpdate: function () { setClients(CLIENTS.slice()); } })),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px", fontSize: 12, color: c.monthlyFee > 0 ? GRN : MUT } }, c.monthlyFee > 0 ? fmtMoney(c.monthlyFee) + "/חודש" : "-"),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px" } },
+                        React.createElement(Bdg, { color: c.status === "פעיל" ? "green" : "gray", sm: true }, c.status)),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px", fontSize: 12, color: MUT } }, c.last),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "11px 12px" } },
+                        React.createElement("button", { style: { background: ACCLO, border: "none", color: ACC, padding: "3px 9px", borderRadius: 5, fontSize: 12, cursor: "pointer" } }, "פתח")),
+                    "               ")); }),
+                "           "),
+            "         "),
+        "       "),
+    "     ")); }
+function NewClientModal(p) { var [name, setName] = useState(""); var [type, setType] = useState("חברה"); var [clientType, setClientType] = useState(""); var [caseNum, setCaseNum] = useState(""); var [email, setEmail] = useState(""); var [phone, setPhone] = useState(""); var [fee, setFee] = useState(""); var [billingDay, setBillingDay] = useState("1"); var [tags, setTags] = useState(""); var [errs, setErrs] = useState({}); function validate() { var e = {}; if (!name.trim())
+    e.name = "שדה חובה"; if (!caseNum.trim())
+    e.caseNum = "שדה חובה"; if (fee && isNaN(Number(fee)))
+    e.fee = "מספרים בלבד"; setErrs(e); return Object.keys(e).length === 0; } function save() { if (!validate())
+    return; var tagList = tags.trim() ? tags.split(",").map(function (t) { return t.trim(); }).filter(Boolean) : []; var nc = { id: Date.now(), name: name.trim(), caseNum: caseNum.trim(), status: "פעיל", type: type, clientType: clientType, tags: tagList, last: new Date().toISOString().slice(0, 10), monthlyFee: fee ? Number(fee) : 0, billingDay: Number(billingDay) || 1, email: email.trim(), phone: phone.trim() }; CLIENTS.unshift(nc); FOLDERS[nc.id] = ["חוזים", "פיננסים", "התכתבויות"]; BILLING[nc.id] = []; p.onSave(nc); } return (React.createElement("div", { onClick: p.onClose, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.78)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 } },
+    "       ",
+    React.createElement("div", { dir: "rtl", onClick: function (e) { e.stopPropagation(); }, style: { background: SURF, border: "1px solid " + BDR, borderRadius: 18, padding: 28, width: "100%", maxWidth: 500, maxHeight: "90vh", overflow: "auto", boxShadow: "0 24px 80px rgba(0,0,0,0.7)" } },
+        "         ",
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 18 } },
+            "           ",
+            React.createElement("div", null,
+                React.createElement("h2", { style: { fontSize: 18, fontWeight: 800, color: TXT } }, "לקוח חדש"),
+                React.createElement("p", { style: { fontSize: 12, color: MUT, marginTop: 2 } }, "Client details and fee structure")),
+            "           ",
+            React.createElement("button", { onClick: p.onClose, style: { background: "none", border: "none", cursor: "pointer", color: MUT, fontSize: 20 } }, "x"),
+            "         "),
+        "         ",
+        React.createElement(Fld, { label: "\u05E9\u05DD \u05DC\u05E7\u05D5\u05D7 / \u05D7\u05D1\u05E8\u05D4", value: name, onChange: setName, ph: "\u05E9\u05DD \u05D4\u05DC\u05E7\u05D5\u05D7", req: true, err: errs.name }),
+        "         ",
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px", marginBottom: 0 } },
+            "           ",
+            React.createElement("div", { style: { marginBottom: 14 } },
+                "             ",
+                React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "סוג ישות"),
+                "             ",
+                React.createElement("select", { value: type, onChange: function (e) { setType(e.target.value); }, style: { width: "100%", background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "11px 14px", color: TXT, fontSize: 14, fontFamily: "inherit" } },
+                    "               ",
+                    React.createElement("option", { value: "\u05D7\u05D1\u05E8\u05D4" }, "חברה"),
+                    "               ",
+                    React.createElement("option", { value: "\u05E4\u05E8\u05D8\u05D9" }, "פרטי"),
+                    "               ",
+                    React.createElement("option", { value: "\u05E2\u05DE\u05D5\u05EA\u05D4" }, "עמותה"),
+                    "               ",
+                    React.createElement("option", { value: "\u05E9\u05D5\u05EA\u05E4\u05D5\u05EA" }, "שותפות"),
+                    "             "),
+                "           "),
+            "           ",
+            React.createElement("div", { style: { marginBottom: 14 } },
+                "             ",
+                React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "סוג לקוח (מס)"),
+                "             ",
+                React.createElement("select", { value: clientType, onChange: function (e) { setClientType(e.target.value); }, style: { width: "100%", background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "11px 14px", color: TXT, fontSize: 14, fontFamily: "inherit" } },
+                    "               ",
+                    React.createElement("option", { value: "" }, "-- בחר --"),
+                    "               ",
+                    ["פטור", "עצמאי", "חברה", "עמותה", "כלכלי"].map(function (t) { return React.createElement("option", { key: t, value: t }, t); }),
+                    "             "),
+                "           "),
+            "         "),
+        "         ",
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px" } },
+            "           ",
+            React.createElement(Fld, { label: "\u05DE\u05E1\u05E4\u05E8 \u05EA\u05D9\u05E7", value: caseNum, onChange: setCaseNum, ph: "2024-006", req: true, err: errs.caseNum }),
+            "           ",
+            React.createElement(Fld, { label: "\u05D0\u05D9\u05DE\u05D9\u05D9\u05DC", value: email, onChange: setEmail, ph: "client@email.com", type: "email" }),
+            "           ",
+            React.createElement(Fld, { label: "\u05D8\u05DC\u05E4\u05D5\u05DF", value: phone, onChange: setPhone, ph: "050-1234567" }),
+            "           ",
+            React.createElement(Fld, { label: "\u05EA\u05D2\u05D9\u05D5\u05EA (\u05DE\u05D5\u05E4\u05E8\u05D3\u05D5\u05EA \u05D1\u05E4\u05E1\u05D9\u05E7)", value: tags, onChange: setTags, ph: "\u05D7\u05D5\u05D6\u05D9\u05DD, \u05E0\u05D3\u05DC\u05DF" }),
+            "         "),
+        "         ",
+        React.createElement("div", { style: { background: CARD, border: "1px solid " + BDR, borderRadius: 12, padding: "16px 18px", marginBottom: 14 } },
+            "           ",
+            React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: TXT, marginBottom: 12 } }, "Monthly Fee"),
+            "           ",
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px" } },
+                "             ",
+                React.createElement(Fld, { label: "\u05E1\u05DB\u05D5\u05DD (\u05E9\u05D7, \u05DC\u05E4\u05E0\u05D9 \u05DE\u05E2\u05DE)", value: fee, onChange: setFee, ph: "5000", type: "number", err: errs.fee, hint: "\u05DE\u05E2\u05DE 18% \u05D9\u05EA\u05D5\u05D5\u05E1\u05E3 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA" }),
+                "             ",
+                React.createElement("div", { style: { marginBottom: 14 } },
+                    "               ",
+                    React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "Billing Day"),
+                    "               ",
+                    React.createElement("select", { value: billingDay, onChange: function (e) { setBillingDay(e.target.value); }, style: { width: "100%", background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "11px 14px", color: TXT, fontSize: 14, fontFamily: "inherit" } },
+                        "                 ",
+                        [1, 5, 10, 15, 20, 25, 28].map(function (d) { return React.createElement("option", { key: d, value: d }, "יום " + d + " בחודש"); }),
+                        "               "),
+                    "             "),
+                "           "),
+            "           ",
+            fee && !isNaN(Number(fee)) && Number(fee) > 0 && (React.createElement("div", { style: { background: GRNLO, border: "1px solid " + GRN + "33", borderRadius: 7, padding: "8px 12px", fontSize: 13, color: GRN } },
+                "               ",
+                "חודשי: " + fmtMoney(fee) + " + מעמ = " + fmtMoney(Math.round(Number(fee) * 1.18)),
+                "             ")),
+            "         "),
+        "         ",
+        React.createElement("div", { style: { display: "flex", gap: 8 } },
+            "           ",
+            React.createElement("button", { onClick: p.onClose, style: { flex: 1, background: SUB, border: "1px solid " + BDR, borderRadius: 9, padding: "11px", color: MUT, fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit" } }, "ביטול"),
+            "           ",
+            React.createElement(Btn, { style: { flex: 2 }, onClick: save }, "צור לקוח"),
+            "         "),
+        "       "),
+    "     ")); }
+function AuditView() { var LOG = [{ id: 1, time: "2024-01-15 14:32", user: "בעל המשרד", action: "עדכן", target: "Agreement 2024.pdf", sev: "info" }, { id: 2, time: "2024-01-15 13:05", user: "עורך", action: "צפה", target: "Annual Report 2023.xlsx", sev: "info" }, { id: 3, time: "2024-01-14 16:30", user: "מזכירה", action: "העלה", target: "ID Document.jpg", sev: "info" }, { id: 4, time: "2024-01-14 11:00", user: "בעל המשרד", action: "מחק", target: "Old draft.docx", sev: "warn" }, { id: 5, time: "2024-01-13 08:01", user: "IP חיצוני", action: "כניסה נכשלה", target: "אימות", sev: "התראה" },]; return (React.createElement("div", { className: "fade" },
+    "       ",
+    React.createElement("div", { style: { marginBottom: 16 } },
+        React.createElement("h1", { style: { fontSize: 20, fontWeight: 800, color: TXT } }, "יומן ביקורת"),
+        React.createElement("p", { style: { fontSize: 12, color: MUT, marginTop: 2 } }, "Append-only | DELETE USING (false)")),
+    "       ",
+    React.createElement("div", { style: { background: CARD, border: "1px solid " + BDR, borderRadius: 11, overflow: "hidden" } },
+        "         ",
+        React.createElement("table", { style: { width: "100%", borderCollapse: "collapse" } },
+            "           ",
+            React.createElement("thead", null,
+                React.createElement("tr", { style: { background: BG } }, ["", "זמן", "משתמש", "פעולה", "יעד"].map(function (h) { return React.createElement("th", { key: h, style: { padding: "9px 12px", textAlign: "right", fontSize: 12, color: MUT } }, h); }))),
+            "           ",
+            React.createElement("tbody", null,
+                "             ",
+                LOG.map(function (a) { return (React.createElement("tr", { key: a.id, style: { borderBottom: "1px solid " + BDR } },
+                    "                 ",
+                    React.createElement("td", { style: { padding: "10px 12px" } }, a.sev === "התראה" ? "(!!)" : a.sev === "warn" ? "(!)" : "(ok)"),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "10px 12px", fontSize: 12, color: MUT } }, a.time),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "10px 12px", fontSize: 13, color: ACC, fontWeight: 500 } }, a.user),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "10px 12px" } },
+                        React.createElement(Bdg, { color: a.sev === "התראה" ? "red" : a.sev === "warn" ? "amber" : "gray", sm: true }, a.action)),
+                    "                 ",
+                    React.createElement("td", { style: { padding: "10px 12px", fontSize: 13, color: MUT } }, a.target),
+                    "               ")); }),
+                "           "),
+            "         "),
+        "         ",
+        React.createElement("div", { style: { padding: "8px 12px", background: BG, borderTop: "1px solid " + BDR, fontSize: 11, color: MUT } }, "RLS: DELETE USING (false) - audit logs cannot be deleted"),
+        "       "),
+    "     ")); }
+function Root() { var [firm, setFirm] = useState(null); var [loading, setLoad] = useState(true); var [authed, setAuthed] = useState(false); var [theme, setTheme] = useState("sky"); var [showWelcome, setShowWelcome] = useState(false); var [licStatus, setLicStatus] = useState(function () { return getLicenseStatus(); }); function applyTheme(tid) { if (!THEMES[tid])
+    return; CURRENT_THEME = tid; var T2 = THEMES[tid]; BG = T2.BG; SURF = T2.SURF; CARD = T2.CARD; BDR = T2.BDR; SUB = T2.SUB; TXT = T2.TXT; MUT = T2.MUT; ACC = T2.ACC; ACCLO = T2.ACCLO; GRN = T2.GRN; GRNLO = T2.GRNLO; RED = T2.RED; REDLO = T2.REDLO; AMB = T2.AMB; AMBLO = T2.AMBLO; setTheme(tid); } useEffect(function () { }); }
 
+
+  // Mount
+  var container = document.getElementById('root');
+  if (container) {
+    container.innerHTML = '';
+    ReactDOM.createRoot(container).render(React.createElement(Root));
+  }
+})(window);
 </script>
 </body>
 </html>
