@@ -27,8 +27,8 @@ window.addEventListener("load",function(){
   try{
     var code=document.getElementById("app-src").textContent;
     var compiled=Babel.transform(code,{presets:["react"],filename:"app.jsx"}).code;
-    var fn=new Function("React","ReactDOM","useState","useEffect","useRef",compiled+";return Root;");
-    var Root=fn(React,ReactDOM,React.useState,React.useEffect,React.useRef);
+    var fn=new Function("React","ReactDOM", compiled+";return Root;");
+    var Root=fn(React,ReactDOM);
     var container=document.getElementById("root");
     container.innerHTML="";
     ReactDOM.createRoot(container).render(React.createElement(Root));
