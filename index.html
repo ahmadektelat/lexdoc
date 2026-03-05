@@ -6,10 +6,9 @@
 <title>MisradPro — ניהול משרד</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;-webkit-text-size-adjust:100%;}
+body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;background:#070d1a;-webkit-text-size-adjust:100%;}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeIn .25s ease}
@@ -18,26 +17,100 @@ body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;-webkit-text-size-adj
 ::-webkit-scrollbar-thumb{background:rgba(100,116,139,0.4);border-radius:3px}
 input,select,textarea,button{font-family:inherit;}
 @media(max-width:768px){input,select,textarea{font-size:16px!important;}}
+#loader{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#60a5fa;}
+#progress-bar{width:200px;height:4px;background:#1e3a5f;border-radius:2px;margin-top:16px;overflow:hidden;}
+#progress-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:2px;width:0%;transition:width 0.3s;}
 </style>
 </head>
 <body>
-<div id="root" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#070d1a;"><div style="text-align:center;color:#60a5fa;font-family:sans-serif;"><div style="font-size:48px;margin-bottom:16px;">📊</div><div style="font-size:20px;font-weight:700;margin-bottom:8px;">MisradPro</div><div style="font-size:14px;color:#64748b;">טוען מערכת...</div><div style="margin-top:20px;width:40px;height:40px;border:3px solid #1e3a5f;border-top-color:#3b82f6;border-radius:50%;animation:spin 0.8s linear infinite;margin:20px auto 0;"></div></div></div>
+<div id="loader">
+  <div style="font-size:48px;margin-bottom:16px;">📊</div>
+  <div style="font-size:20px;font-weight:700;margin-bottom:8px;">MisradPro</div>
+  <div id="load-msg" style="font-size:13px;color:#64748b;">טוען...</div>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+</div>
+<div id="root" style="display:none;"></div>
+
 <script>
-window.addEventListener("load",function(){
-  try{
-    var code=document.getElementById("app-src").textContent;
-    var compiled=Babel.transform(code,{presets:["react"],filename:"app.jsx"}).code;
-    var fn=new Function("React","ReactDOM", compiled+";return Root;");
-    var Root=fn(React,ReactDOM);
-    var container=document.getElementById("root");
-    container.innerHTML="";
-    ReactDOM.createRoot(container).render(React.createElement(Root));
-  }catch(e){
-    document.getElementById("root").innerHTML='<div style="color:#ef4444;padding:40px;font-family:monospace;direction:ltr;"><h2>Error:</h2><pre style="white-space:pre-wrap;">'+e.message+'</pre></div>';
-    console.error(e);
+function setProgress(pct, msg) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('load-msg').textContent = msg;
+}
+
+function loadScript(url, cb) {
+  var s = document.createElement('script');
+  s.src = url;
+  s.onload = cb;
+  s.onerror = function(){ cb(new Error('Failed to load: ' + url)); };
+  document.head.appendChild(s);
+}
+
+setProgress(20, 'טוען Babel...');
+
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js', function(err) {
+  if (err) {
+    document.getElementById('load-msg').textContent = 'שגיאה בטעינת Babel';
+    return;
   }
+  setProgress(50, 'מקמפל קוד...');
+
+  // Use setTimeout to let the UI update before heavy Babel work
+  setTimeout(function() {
+    try {
+      var code = document.getElementById('app-src').textContent;
+      setProgress(60, 'מקמפל... (עשוי לקחת מספר שניות)');
+      
+      setTimeout(function() {
+        try {
+          var compiled = Babel.transform(code, {
+            presets: ['react'],
+            filename: 'app.jsx',
+            // Disable source maps for speed
+            sourceMaps: false,
+            comments: false
+          }).code;
+          
+          setProgress(90, 'מפעיל מערכת...');
+          
+          setTimeout(function() {
+            try {
+              // Use indirect eval to run in global scope
+              var script = document.createElement('script');
+              script.textContent = compiled + '\n;window.__AppRoot=Root;';
+              document.head.appendChild(script);
+              
+              var loader = document.getElementById('loader');
+              var rootEl = document.getElementById('root');
+              loader.style.display = 'none';
+              rootEl.style.display = 'block';
+              
+              setProgress(100, 'מוכן');
+              ReactDOM.createRoot(rootEl).render(React.createElement(window.__AppRoot));
+            } catch(e) {
+              showError(e);
+            }
+          }, 100);
+          
+        } catch(e) {
+          showError(e);
+        }
+      }, 200);
+      
+    } catch(e) {
+      showError(e);
+    }
+  }, 100);
 });
+
+function showError(e) {
+  document.getElementById('loader').innerHTML = 
+    '<div style="color:#ef4444;padding:40px;font-family:monospace;direction:ltr;max-width:90vw;overflow:auto;">' +
+    '<h2 style="margin-bottom:12px;">שגיאה:</h2><pre style="white-space:pre-wrap;font-size:12px;">' + 
+    (e.message || String(e)) + '</pre></div>';
+  console.error(e);
+}
 </script>
+
 <script id="app-src" type="text/plain">
 const { useState, useEffect, useRef } = React;
 
