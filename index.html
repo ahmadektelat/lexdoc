@@ -4202,8 +4202,108 @@ function AuditView() { var LOG = [{ id: 1, time: "2024-01-15 14:32", user: "בע
         React.createElement("div", { style: { padding: "8px 12px", background: BG, borderTop: "1px solid " + BDR, fontSize: 11, color: MUT } }, "RLS: DELETE USING (false) - audit logs cannot be deleted"),
         "       "),
     "     ")); }
-function Root() { var [firm, setFirm] = useState(null); var [loading, setLoad] = useState(true); var [authed, setAuthed] = useState(false); var [theme, setTheme] = useState("sky"); var [showWelcome, setShowWelcome] = useState(false); var [licStatus, setLicStatus] = useState(function () { return getLicenseStatus(); }); function applyTheme(tid) { if (!THEMES[tid])
-    return; CURRENT_THEME = tid; var T2 = THEMES[tid]; BG = T2.BG; SURF = T2.SURF; CARD = T2.CARD; BDR = T2.BDR; SUB = T2.SUB; TXT = T2.TXT; MUT = T2.MUT; ACC = T2.ACC; ACCLO = T2.ACCLO; GRN = T2.GRN; GRNLO = T2.GRNLO; RED = T2.RED; REDLO = T2.REDLO; AMB = T2.AMB; AMBLO = T2.AMBLO; setTheme(tid); } useEffect(function () { }); }
+
+
+function Root() {
+  var [firm, setFirm] = useState(null);
+  var [loading, setLoad] = useState(true);
+  var [authed, setAuthed] = useState(false);
+  var [theme, setTheme] = useState("sky");
+  var [showWelcome, setShowWelcome] = useState(false);
+  var [licStatus, setLicStatus] = useState(function() { return getLicenseStatus(); });
+
+  function applyTheme(tid) {
+    if (!THEMES[tid]) return;
+    CURRENT_THEME = tid;
+    var T2 = THEMES[tid];
+    BG=T2.BG; SURF=T2.SURF; CARD=T2.CARD; BDR=T2.BDR; SUB=T2.SUB;
+    TXT=T2.TXT; MUT=T2.MUT;
+    ACC=T2.ACC; ACCLO=T2.ACCLO;
+    GRN=T2.GRN; GRNLO=T2.GRNLO;
+    RED=T2.RED; REDLO=T2.REDLO;
+    AMB=T2.AMB; AMBLO=T2.AMBLO;
+    setTheme(tid);
+  }
+
+  function toast(msg) {
+    // toast is handled inside App, but Root needs it for auto-task engine
+  }
+
+  useEffect(function() {
+    var count = runAutoTaskEngine(true);
+    if (count > 0) setTimeout(function() {}, 1500);
+  }, []);
+
+  useEffect(function() {
+    var t = setTimeout(function() { setLoad(false); }, 2500);
+    sLoad(function(d) {
+      clearTimeout(t);
+      setFirm(d);
+      if (d && d.theme) { applyTheme(d.theme); }
+      setLoad(false);
+    });
+    return function() { clearTimeout(t); };
+  }, []);
+
+  var T2 = THEMES[theme] || THEMES.sky;
+
+  // License check
+  if (firm && firm.ok) {
+    if (licStatus.status === "expired") {
+      return React.createElement(ExpiredScreen, {
+        theme: theme,
+        onActivated: function() { setLicStatus({ status: "active", daysLeft: 365 }); }
+      });
+    }
+  }
+
+  if (loading) {
+    return React.createElement("div", {
+      style: { minHeight: "100vh", background: T2.BG, display: "flex",
+               alignItems: "center", justifyContent: "center",
+               flexDirection: "column", gap: 10 }
+    },
+      React.createElement("div", {
+        style: { width: 32, height: 32, border: "3px solid " + T2.BDR,
+                 borderTopColor: T2.ACC, borderRadius: "50%",
+                 animation: "spin 0.8s linear infinite" }
+      }),
+      React.createElement("p", { style: { color: T2.MUT, fontSize: 14 } }, "Loading...")
+    );
+  }
+
+  if (!firm || !firm.ok) {
+    if (!showWelcome) {
+      return React.createElement(WelcomeScreen, {
+        theme: theme,
+        onNew: function() { setShowWelcome(true); },
+        onFound: function(d) { setFirm(d); if (d && d.theme) applyTheme(d.theme); setAuthed(false); }
+      });
+    }
+    return React.createElement(Onboard, {
+      onDone: function(d) { setFirm(d); if (d && d.theme) applyTheme(d.theme); },
+      theme: theme,
+      onTheme: applyTheme
+    });
+  }
+
+  if (!authed) {
+    return React.createElement(Login, {
+      firm: firm,
+      onLogin: function() { setAuthed(true); },
+      onReset: function() { sClear(function() { setFirm(null); setAuthed(false); }); },
+      theme: theme,
+      onTheme: applyTheme
+    });
+  }
+
+  return React.createElement(App, {
+    firm: firm,
+    onLogout: function() { setAuthed(false); },
+    theme: theme,
+    onTheme: applyTheme
+  });
+}
 
 
   // Mount
