@@ -2,27 +2,58 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LexDoc — ניהול משרד</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>MisradPro — ניהול משרד</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;}
+body{font-family:"Segoe UI",Arial,sans-serif;direction:rtl;-webkit-text-size-adjust:100%;}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeIn .25s ease}
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(100,116,139,0.4);border-radius:3px}
+input,select,textarea,button{font-family:inherit;}
+@media(max-width:768px){
+  input,select,textarea{font-size:16px!important;}
+}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
+<div id="root" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#070d1a;">
+  <div style="text-align:center;color:#60a5fa;font-family:sans-serif;">
+    <div style="font-size:48px;margin-bottom:16px;">📊</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px;">MisradPro</div>
+    <div style="font-size:14px;color:#64748b;">טוען מערכת...</div>
+    <div style="margin-top:20px;width:40px;height:40px;border:3px solid #1e3a5f;border-top-color:#3b82f6;border-radius:50%;animation:spin 0.8s linear infinite;margin:20px auto 0;"></div>
+  </div>
+</div>
+<script>
+window.addEventListener("load", function() {
+  try {
+    var code = document.getElementById("app-src").textContent;
+    var compiled = Babel.transform(code, {
+      presets: ["react"],
+      filename: "app.jsx"
+    }).code;
+    var fn = new Function("React","ReactDOM","useState","useEffect","useRef", compiled + "; return Root;");
+    var Root = fn(React, ReactDOM, React.useState, React.useEffect, React.useRef);
+    var container = document.getElementById("root");
+    container.innerHTML = "";
+    ReactDOM.createRoot(container).render(React.createElement(Root));
+  } catch(e) {
+    document.getElementById("root").innerHTML =
+      '<div style="color:#ef4444;padding:40px;font-family:monospace;direction:ltr;">' +
+      '<h2>Error:</h2><pre style="white-space:pre-wrap;">' + (e.message||e) + '</pre></div>';
+    console.error(e);
+  }
+});
+</script>
+<script id="app-src" type="text/plain">
 const { useState, useEffect, useRef } = React;
-
 
 // ---- Theme System ----
 var THEMES={
@@ -70,10 +101,238 @@ var GRN=T.GRN,GRNLO=T.GRNLO;
 var RED=T.RED,REDLO=T.REDLO;
 var AMB=T.AMB,AMBLO=T.AMBLO;
 
+
+// ============================================================
+// מערכת רישיון — ניסיון 30 יום + הפעלה שנתית
+// ============================================================
+var _LIC_KEY  = "lexdoc_license_v2";
+var _TRIAL_KEY = "lexdoc_trial_v2";
+var _LIC_SALT = 133337;
+var _LIC_MULT = 7;
+var _LIC_MOD  = 1000000;
+var _SUPPORT_PHONE = "04-6444925";
+
+function generateChallenge(){
+  return Math.floor(100000 + Math.random() * 900000);
+}
+function verifyResponse(challenge, response){
+  var expected = (challenge * _LIC_MULT + _LIC_SALT) % _LIC_MOD;
+  return String(expected).padStart(6,"0") === String(response).trim().padStart(6,"0");
+}
+function devCalcResponse(challenge){
+  return String((challenge * _LIC_MULT + _LIC_SALT) % _LIC_MOD).padStart(6,"0");
+}
+
+// שמירת תחילת תקופת ניסיון (נקרא בסיום הרשמה)
+function startTrial(){
+  try{
+    if(!localStorage.getItem(_TRIAL_KEY)){
+      var expiry=new Date();
+      expiry.setDate(expiry.getDate()+30);
+      localStorage.setItem(_TRIAL_KEY,JSON.stringify({
+        startedAt:new Date().toISOString(),
+        expiry:expiry.toISOString(),
+      }));
+    }
+  }catch(e){}
+}
+
+// בדיקת מצב הרישיון
+function getLicenseStatus(){
+  try{
+    // בדוק הפעלה מלאה (שנתית)
+    var lic=localStorage.getItem(_LIC_KEY);
+    if(lic){
+      var d=JSON.parse(lic);
+      if(d&&d.activated&&new Date(d.expiry)>new Date()){
+        var daysLeft=Math.ceil((new Date(d.expiry)-new Date())/86400000);
+        return {status:"active", daysLeft:daysLeft};
+      }
+    }
+    // בדוק תקופת ניסיון
+    var trial=localStorage.getItem(_TRIAL_KEY);
+    if(trial){
+      var t=JSON.parse(trial);
+      if(new Date(t.expiry)>new Date()){
+        var trialLeft=Math.ceil((new Date(t.expiry)-new Date())/86400000);
+        return {status:"trial", daysLeft:trialLeft};
+      }
+      return {status:"expired"};
+    }
+    // משרד חדש שעוד לא הפעיל ניסיון
+    return {status:"new"};
+  }catch(e){return {status:"new"};}
+}
+
+function saveFullLicense(challenge){
+  var expiry=new Date();
+  expiry.setFullYear(expiry.getFullYear()+1);
+  localStorage.setItem(_LIC_KEY,JSON.stringify({
+    activated:true,
+    challenge:challenge,
+    activatedAt:new Date().toISOString(),
+    expiry:expiry.toISOString(),
+  }));
+}
+
+// ---- מסך פג תוקף ----
+function ExpiredScreen(p){
+  var[showActivation,setShowActivation]=useState(false);
+  var T2=THEMES[p.theme]||THEMES.sky;
+  if(showActivation) return <ActivationScreen theme={p.theme} onActivated={p.onActivated}/>;
+  var s={
+    wrap:{minHeight:"100vh",background:T2.BG,display:"flex",alignItems:"center",justifyContent:"center",padding:20},
+    card:{background:T2.CARD,border:"1px solid "+(T2.RED||"#ef4444")+"44",borderRadius:20,padding:"48px 40px",maxWidth:460,width:"100%",textAlign:"center"},
+    title:{fontSize:22,fontWeight:900,color:T2.TXT,marginBottom:10},
+    sub:{fontSize:14,color:T2.MUT,lineHeight:1.8,marginBottom:28},
+    phoneBox:{background:T2.BG,border:"2px solid "+T2.ACC,borderRadius:14,padding:"18px 0",marginBottom:28},
+    phone:{fontSize:28,fontWeight:900,color:T2.ACC,letterSpacing:2},
+    phoneLbl:{fontSize:12,color:T2.MUT,marginTop:4},
+    btn:{width:"100%",padding:"13px",borderRadius:10,background:"linear-gradient(135deg,"+T2.ACC+",#2563eb)",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer",fontFamily:"inherit"},
+  };
+  return(
+    <div style={s.wrap}><div style={s.card}>
+      <div style={{fontSize:52,marginBottom:12}}>{"⏰"}</div>
+      <div style={s.title}>{"תקופת הניסיון הסתיימה"}</div>
+      <p style={s.sub}>{"30 ימי הניסיון החינמיים הסתיימו.
+להמשך השימוש במערכת לשנה שלמה, צור קשר:"}</p>
+      <div style={s.phoneBox}>
+        <div style={s.phone}>{_SUPPORT_PHONE}</div>
+        <div style={s.phoneLbl}>{"שעות פעילות: א׳-ה׳ | 9:00-17:00"}</div>
+      </div>
+      <button style={s.btn} onClick={function(){setShowActivation(true);}}>{"יש לי קוד הפעלה ←"}</button>
+    </div></div>
+  );
+}
+
+// ---- מסך הפעלה שנתית ----
+function ActivationScreen(p){
+  var[challenge]=useState(function(){return generateChallenge();});
+  var[response,setResponse]=useState("");
+  var[err,setErr]=useState("");
+  var[success,setSuccess]=useState(false);
+  var T2=THEMES[p.theme]||THEMES.sky;
+
+  function tryActivate(){
+    if(verifyResponse(challenge,response)){
+      saveFullLicense(challenge);
+      setSuccess(true);
+      setTimeout(function(){p.onActivated();},1500);
+    } else {
+      setErr("קוד שגוי — נסה שוב או פנה לתמיכה.");
+      setResponse("");
+    }
+  }
+
+  var s={
+    wrap:{minHeight:"100vh",background:T2.BG,display:"flex",alignItems:"center",justifyContent:"center",padding:20},
+    card:{background:T2.CARD,border:"1px solid "+T2.BDR,borderRadius:20,padding:"44px 36px",maxWidth:440,width:"100%",textAlign:"center"},
+    title:{fontSize:22,fontWeight:900,color:T2.TXT,marginBottom:8},
+    sub:{fontSize:13,color:T2.MUT,marginBottom:28,lineHeight:1.7},
+    challengeBox:{background:T2.BG,border:"2px dashed "+T2.ACC,borderRadius:12,padding:"18px 0",marginBottom:20},
+    challengeNum:{fontSize:42,fontWeight:900,letterSpacing:10,color:T2.ACC,fontFamily:"monospace"},
+    challengeLbl:{fontSize:11,color:T2.MUT,marginTop:5},
+    input:{width:"100%",background:T2.BG,border:"1px solid "+(err?T2.RED||"#ef4444":T2.BDR),borderRadius:10,padding:"13px",color:T2.TXT,fontSize:22,fontFamily:"monospace",outline:"none",textAlign:"center",letterSpacing:8,marginBottom:8},
+    btn:{width:"100%",padding:"12px",borderRadius:10,background:"linear-gradient(135deg,"+T2.ACC+",#2563eb)",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer",fontFamily:"inherit"},
+    err:{color:T2.RED||"#ef4444",fontSize:12,marginBottom:10},
+    ok:{color:T2.GRN||"#10b981",fontSize:16,fontWeight:700},
+  };
+
+  if(success) return(
+    <div style={s.wrap}><div style={s.card}>
+      <div style={{fontSize:52,marginBottom:12}}>{"✅"}</div>
+      <div style={s.ok}>{"התוכנה הופעלה לשנה!"}</div>
+      <p style={{fontSize:13,color:T2.MUT,marginTop:8}}>{"מעביר אותך למערכת..."}</p>
+    </div></div>
+  );
+
+  return(
+    <div style={s.wrap}><div style={s.card}>
+      <div style={{fontSize:44,marginBottom:10}}>{"🔐"}</div>
+      <div style={s.title}>{"הפעלת רישיון שנתי"}</div>
+      <p style={s.sub}>{"התקשר אל "+_SUPPORT_PHONE+" ומסור את קוד האתגר הבא. תקבל קוד תשובה בן 6 ספרות."}</p>
+      <div style={s.challengeBox}>
+        <div style={s.challengeNum}>{String(challenge)}</div>
+        <div style={s.challengeLbl}>{"קוד האתגר שלך — מסור למפתח"}</div>
+      </div>
+      {err&&<div style={s.err}>{err}</div>}
+      <input style={s.input} maxLength={6} value={response}
+        onChange={function(e){var v=e.target.value;var clean="";for(var i=0;i<v.length;i++){if(v[i]>="0"&&v[i]<="9")clean+=v[i];}setResponse(clean);setErr("");}}
+        placeholder={"_ _ _ _ _ _"}/>
+      <p style={{fontSize:11,color:T2.MUT,marginBottom:14}}>{"הכנס קוד תשובה מ-"+_SUPPORT_PHONE}</p>
+      <button style={s.btn} onClick={tryActivate}>{"הפעל לשנה ←"}</button>
+    </div></div>
+  );
+}
+
+
 var SKEY="lexdoc_v5";
-function sLoad(cb){try{window.storage.get(SKEY).then(function(r){try{cb(r?JSON.parse(r.value):null);}catch(e){cb(null);}}).catch(function(){cb(null);});}catch(e){cb(null);}}
-function sSave(d,cb){try{window.storage.set(SKEY,JSON.stringify(d)).then(function(){if(cb)cb();}).catch(function(){if(cb)cb();});}catch(e){if(cb)cb();}}
-function sClear(cb){try{window.storage.delete(SKEY).then(function(){if(cb)cb();}).catch(function(){if(cb)cb();});}catch(e){if(cb)cb();}}
+function sLoad(cb){try{var r=localStorage.getItem(SKEY);cb(r?JSON.parse(r):null);}catch(e){cb(null);}}
+var STORAGE_MAX_BYTES = 4.5 * 1024 * 1024; // 4.5MB מגבלה בטוחה (מתוך 5MB)
+var STORAGE_WARN_BYTES = 3.5 * 1024 * 1024; // 3.5MB — אזהרה
+
+function getStorageUsed(){
+  try{
+    var total=0;
+    for(var k in localStorage){
+      if(localStorage.hasOwnProperty(k)){
+        total+=(localStorage[k].length+k.length)*2; // UTF-16
+      }
+    }
+    return total;
+  }catch(e){return 0;}
+}
+
+function trimForStorage(d){
+  // גרסה מוקטנת: ללא base64 של לוגו אם הנתונים גדולים מדי
+  var copy=JSON.parse(JSON.stringify(d));
+  var raw=JSON.stringify(copy);
+  if(raw.length*2 > STORAGE_MAX_BYTES){
+    // הסר לוגו base64 (יכול להיות מאות KB)
+    if(copy.logo&&copy.logo.length>1000){
+      copy.logo="[לוגו הוסר לחיסכון במקום]";
+    }
+  }
+  return copy;
+}
+
+function sSave(d,cb){
+  try{
+    var trimmed=trimForStorage(d);
+    var serialized=JSON.stringify(trimmed);
+    var byteSize=serialized.length*2;
+    if(byteSize > STORAGE_MAX_BYTES){
+      console.warn("LexDoc: נתונים גדולים מדי לשמירה ("+Math.round(byteSize/1024)+"KB > "+Math.round(STORAGE_MAX_BYTES/1024)+"KB)");
+      if(cb)cb("overflow");
+      return;
+    }
+    localStorage.setItem(SKEY,serialized);
+    if(byteSize > STORAGE_WARN_BYTES){
+      console.warn("LexDoc: אחסון ב-"+Math.round(byteSize/1024/1024*10)/10+"MB — קרוב למגבלה!");
+    }
+    if(cb)cb();
+  }catch(e){
+    // QuotaExceededError
+    if(cb)cb("quota");
+  }
+}
+
+function getStorageStats(){
+  try{
+    var raw=localStorage.getItem(SKEY)||"";
+    var usedBytes=raw.length*2;
+    var pct=Math.round(usedBytes/STORAGE_MAX_BYTES*100);
+    return {
+      usedBytes:usedBytes,
+      usedKB:Math.round(usedBytes/1024*10)/10,
+      usedMB:Math.round(usedBytes/1024/1024*100)/100,
+      pct:pct,
+      maxMB:4.5,
+      status: pct>90?"critical":pct>70?"warning":"ok",
+    };
+  }catch(e){return {usedBytes:0,usedKB:0,usedMB:0,pct:0,maxMB:4.5,status:"ok"};}
+}
+function sClear(cb){try{localStorage.removeItem(SKEY);if(cb)cb();}catch(e){if(cb)cb();}}
 
 function addMonths(n){var d=new Date();d.setMonth(d.getMonth()+n);return d.toISOString();}
 function daysLeft(exp){return Math.max(0,Math.ceil((new Date(exp)-new Date())/86400000));}
@@ -261,7 +520,7 @@ var ACTIVE_USER={name:"בעל המשרד",role:"בעלים"};
 // Staff list (firm employees) - populated from firm settings
 var STAFF=[
   {id:1,name:"בעל המשרד",role:"שותף"},
-  {id:2,name:"עורך דין 1",role:"עורך דין"},
+  {id:2,name:"רואה חשבון 1",role:"רו\"ח"},
   {id:3,name:"מזכירה",role:"מנהל"},
 ];
 function getStaff(){return STAFF;}
@@ -297,7 +556,7 @@ function getInvoices(cid){if(!INVOICES[cid])INVOICES[cid]=[];return INVOICES[cid
 function createInvoice(cid,clientName,fee,hoursData,firm){
   if(!INVOICES[cid])INVOICES[cid]=[];
   INVOICE_SEQ++;
-  var vatAmt=Math.round(fee*0.17);
+  var vatAmt=Math.round(fee*0.18);
   var items=[{desc:"שכר טרחה חודשי",qty:1,unit:fee,total:fee}];
   if(hoursData&&hoursData.length>0){
     var totalHrs=hoursData.reduce(function(s,r){return s+r.hours;},0);
@@ -482,10 +741,149 @@ function ThemePicker(p){
   );
 }
 
+
+// ---- מסך ברוכים הבאים: משרד חדש או קיים ----
+function WelcomeScreen(p){
+  var isMobileW=useIsMobile();
+  var[username,setUsername]=useState("");
+  var[pw,setPw]=useState("");
+  var[err,setErr]=useState("");
+  var[loading,setLoading]=useState(false);
+  var T2=THEMES[p.theme]||THEMES.sky;
+
+  function tryLogin(){
+    if(!username.trim()||!pw.trim()){setErr("נא למלא שם משתמש וסיסמה");return;}
+    setLoading(true);setErr("");
+    setTimeout(function(){
+      try{
+        var found=null;
+        // חפש בכל מפתחות localStorage
+        for(var i=0;i<localStorage.length;i++){
+          var k=localStorage.key(i);
+          if(k&&k.startsWith("lexdoc_v")){
+            try{
+              var d=JSON.parse(localStorage.getItem(k));
+              if(d&&d.ok&&d.username===username.trim()&&(hashPw(pw)===d.pwHash||hashPw(pw)===d.pwhash)){
+                found=d;break;
+              }
+            }catch(ex){}
+          }
+        }
+        if(found){
+          localStorage.setItem(SKEY,JSON.stringify(found));
+          p.onFound(found);
+        } else {
+          setErr("שם משתמש או סיסמה שגויים");
+        }
+      }catch(ex){setErr("שגיאה בכניסה");}
+      setLoading(false);
+    },700);
+  }
+
+  var bg=T2.BG;
+  var card=T2.CARD;
+  var bdr=T2.BDR;
+  var acc=T2.ACC;
+  var txt=T2.TXT;
+  var mut=T2.MUT;
+  var red=T2.RED||"#ef4444";
+  var grn=T2.GRN||"#10b981";
+
+  var inp={
+    width:"100%",background:bg,border:"1px solid "+bdr,borderRadius:9,
+    padding:"11px 14px",color:txt,fontSize:14,fontFamily:"inherit",
+    outline:"none",marginBottom:10,textAlign:"right",
+  };
+
+  return(
+    <div style={{minHeight:"100vh",background:bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
+      {/* לוגו */}
+      <div style={{textAlign:"center",marginBottom:36}}>
+        <div style={{fontSize:44,marginBottom:8}}>{"📊"}</div>
+        <div style={{fontSize:26,fontWeight:900,color:acc,letterSpacing:-1}}>{"MisradPro"}</div>
+        <div style={{fontSize:13,color:mut,marginTop:4}}>{"מערכת ניהול משרד רואי חשבון"}</div>
+      </div>
+
+      {/* שני כרטיסים זה לצד זה */}
+      <div style={{display:"flex",flexDirection:isMobileW?"column":"row",gap:16,maxWidth:720,width:"100%",alignItems:"stretch"}}>
+
+        {/* ימין — משרד קיים */}
+        <div style={{flex:1,background:card,border:"2px solid "+acc+"44",borderRadius:18,padding:"32px 28px",display:"flex",flexDirection:"column"}}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <div style={{fontSize:36,marginBottom:8}}>{"🔑"}</div>
+            <div style={{fontSize:18,fontWeight:800,color:txt,marginBottom:4}}>{"משרד קיים"}</div>
+            <div style={{fontSize:12,color:mut}}>{"כניסה עם פרטי המשרד שלך"}</div>
+          </div>
+          {err&&<div style={{background:red+"18",border:"1px solid "+red+"44",borderRadius:8,padding:"8px 12px",fontSize:12,color:red,marginBottom:10,textAlign:"right"}}>{err}</div>}
+          <div style={{flex:1}}>
+            <label style={{fontSize:12,color:mut,display:"block",marginBottom:4,textAlign:"right"}}>{"שם משתמש"}</label>
+            <input style={inp} value={username} onChange={function(e){setUsername(e.target.value);setErr("");}}
+              placeholder="שם המשתמש שלך"
+              onKeyDown={function(e){if(e.key==="Enter")tryLogin();}}/>
+            <label style={{fontSize:12,color:mut,display:"block",marginBottom:4,textAlign:"right"}}>{"סיסמה"}</label>
+            <input style={Object.assign({},inp,{marginBottom:20})} type="password" value={pw}
+              onChange={function(e){setPw(e.target.value);setErr("");}}
+              placeholder="••••••••"
+              onKeyDown={function(e){if(e.key==="Enter")tryLogin();}}/>
+          </div>
+          <button onClick={tryLogin} disabled={loading}
+            style={{width:"100%",padding:"12px",borderRadius:10,background:"linear-gradient(135deg,"+acc+",#2563eb)",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:loading?"wait":"pointer",fontFamily:"inherit",opacity:loading?0.7:1}}>
+            {loading?"מתחבר...":"כניסה ←"}
+          </button>
+          <div style={{marginTop:14,textAlign:"center"}}>
+            <div style={{fontSize:11,color:mut,marginBottom:6}}>{"תקופת ניסיון / מנוי פעיל — כניסה ישירה"}</div>
+            <div style={{display:"flex",gap:6,justifyContent:"center"}}>
+              <span style={{fontSize:11,background:grn+"18",color:grn,borderRadius:999,padding:"2px 8px",border:"1px solid "+grn+"33"}}>{"✓ ניסיון 30 יום"}</span>
+              <span style={{fontSize:11,background:acc+"18",color:acc,borderRadius:999,padding:"2px 8px",border:"1px solid "+acc+"33"}}>{"✓ מנוי שנתי"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* מפריד */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:8,padding:"0 4px"}}>
+          <div style={{width:1,flex:1,background:bdr}}/>
+          <div style={{fontSize:12,color:mut,fontWeight:700,padding:"8px 0"}}>{"או"}</div>
+          <div style={{width:1,flex:1,background:bdr}}/>
+        </div>
+
+        {/* שמאל — משרד חדש */}
+        <div style={{flex:1,background:card,border:"1px solid "+bdr,borderRadius:18,padding:"32px 28px",display:"flex",flexDirection:"column"}}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <div style={{fontSize:36,marginBottom:8}}>{"✨"}</div>
+            <div style={{fontSize:18,fontWeight:800,color:txt,marginBottom:4}}>{"משרד חדש"}</div>
+            <div style={{fontSize:12,color:mut}}>{"הרשמה ראשונה — חינם"}</div>
+          </div>
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:10}}>
+            <div style={{background:grn+"12",border:"1px solid "+grn+"33",borderRadius:10,padding:"14px 16px"}}>
+              <div style={{fontSize:22,textAlign:"center",marginBottom:6}}>{"🎁"}</div>
+              <div style={{fontSize:14,fontWeight:700,color:grn,textAlign:"center",marginBottom:4}}>{"30 יום ניסיון חינם"}</div>
+              <div style={{fontSize:12,color:mut,textAlign:"center",lineHeight:1.6}}>{"גישה מלאה לכל יכולות המערכת ללא תשלום"}</div>
+            </div>
+            <div style={{fontSize:12,color:mut,lineHeight:1.9,textAlign:"right"}}>
+              <div>{"✓ ניהול לקוחות ללא הגבלה"}</div>
+              <div>{"✓ מעקב הגשות אוטומטי"}</div>
+              <div>{"✓ משימות אוטומטיות ⚡"}</div>
+              <div>{"✓ תקשורת עם לקוחות ✉"}</div>
+              <div>{"✓ ייבוא מ-Excel"}</div>
+            </div>
+          </div>
+          <button onClick={p.onNew}
+            style={{width:"100%",padding:"12px",borderRadius:10,background:"linear-gradient(135deg,"+grn+",#059669)",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer",fontFamily:"inherit",marginTop:16}}>
+            {"הרשמה חינם ←"}
+          </button>
+          <div style={{marginTop:10,textAlign:"center",fontSize:11,color:mut}}>
+            {"לאחר 30 יום — "+_SUPPORT_PHONE}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Onboard(p){
   var[step,setStep]=useState(1);
   var[name,setName]=useState("");
-  var[btype,setBtype]=useState("עורך דין");
+  var[btype,setBtype]=useState("cpa");
   var[regNum,setRegNum]=useState("");
   var[phone,setPhone]=useState("");
   var[email,setEmail]=useState("");
@@ -503,14 +901,14 @@ function Onboard(p){
   function handleLogo(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){setLogo(ev.target.result);};r.readAsDataURL(f);}
   function v1(){var e={};if(!name.trim())e.name="שדה חובה";if(!regNum.trim())e.regNum="שדה חובה";if(!phone.trim())e.phone="שדה חובה";if(!email.trim()||email.indexOf("@")<0)e.email="אימייל לא תקין";setErrs(e);return Object.keys(e).length===0;}
   function v3(){var e={};if(uname.trim().length<3)e.uname="מינימום 3 תווים";if(pw.length<6)e.pw="מינימום 6 תווים";if(pw!==pw2)e.pw2="Passwords don't match";setErrs(e);return Object.keys(e).length===0;}
-  function finish(){if(!v3())return;setSaving(true);var sel=null;for(var i=0;i<PLANS.length;i++){if(PLANS[i].id===plan){sel=PLANS[i];break;}}var d={firmName:name,btype:btype,regNum:regNum,phone:phone,email:email,city:city,logo:logo,plan:plan,planLabel:sel?sel.label:"שנתי",expiry:addMonths(sel?sel.months:12),username:uname.trim(),pwHash:hashPw(pw),defaultFee:fee?Number(fee):0,ok:true};setTimeout(function(){sSave(d,function(){setSaving(false);setStep(4);p.onDone(d);});},900);}
+  function finish(){if(!v3())return;setSaving(true);var sel=null;for(var i=0;i<PLANS.length;i++){if(PLANS[i].id===plan){sel=PLANS[i];break;}}var d={firmName:name,btype:btype,regNum:regNum,phone:phone,email:email,city:city,logo:logo,plan:plan,planLabel:sel?sel.label:"שנתי",expiry:addMonths(sel?sel.months:12),username:uname.trim(),pwHash:hashPw(pw),defaultFee:fee?Number(fee):0,ok:true};setTimeout(function(){startTrial();sSave(d,function(){setSaving(false);setStep(4);p.onDone(d);});},900);}
 
   return(
     <div dir="rtl" style={{minHeight:"100vh",background:BG,display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"'Segoe UI',sans-serif"}}>
       <div style={{width:"100%",maxWidth:520}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{width:54,height:54,background:"linear-gradient(135deg,"+ACCLO+","+ACC+")",borderRadius:16,margin:"0 auto 10px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26}}>L</div>
-          <h1 style={{fontSize:23,fontWeight:800,color:TXT}}>LexDoc Secure</h1>
+          <h1 style={{fontSize:23,fontWeight:800,color:TXT}}>MisradPro</h1>
           <p style={{fontSize:13,color:MUT,marginTop:3}}>{"הגדרה - שלב "+step+" מתוך 4"}</p>
           <div style={{display:"flex",justifyContent:"center",marginTop:14}}><Dot num={1} step={step}/><Dot num={2} step={step}/><Dot num={3} step={step}/><Dot num={4} step={step}/></div>
         </div>
@@ -536,7 +934,7 @@ function Onboard(p){
               <div style={{marginBottom:14}}>
                 <label style={{fontSize:13,color:MUT,display:"block",marginBottom:5}}>{"סוג משרד"}</label>
                 <select value={btype} onChange={function(e){setBtype(e.target.value);}} style={{width:"100%",background:BG,border:"1px solid "+BDR,borderRadius:9,padding:"11px 14px",color:TXT,fontSize:14,fontFamily:"inherit"}}>
-                  <option value="עורך דין">Law Firm</option>
+                  <option value="עורך דין">משרד עורכי דין</option>
                   <option value="cpa">CPA Firm</option>
                   <option value="combined">Law + CPA</option>
                   <option value="notary">Notary</option>
@@ -551,7 +949,7 @@ function Onboard(p){
               <div style={{marginBottom:14}}>
                 <label style={{fontSize:13,color:MUT,display:"block",marginBottom:5}}>Default Monthly Fee (ILS, excl. VAT)</label>
                 <input type="number" value={fee} onChange={function(e){setFee(e.target.value);}} placeholder="5000" style={{width:"100%",background:BG,border:"1px solid "+BDR,borderRadius:9,padding:"11px 14px",color:TXT,fontSize:14,outline:"none",fontFamily:"inherit"}}/>
-                {fee&&!isNaN(Number(fee))&&Number(fee)>0&&<p style={{fontSize:12,color:GRN,marginTop:3}}>{"כולל מעמ 17%: "+fmtMoney(Math.round(Number(fee)*1.17))}</p>}
+                {fee&&!isNaN(Number(fee))&&Number(fee)>0&&<p style={{fontSize:12,color:GRN,marginTop:3}}>{"כולל מעמ 18%: "+fmtMoney(Math.round(Number(fee)*1.18))}</p>}
               </div>
               <Btn full onClick={function(){if(v1())setStep(2);}}>{"המשך לבחירת מנוי"}</Btn>
             </div>
@@ -815,7 +1213,7 @@ function InvoiceModal(p){
     if(c.email)lines.push("  אימייל: "+c.email);
     lines.push("",sep2,"שירותים - "+months[d.getMonth()]+" "+d.getFullYear(),sep2,"","  שכר טרחה חודשי:    "+fmtMoney(inv.subtotal));
     if(totalHrs>0){lines.push("","  שעות החודש: "+totalHrs+"h");Object.keys(byStaff).forEach(function(nm){lines.push("    "+nm+": "+byStaff[nm]+"h");});}
-    lines.push("",sep2,"  לפני מעמ:           "+fmtMoney(inv.subtotal),"  מעמ (17%):          "+fmtMoney(inv.vatAmount),"  סהכ לתשלום:         "+fmtMoney(inv.total),sep,"","מועד תשלום: יום "+c.billingDay+" לכל חודש","תודה על שיתוף הפעולה.");
+    lines.push("",sep2,"  לפני מעמ:           "+fmtMoney(inv.subtotal),"  מעמ (18%):          "+fmtMoney(inv.vatAmount),"  סהכ לתשלום:         "+fmtMoney(inv.total),sep,"","מועד תשלום: יום "+c.billingDay+" לכל חודש","תודה על שיתוף הפעולה.");
     var text=lines.join("\n");
     var blob=new Blob([text],{type:"text/plain;charset=utf-8"});
     var url=URL.createObjectURL(blob);
@@ -855,8 +1253,8 @@ function InvoiceModal(p){
                 <div style={{background:GRNLO,border:"1px solid "+GRN+"33",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:13}}>
                   <p style={{color:GRN,fontWeight:700}}>Invoice will include:</p>
                   <p style={{color:TXT,marginTop:4}}>{"שכט חודשי: "+fmtMoney(c.monthlyFee)}</p>
-                  <p style={{color:TXT}}>{"מעמ 17%: "+fmtMoney(Math.round(c.monthlyFee*0.17))}</p>
-                  <p style={{color:TXT,fontWeight:700}}>{"סהכ: "+fmtMoney(Math.round(c.monthlyFee*1.17))}</p>
+                  <p style={{color:TXT}}>{"מעמ 18%: "+fmtMoney(Math.round(c.monthlyFee*0.18))}</p>
+                  <p style={{color:TXT,fontWeight:700}}>{"סהכ: "+fmtMoney(Math.round(c.monthlyFee*1.18))}</p>
                 </div>
                 <div style={{marginBottom:12}}>
                   <label style={{fontSize:13,color:MUT,display:"block",marginBottom:5}}>Billing Period</label>
@@ -1027,7 +1425,7 @@ function BillingModal(p){
 
   function addMonthly(){
     if(!c.monthlyFee)return;
-    var a=Math.round(c.monthlyFee*1.17);
+    var a=Math.round(c.monthlyFee*1.18);
     var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     var d=new Date();
     var entry={id:Date.now(),date:d.toISOString().slice(0,10),type:"חיוב",desc:"שכר טרחה - "+months[d.getMonth()]+" "+d.getFullYear(),amount:a,vat:true,status:"ממתין"};
@@ -1041,7 +1439,7 @@ function BillingModal(p){
   function save(){
     if(!desc.trim()){setErr("נדרש תיאור");return;}
     if(!amt||isNaN(Number(amt))||Number(amt)<=0){setErr("נדרש סכום תקין");return;}
-    var finalAmt=vat&&etype==="חיוב"?Math.round(Number(amt)*1.17):Number(amt);
+    var finalAmt=vat&&etype==="חיוב"?Math.round(Number(amt)*1.18):Number(amt);
     var entry={id:Date.now(),date:date,type:etype,desc:desc.trim(),amount:finalAmt,vat:vat&&etype==="חיוב",status:etype==="זיכוי"?"זיכוי":"ממתין"};
     BILLING[c.id]=BILLING[c.id]||[];
     BILLING[c.id].unshift(entry);
@@ -1079,7 +1477,7 @@ function BillingModal(p){
           <div style={{background:balance>0?REDLO:GRNLO,borderRadius:9,padding:"11px 14px",border:"1px solid "+(balance>0?RED+"33":GRN+"33")}}><p style={{fontSize:12,color:MUT,marginBottom:3}}>{"יתרה לתשלום"}</p><p style={{fontSize:18,fontWeight:800,color:balance>0?RED:GRN}}>{fmtMoney(Math.abs(balance))+(balance<0?" זיכוי":"")}</p></div>
         </div>
         <div style={{padding:"12px 26px",borderBottom:"1px solid "+BDR,display:"flex",gap:8,flexWrap:"wrap"}}>
-          {c.monthlyFee>0&&<Btn bg={"linear-gradient(135deg,"+GRNLO+","+GRN+")"} onClick={addMonthly} pad="8px 14px" fs={12}>{"חודשי ("+fmtMoney(Math.round(c.monthlyFee*1.17))+")"}</Btn>}
+          {c.monthlyFee>0&&<Btn bg={"linear-gradient(135deg,"+GRNLO+","+GRN+")"} onClick={addMonthly} pad="8px 14px" fs={12}>{"חודשי ("+fmtMoney(Math.round(c.monthlyFee*1.18))+")"}</Btn>}
           <button onClick={function(){setEtype("חיוב");setShowAdd(true);}} style={{background:REDLO,border:"1px solid "+RED+"33",borderRadius:7,padding:"8px 14px",color:RED,fontWeight:600,fontSize:13,cursor:"pointer"}}>{"+ חיוב"}</button>
           <button onClick={function(){setEtype("זיכוי");setShowAdd(true);}} style={{background:GRNLO,border:"1px solid "+GRN+"33",borderRadius:7,padding:"8px 14px",color:GRN,fontWeight:600,fontSize:13,cursor:"pointer"}}>{"+ זיכוי"}</button>
         </div>
@@ -1094,8 +1492,8 @@ function BillingModal(p){
             {etype==="חיוב"&&(
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,marginTop:-6}}>
                 <input type="checkbox" checked={vat} onChange={function(e){setVat(e.target.checked);}} id="vat_chk" style={{cursor:"pointer"}}/>
-                <label htmlFor="vat_chk" style={{fontSize:13,color:MUT,cursor:"pointer"}}>Add VAT 17%</label>
-                {amt&&!isNaN(Number(amt))&&vat&&<span style={{fontSize:13,color:AMB}}>{"סהכ עם מעמ: "+fmtMoney(Math.round(Number(amt)*1.17))}</span>}
+                <label htmlFor="vat_chk" style={{fontSize:13,color:MUT,cursor:"pointer"}}>Add VAT 18%</label>
+                {amt&&!isNaN(Number(amt))&&vat&&<span style={{fontSize:13,color:AMB}}>{"סהכ עם מעמ: "+fmtMoney(Math.round(Number(amt)*1.18))}</span>}
               </div>
             )}
             <div style={{display:"flex",gap:8}}>
@@ -1227,7 +1625,7 @@ function DocGen(p){
     var blob=new Blob([text],{type:"text/plain;charset=utf-8"});
     var url=URL.createObjectURL(blob);
     var link=window.document.createElement("a");
-    var fname=subject.trim().replace(/[^א-תa-zA-Z0-9 ]/g,"").slice(0,40)||c.name;
+    var fname=subject.trim().split("").filter(function(c){return /[a-zA-Z0-9 ]/.test(c)||c>="א"&&c<="ת";}).join("").slice(0,40)||c.name;
     link.href=url;link.download=fname+".txt";link.click();
     URL.revokeObjectURL(url);
     // Save to client docs folder
@@ -1249,7 +1647,7 @@ function DocGen(p){
 
   function saveOnly(){
     var text=buildText();
-    var fname=subject.trim().replace(/[^א-תa-zA-Z0-9 ]/g,"").slice(0,40)||c.name;
+    var fname=subject.trim().split("").filter(function(c){return /[a-zA-Z0-9 ]/.test(c)||c>="א"&&c<="ת";}).join("").slice(0,40)||c.name;
     var docEntry={
       id:Date.now(),
       name:fname+".txt",
@@ -2487,6 +2885,7 @@ function BackupView(p){
   try{
     var bak2=buildBackup(firm);
     storageEstimate=JSON.stringify(bak2).length;
+    var storageStats=getStorageStats();
   }catch(e){}
 
   return(
@@ -2539,9 +2938,9 @@ function BackupView(p){
           })}
         </div>
         <div style={{marginTop:14,background:SUB,borderRadius:8,padding:"10px 14px",fontSize:12,color:MUT}}>
-          {"נפח שימוש: "+(Math.round(storageEstimate/1024*10)/10)+"KB | מגבלת localStorage: 5MB"}
+          {(function(){var s=getStorageStats();return "נפח שימוש: "+s.usedKB+"KB ("+s.usedMB+"MB) | "+s.pct+"% מתוך 4.5MB | סטטוס: "+(s.status==="ok"?"✅ תקין":s.status==="warning"?"⚠ קרוב למגבלה":"🔴 קריטי");})()}
           <div style={{background:BDR,borderRadius:999,height:6,marginTop:6,overflow:"hidden"}}>
-            <div style={{width:Math.min(100,Math.round(storageEstimate/5000/10.24))+"%",height:"100%",background:ACC,borderRadius:999}}/>
+            {(function(){var s=getStorageStats();return <div style={{width:Math.min(100,s.pct)+"%",height:"100%",background:s.status==="critical"?RED:s.status==="warning"?AMB:ACC,borderRadius:999}}/>;})()}
           </div>
         </div>
       </div>
@@ -3626,7 +4025,7 @@ function ImportPanel(p){
           city:r.city||"",
           type:r.type||"פרטי",
           clientType:r.clientType||"",
-          monthlyFee:r.monthlyFee?Number(r.monthlyFee.replace(/[^\d.]/g,"")):0,
+          monthlyFee:r.monthlyFee?Number(r.monthlyFee.replace(/[^0-9.]/g,"")):0,
           billingDay:1,
           status:"פעיל",
           tags:[],
@@ -4713,13 +5112,27 @@ function ClientMsgButton(props){
   );
 }
 
+
+// ============================================================
+// Mobile Responsive Utilities
+// ============================================================
+function useIsMobile(){
+  var[mobile,setMobile]=React.useState(function(){return window.innerWidth<768;});
+  React.useEffect(function(){
+    function onResize(){setMobile(window.innerWidth<768);}
+    window.addEventListener("resize",onResize);
+    return function(){window.removeEventListener("resize",onResize);};
+  },[]);
+  return mobile;
+}
+
 function App(p){
   var firm=p.firm;
   useEffect(function(){
     var s=window.document.createElement("style");
     s.id="lexdoc-css";
     if(!window.document.getElementById("lexdoc-css")){
-      s.textContent="tr:hover td{background:#1e293b!important}.fade{animation:fi .15s ease}@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}";
+      s.textContent="tr:hover td{background:#1e293b!important}.fade{animation:fi .15s ease}@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}table{width:100%;table-layout:fixed}@media(max-width:768px){table th:nth-child(n+4),table td:nth-child(n+4){display:none}}";
       window.document.head.appendChild(s);
     }
   },[]);
@@ -4727,7 +5140,9 @@ function App(p){
   var[client,setClient]=useState(null);
   var[search,setSearch]=useState("");
   var[notif,setNotif]=useState(null);
-  var[collapsed,setCollapsed]=useState(false);
+  var isMobile=useIsMobile();
+  var[collapsed,setCollapsed]=useState(function(){return window.innerWidth<768;});
+  var[mobileMenuOpen,setMobileMenuOpen]=useState(false);
   var days=daysLeft(firm.expiry);
   function toast(msg){setNotif(msg);setTimeout(function(){setNotif(null);},3000);}
 
@@ -4748,17 +5163,18 @@ function App(p){
 
   return(
     <div dir="rtl" style={{fontFamily:"'Segoe UI',sans-serif",background:BG,minHeight:"100vh",color:TXT,display:"flex",flexDirection:"column"}}>
-      <header style={{height:58,background:"linear-gradient(135deg,#0d3060 0%,#1a5296 50%,#1e6ab8 100%)",borderBottom:"1px solid rgba(100,180,255,0.2)",display:"flex",alignItems:"center",padding:"0 18px",gap:14,flexShrink:0,boxShadow:"0 2px 12px rgba(0,0,0,0.4)"}}>
-        <button onClick={function(){setCollapsed(function(x){return !x;});}} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,cursor:"pointer",color:"rgba(200,230,255,0.8)",fontSize:16,width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"≡"}</button>
+      <header style={{height:58,background:"linear-gradient(135deg,#0d3060 0%,#1a5296 50%,#1e6ab8 100%)",borderBottom:"1px solid rgba(100,180,255,0.2)",display:"flex",alignItems:"center",padding:"0 12px",gap:10,flexShrink:0,boxShadow:"0 2px 12px rgba(0,0,0,0.4)"}}>
+        <button onClick={function(){if(isMobile){setMobileMenuOpen(function(x){return !x;});}else{setCollapsed(function(x){return !x;});}}} style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,cursor:"pointer",color:"rgba(200,230,255,0.8)",fontSize:16,width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{"≡"}</button>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <div style={{width:34,height:34,borderRadius:9,overflow:"hidden",background:"linear-gradient(135deg,#1a6fb5,#4a9eff)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontWeight:800,color:"#fff",fontSize:15,boxShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>
             {firm.logo?<img src={firm.logo} style={{width:"100%",height:"100%",objectFit:"cover"}} alt=""/>:"L"}
           </div>
           <span style={{fontWeight:800,fontSize:15,color:"#ffffff",letterSpacing:0.3}}>{firm.firmName}</span>
         </div>
-        <div style={{flex:1,maxWidth:420}}>
+        {!isMobile&&<div style={{flex:1,maxWidth:420}}>
           <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="חיפוש לקוחות..." style={{width:"100%",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:10,padding:"8px 14px",fontSize:13,color:"#fff",outline:"none",fontFamily:"inherit"}}/>
-        </div>
+        </div>}
+        {isMobile&&<div style={{flex:1}}/>}
         <div style={{marginRight:"auto",display:"flex",gap:8,alignItems:"center"}}>
           {days<=30&&days>0&&<Bdg color="amber">{days+" ימים נותרו"}</Bdg>}
           <ThemePicker current={p.theme||"sky"} onChange={function(tid){if(p.onTheme)p.onTheme(tid);}}/>
@@ -4767,7 +5183,8 @@ function App(p){
       </header>
 
       <div style={{display:"flex",flex:1,overflow:"hidden",height:"calc(100vh - 54px)"}}>
-        <aside style={{width:collapsed?58:200,background:"linear-gradient(180deg,#0d2d5e 0%,#0f3670 40%,#0e3268 100%)",borderLeft:"1px solid rgba(100,180,255,0.12)",display:"flex",flexDirection:"column",padding:"12px 0 8px",flexShrink:0,overflow:"hidden",boxShadow:"2px 0 16px rgba(0,0,0,0.3)"}}>
+        {isMobile&&mobileMenuOpen&&<div onClick={function(){setMobileMenuOpen(false);}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:199}}/>}
+        <aside style={{width:isMobile?(mobileMenuOpen?240:0):(collapsed?58:200),background:"linear-gradient(180deg,#0d2d5e 0%,#0f3670 40%,#0e3268 100%)",borderLeft:"1px solid rgba(100,180,255,0.12)",display:"flex",flexDirection:"column",padding:"12px 0 8px",flexShrink:0,overflow:"hidden",boxShadow:"2px 0 16px rgba(0,0,0,0.3)",position:isMobile?"fixed":"relative",top:isMobile?58:0,right:0,bottom:0,zIndex:isMobile?200:1,transition:"width 0.25s"}}>
           {!collapsed&&(
             <div style={{padding:"0 14px 14px",borderBottom:"1px solid rgba(100,180,255,0.1)",marginBottom:8}}>
               <p style={{fontSize:11,color:"rgba(150,200,255,0.5)",letterSpacing:1.5,fontWeight:600,textTransform:"uppercase"}}>{"תפריט"}</p>
@@ -4777,7 +5194,7 @@ function App(p){
             var isAct=view===item[0]||(view==="client"&&item[0]==="clients");
             var icons={"dash":"🏠","clients":"👥","crm":"📌","staff":"👤","filings":"📋","reports":"📊","messaging":"✉","importexport":"📂","permissions":"🔐","audit":"🔍","backup":"💾"};
             return(
-              <button key={item[0]} onClick={function(){setView(item[0]);}} style={{display:"flex",alignItems:"center",gap:10,padding:collapsed?"12px 0":"10px 14px",justifyContent:collapsed?"center":"flex-start",fontSize:14,fontWeight:isAct?700:500,color:isAct?"#ffffff":"rgba(180,220,255,0.65)",background:isAct?"rgba(255,255,255,0.13)":"transparent",borderRight:"3px solid "+(isAct?"#7ec8f0":"transparent"),border:"none",textAlign:"right",width:"100%",cursor:"pointer",whiteSpace:"nowrap",transition:"all 0.15s",marginBottom:2,borderRadius:collapsed?"0":"0 0 0 0"}}>
+              <button key={item[0]} onClick={function(){setView(item[0]);setMobileMenuOpen(false);}} style={{display:"flex",alignItems:"center",gap:10,padding:collapsed?"12px 0":"10px 14px",justifyContent:collapsed?"center":"flex-start",fontSize:14,fontWeight:isAct?700:500,color:isAct?"#ffffff":"rgba(180,220,255,0.65)",background:isAct?"rgba(255,255,255,0.13)":"transparent",borderRight:"3px solid "+(isAct?"#7ec8f0":"transparent"),border:"none",textAlign:"right",width:"100%",cursor:"pointer",whiteSpace:"nowrap",transition:"all 0.15s",marginBottom:2,borderRadius:collapsed?"0":"0 0 0 0"}}>
                 <span style={{fontSize:17,minWidth:22,textAlign:"center",lineHeight:1}}>{icons[item[0]]||"•"}</span>
                 {!collapsed&&<span style={{fontSize:14,letterSpacing:0.2}}>{item[1]}</span>}
                 {!collapsed&&isAct&&<span style={{marginRight:"auto",width:6,height:6,borderRadius:"50%",background:"#7ec8f0",flexShrink:0}}/>}
@@ -4801,7 +5218,7 @@ function App(p){
           )}
         </aside>
 
-        <main style={{flex:1,overflow:"auto",padding:22}}>
+        <main style={{flex:1,overflow:"auto",padding:isMobile?12:22}}>
           {filtered&&(
             <div className="fade">
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:14}}>
@@ -4817,6 +5234,16 @@ function App(p){
               );})}
             </div>
           )}
+          {(function(){
+            var ls=getLicenseStatus();
+            if(ls.status==="trial"){
+              return <div style={{background:AMB+"18",border:"1px solid "+AMB+"44",borderRadius:10,padding:"9px 14px",marginBottom:12,display:"flex",alignItems:isMobile?"flex-start":"center",flexDirection:isMobile?"column":"row",justifyContent:"space-between",gap:6}}>
+                <span style={{fontSize:13,color:AMB,fontWeight:700}}>{"⏳ תקופת ניסיון — נותרו "+ls.daysLeft+" ימים מתוך 30"}</span>
+                <span style={{fontSize:12,color:MUT}}>{"לרישיון שנתי: "+_SUPPORT_PHONE}</span>
+              </div>;
+            }
+            return null;
+          })()}
           {!filtered&&view==="dash"&&<DashView firm={firm} days={days} setView={setView} setClient={setClient}/>}
           {!filtered&&view==="clients"&&<ClientsView setClient={setClient} setView={setView} toast={toast}/>}
           {!filtered&&view==="client"&&client&&<ClientView client={client} firm={firm} toast={toast}/>}
@@ -5078,7 +5505,7 @@ function NewClientModal(p){
         <div style={{background:CARD,border:"1px solid "+BDR,borderRadius:12,padding:"16px 18px",marginBottom:14}}>
           <p style={{fontSize:13,fontWeight:700,color:TXT,marginBottom:12}}>Monthly Fee</p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 14px"}}>
-            <Fld label="סכום (שח, לפני מעמ)" value={fee} onChange={setFee} ph="5000" type="number" err={errs.fee} hint="מעמ 17% יתווסף אוטומטית"/>
+            <Fld label="סכום (שח, לפני מעמ)" value={fee} onChange={setFee} ph="5000" type="number" err={errs.fee} hint="מעמ 18% יתווסף אוטומטית"/>
             <div style={{marginBottom:14}}>
               <label style={{fontSize:13,color:MUT,display:"block",marginBottom:5}}>Billing Day</label>
               <select value={billingDay} onChange={function(e){setBillingDay(e.target.value);}} style={{width:"100%",background:BG,border:"1px solid "+BDR,borderRadius:9,padding:"11px 14px",color:TXT,fontSize:14,fontFamily:"inherit"}}>
@@ -5088,7 +5515,7 @@ function NewClientModal(p){
           </div>
           {fee&&!isNaN(Number(fee))&&Number(fee)>0&&(
             <div style={{background:GRNLO,border:"1px solid "+GRN+"33",borderRadius:7,padding:"8px 12px",fontSize:13,color:GRN}}>
-              {"חודשי: "+fmtMoney(fee)+" + מעמ = "+fmtMoney(Math.round(Number(fee)*1.17))}
+              {"חודשי: "+fmtMoney(fee)+" + מעמ = "+fmtMoney(Math.round(Number(fee)*1.18))}
             </div>
           )}
         </div>
@@ -5139,6 +5566,8 @@ function Root(){
   var[loading,setLoad]=useState(true);
   var[authed,setAuthed]=useState(false);
   var[theme,setTheme]=useState("sky");
+  var[showWelcome,setShowWelcome]=useState(false);
+  var[licStatus,setLicStatus]=useState(function(){return getLicenseStatus();});
 
   function applyTheme(tid){
     if(!THEMES[tid])return;
@@ -5172,20 +5601,28 @@ function Root(){
 
   var T2=THEMES[theme]||THEMES.sky;
 
+  // בדיקת רישיון — רק למשרד שכבר נרשם (firm קיים)
+  if(firm&&firm.ok){
+    if(licStatus.status==="expired") return <ExpiredScreen theme={theme} onActivated={function(){setLicStatus({status:"active",daysLeft:365});}}/>;
+  }
+
   if(loading){return(
     <div style={{minHeight:"100vh",background:T2.BG,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:10}}>
         <div style={{width:32,height:32,border:"3px solid "+T2.BDR,borderTopColor:T2.ACC,borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
       <p style={{color:T2.MUT,fontSize:14}}>{"Loading..."}</p>
     </div>
   );}
-  if(!firm||!firm.ok){return <Onboard onDone={function(d){setFirm(d);if(d&&d.theme)applyTheme(d.theme);}} theme={theme} onTheme={applyTheme}/>;}
+  if(!firm||!firm.ok){
+    if(!showWelcome) return <WelcomeScreen theme={theme}
+      onNew={function(){setShowWelcome(true);}}
+      onFound={function(d){setFirm(d);if(d&&d.theme)applyTheme(d.theme);setAuthed(false);}}
+    />;
+    return <Onboard onDone={function(d){setFirm(d);if(d&&d.theme)applyTheme(d.theme);}} theme={theme} onTheme={applyTheme}/>;
+  }
   if(!authed){return <Login firm={firm} onLogin={function(){setAuthed(true);}} onReset={function(){sClear(function(){setFirm(null);setAuthed(false);});}} theme={theme} onTheme={applyTheme}/>;}
   return <App firm={firm} onLogout={function(){setAuthed(false);}} theme={theme} onTheme={applyTheme}/>;
 }
 
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(Root));
 </script>
 </body>
 </html>
