@@ -2319,15 +2319,16 @@ function BackupView(p) {
             try {
                 var bak = JSON.parse(ev.target.result);
                 var restoredFirm = restoreBackup(bak);
-                if (restoredFirm) {
-                    setMsg("שחזור הצליח! " + bak.ts + " | " + Object.keys(bak.clients || []).length + " לקוחות");
-                    p.toast("שחזור הושלם");
-                    if (restoredFirm && restoredFirm.firmName) {
-                        window.location.reload && window.location.reload();
-                    }
+                if (restoredFirm && restoredFirm.firmName) {
+                    // Save restored firm to localStorage
+                    sSave(restoredFirm, function() {
+                        setMsg("שחזור הצליח! " + (bak.clients || []).length + " לקוחות שוחזרו");
+                        p.toast("✅ שחזור הושלם בהצלחה");
+                        setTimeout(function() { window.location.reload(); }, 1200);
+                    });
                 }
                 else {
-                    setMsg("שחזור נכשל - קובץ לא תקין");
+                    setMsg("שחזור נכשל — קובץ לא תקין או גרסה ישנה");
                 }
             }
             catch (err) {
@@ -4704,14 +4705,14 @@ function Root() {
         if (days <= 0) {
             return React.createElement(ExpiredScreen, {
                 theme: theme,
-                onLogout: function() { setAuthed(false); }
+                onLogout: function() { setAuthed(false); setFirm(null); setScreen("welcome"); }
             });
         }
         // מחובר — הצג אפליקציה
         if (authed) {
             return React.createElement(App, {
                 firm: firm,
-                onLogout: function() { setAuthed(false); },
+                onLogout: function() { setAuthed(false); setFirm(null); setScreen("welcome"); },
                 theme: theme,
                 onTheme: applyTheme
             });
