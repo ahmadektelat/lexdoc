@@ -4583,7 +4583,7 @@ function WelcomeScreen(p) {
                 "⚠ לא נמצא משרד שמור במכשיר זה"
             ),
             React.createElement("p", { style: { color: T2.MUT, fontSize: 12, marginTop: 4 } },
-                "ייתכן שנרשמת במכשיר אחר, או שהנתונים נמחקו. פנה ל-04-6444925"
+                "ייתכן שנרשמת בגרסה קודמת — נא להירשם מחדש, או פנה ל-04-6444925"
             )
         )
     );
@@ -4704,7 +4704,7 @@ function Root() {
         if (days <= 0) {
             return React.createElement(ExpiredScreen, {
                 theme: theme,
-                onLogout: function() { setFirm(null); setAuthed(false); setScreen("welcome"); }
+                onLogout: function() { setAuthed(false); }
             });
         }
         // מחובר — הצג אפליקציה
