@@ -73,36 +73,41 @@ var GRN = T.GRN, GRNLO = T.GRNLO;
 var RED = T.RED, REDLO = T.REDLO;
 var AMB = T.AMB, AMBLO = T.AMBLO;
 var SKEY = "lexdoc_v5";
-function sLoad(cb) { try {
-    window.storage.get(SKEY).then(function (r) { try {
-        cb(r ? JSON.parse(r.value) : null);
-    }
-    catch (e) {
+var SUPPORT_PHONE = "04-6444925";
+var MAX_STORAGE = 4.5 * 1024 * 1024; // 4.5MB
+
+function sLoad(cb) {
+    try {
+        var raw = localStorage.getItem(SKEY);
+        cb(raw ? JSON.parse(raw) : null);
+    } catch(e) {
         cb(null);
-    } }).catch(function () { cb(null); });
+    }
 }
-catch (e) {
-    cb(null);
-} }
-function sSave(d, cb) { try {
-    window.storage.set(SKEY, JSON.stringify(d)).then(function () { if (cb)
-        cb(); }).catch(function () { if (cb)
-        cb(); });
+function sSave(d, cb) {
+    try {
+        var str = JSON.stringify(d);
+        if (str.length > MAX_STORAGE) {
+            if (d.log) d.log = d.log.slice(-50);
+            str = JSON.stringify(d);
+        }
+        localStorage.setItem(SKEY, str);
+        if (cb) cb();
+    } catch(e) {
+        console.warn("sSave error:", e);
+        if (cb) cb();
+    }
 }
-catch (e) {
-    if (cb)
-        cb();
-} }
-function sClear(cb) { try {
-    window.storage.delete(SKEY).then(function () { if (cb)
-        cb(); }).catch(function () { if (cb)
-        cb(); });
+function sClear(cb) {
+    try {
+        localStorage.removeItem(SKEY);
+        if (cb) cb();
+    } catch(e) {
+        if (cb) cb();
+    }
 }
-catch (e) {
-    if (cb)
-        cb();
-} }
 function addMonths(n) { var d = new Date(); d.setMonth(d.getMonth() + n); return d.toISOString(); }
+function addDays(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString(); }
 function daysLeft(exp) { return Math.max(0, Math.ceil((new Date(exp) - new Date()) / 86400000)); }
 function fmtDate(iso) { return new Date(iso).toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit", year: "numeric" }); }
 function fmtMoney(n) { return String.fromCharCode(8362) + Number(n).toLocaleString("he-IL", { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
@@ -291,7 +296,7 @@ var ACTIVE_USER = { name: "בעל המשרד", role: "בעלים" };
 // Staff list (firm employees) - populated from firm settings
 var STAFF = [
     { id: 1, name: "בעל המשרד", role: "שותף" },
-    { id: 2, name: "עורך דין 1", role: "עורך דין" },
+    { id: 2, name: "עורך דין 1", role: "רואה חשבון" },
     { id: 3, name: "מזכירה", role: "מנהל" },
 ];
 function getStaff() { return STAFF; }
@@ -332,7 +337,7 @@ function createInvoice(cid, clientName, fee, hoursData, firm) {
     if (!INVOICES[cid])
         INVOICES[cid] = [];
     INVOICE_SEQ++;
-    var vatAmt = Math.round(fee * 0.17);
+    var vatAmt = Math.round(fee * 0.18);
     var items = [{ desc: "שכר טרחה חודשי", qty: 1, unit: fee, total: fee }];
     if (hoursData && hoursData.length > 0) {
         var totalHrs = hoursData.reduce(function (s, r) { return s + r.hours; }, 0);
@@ -572,7 +577,7 @@ function ThemePicker(p) {
 function Onboard(p) {
     var [step, setStep] = useState(1);
     var [name, setName] = useState("");
-    var [btype, setBtype] = useState("עורך דין");
+    var [btype, setBtype] = useState("רואה חשבון");
     var [regNum, setRegNum] = useState("");
     var [phone, setPhone] = useState("");
     var [email, setEmail] = useState("");
@@ -603,18 +608,16 @@ function Onboard(p) {
             sel = PLANS[i];
             break;
         }
-    } var d = { firmName: name, btype: btype, regNum: regNum, phone: phone, email: email, city: city, logo: logo, plan: plan, planLabel: sel ? sel.label : "שנתי", expiry: addMonths(sel ? sel.months : 12), username: uname.trim(), pwHash: hashPw(pw), defaultFee: fee ? Number(fee) : 0, ok: true }; setTimeout(function () { sSave(d, function () { setSaving(false); setStep(4); p.onDone(d); }); }, 900); }
+    } var d = { firmName: name, btype: btype, regNum: regNum, phone: phone, email: email, city: city, logo: logo, plan: "trial", planLabel: "ניסיון 30 יום", expiry: addDays(30), username: uname.trim(), pwHash: hashPw(pw), defaultFee: fee ? Number(fee) : 0, ok: true }; setTimeout(function () { sSave(d, function () { setSaving(false); setStep(4); p.onDone(d); }); }, 900); }
     return (React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Segoe UI',sans-serif" } },
         React.createElement("div", { style: { width: "100%", maxWidth: 520 } },
             React.createElement("div", { style: { textAlign: "center", marginBottom: 20 } },
                 React.createElement("div", { style: { width: 54, height: 54, background: "linear-gradient(135deg," + ACCLO + "," + ACC + ")", borderRadius: 16, margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 } }, "L"),
                 React.createElement("h1", { style: { fontSize: 23, fontWeight: 800, color: TXT } }, "LexDoc Secure"),
-                React.createElement("p", { style: { fontSize: 13, color: MUT, marginTop: 3 } }, "הגדרה - שלב " + step + " מתוך 4"),
+                React.createElement("p", { style: { fontSize: 13, color: MUT, marginTop: 3 } }, "הגדרה - שלב " + step + " מתוך 2"),
                 React.createElement("div", { style: { display: "flex", justifyContent: "center", marginTop: 14 } },
                     React.createElement(Dot, { num: 1, step: step }),
-                    React.createElement(Dot, { num: 2, step: step }),
-                    React.createElement(Dot, { num: 3, step: step }),
-                    React.createElement(Dot, { num: 4, step: step }))),
+                    React.createElement(Dot, { num: 2, step: step }))),
             React.createElement("div", { style: { background: SURF, border: "1px solid " + BDR, borderRadius: 20, padding: 28, boxShadow: "0 24px 80px rgba(0,0,0,0.5)" } },
                 step === 1 && (React.createElement("div", null,
                     React.createElement("h2", { style: { fontSize: 17, fontWeight: 800, color: TXT, marginBottom: 18 } }, "פרטי המשרד"),
@@ -644,28 +647,10 @@ function Onboard(p) {
                     React.createElement("div", { style: { marginBottom: 14 } },
                         React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "Default Monthly Fee (ILS, excl. VAT)"),
                         React.createElement("input", { type: "number", value: fee, onChange: function (e) { setFee(e.target.value); }, placeholder: "5000", style: { width: "100%", background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "11px 14px", color: TXT, fontSize: 14, outline: "none", fontFamily: "inherit" } }),
-                        fee && !isNaN(Number(fee)) && Number(fee) > 0 && React.createElement("p", { style: { fontSize: 12, color: GRN, marginTop: 3 } }, "כולל מעמ 17%: " + fmtMoney(Math.round(Number(fee) * 1.17)))),
+                        fee && !isNaN(Number(fee)) && Number(fee) > 0 && React.createElement("p", { style: { fontSize: 12, color: GRN, marginTop: 3 } }, "כולל מעמ 18%: " + fmtMoney(Math.round(Number(fee) * 1.18)))),
                     React.createElement(Btn, { full: true, onClick: function () { if (v1())
-                            setStep(2); } }, "המשך לבחירת מנוי"))),
-                step === 2 && (React.createElement("div", null,
-                    React.createElement("h2", { style: { fontSize: 17, fontWeight: 800, color: TXT, marginBottom: 16 } }, "בחר מנוי"),
-                    PLANS.map(function (pl) {
-                        var sel = plan === pl.id;
-                        return (React.createElement("div", { key: pl.id, onClick: function () { setPlan(pl.id); }, style: { background: sel ? "#1d346120" : CARD, border: "2px solid " + (sel ? ACC : BDR), borderRadius: 10, padding: 14, cursor: "pointer", marginBottom: 10 } },
-                            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
-                                React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
-                                    React.createElement("div", { style: { width: 16, height: 16, borderRadius: "50%", border: "2px solid " + (sel ? ACC : BDR), background: sel ? ACC : "transparent" } }),
-                                    React.createElement("div", null,
-                                        React.createElement("p", { style: { fontWeight: 700, color: TXT } }, pl.label),
-                                        React.createElement("p", { style: { fontSize: 13, color: MUT } }, "שח " + pl.price + " " + pl.period))),
-                                pl.id === "yearly" && React.createElement(Bdg, { color: "green", sm: true }, "Save 31%"),
-                                pl.id === "two" && React.createElement(Bdg, { color: "amber", sm: true }, "Save 44%"))));
-                    }),
-                    React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 4 } },
-                        React.createElement("button", { onClick: function () { setStep(1); }, style: { flex: 1, background: SUB, border: "1px solid " + BDR, borderRadius: 10, padding: "11px", color: MUT, fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit" } }, "חזור"),
-                        React.createElement(Btn, { style: { flex: 2 }, disabled: !plan, onClick: function () { if (plan)
-                                setStep(3); } }, "המשך לפרטי כניסה")))),
-                step === 3 && (React.createElement("div", null,
+                            setStep(2); } }, "המשך להגדרת כניסה"))),
+                false && (React.createElement("div", null)), step === 2 && (React.createElement("div", null,
                     React.createElement("h2", { style: { fontSize: 17, fontWeight: 800, color: TXT, marginBottom: 16 } }, "פרטי כניסה"),
                     React.createElement(Fld, { label: "\u05E9\u05DD \u05DE\u05E9\u05EA\u05DE\u05E9", value: uname, onChange: setUname, ph: "admin_mishrad", req: true, err: errs.uname, hint: "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD 3 \u05EA\u05D5\u05D5\u05D9\u05DD" }),
                     React.createElement(Fld, { label: "\u05E1\u05D9\u05E1\u05DE\u05D4", value: pw, onChange: setPw, ph: "\u05DE\u05D9\u05E0\u05D9\u05DE\u05D5\u05DD 6 \u05EA\u05D5\u05D5\u05D9\u05DD", type: "password", req: true, err: errs.pw }),
@@ -695,16 +680,24 @@ function Login(p) {
     var [tries, setTries] = useState(0);
     var [code, setCode] = useState("");
     var days = daysLeft(firm.expiry);
-    function submit() { setSt("loading"); setTimeout(function () { if (pw.length >= 6) {
-        setSt("mfa");
+    function submit() {
+        setSt("loading");
+        setTimeout(function() {
+            var inputHash = hashPw(pw);
+            var unameOk = uname.trim() === firm.username;
+            var pwOk = inputHash === firm.pwHash;
+            if (unameOk && pwOk) {
+                setSt("ok");
+                setTimeout(function() { ACTIVE_USER = { name: firm.username, role: "בעלים" }; p.onLogin(); }, 400);
+            } else {
+                setTries(function(t) { return t + 1; });
+                setSt("error");
+                setTimeout(function() { setSt("idle"); }, 2500);
+            }
+        }, 700);
     }
-    else {
-        setTries(function (t) { return t + 1; });
-        setSt("error");
-        setTimeout(function () { setSt("idle"); }, 2000);
-    } }, 700); }
     function submitMfa() { setSt("loading"); setTimeout(function () { ACTIVE_USER = { name: firm.username, role: "בעלים" }; p.onLogin(); }, 600); }
-    var typeStr = firm.btype === "עורך דין" ? "משרד עורכי דין" : firm.btype === "cpa" ? "משרד רואי חשבון" : firm.btype === "combined" ? "עו-ד + רו-ח" : "נוטריון";
+    var typeStr = firm.btype === "רואה חשבון" ? "משרד עורכי דין" : firm.btype === "cpa" ? "משרד רואי חשבון" : firm.btype === "combined" ? "עו-ד + רו-ח" : "נוטריון";
     return (React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Segoe UI',sans-serif" } },
         React.createElement("div", { style: { width: "100%", maxWidth: 400 } },
             React.createElement("div", { style: { background: SURF, border: "1px solid " + BDR, borderRadius: 20, padding: 26, boxShadow: "0 24px 80px rgba(0,0,0,0.6)" } },
@@ -884,7 +877,7 @@ function InvoiceModal(p) {
             lines.push("", "  שעות החודש: " + totalHrs + "h");
             Object.keys(byStaff).forEach(function (nm) { lines.push("    " + nm + ": " + byStaff[nm] + "h"); });
         }
-        lines.push("", sep2, "  לפני מעמ:           " + fmtMoney(inv.subtotal), "  מעמ (17%):          " + fmtMoney(inv.vatAmount), "  סהכ לתשלום:         " + fmtMoney(inv.total), sep, "", "מועד תשלום: יום " + c.billingDay + " לכל חודש", "תודה על שיתוף הפעולה.");
+        lines.push("", sep2, "  לפני מעמ:           " + fmtMoney(inv.subtotal), "  מעמ (18%):          " + fmtMoney(inv.vatAmount), "  סהכ לתשלום:         " + fmtMoney(inv.total), sep, "", "מועד תשלום: יום " + c.billingDay + " לכל חודש", "תודה על שיתוף הפעולה.");
         var text = lines.join("\n");
         var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
         var url = URL.createObjectURL(blob);
@@ -937,8 +930,8 @@ function InvoiceModal(p) {
                     React.createElement("div", { style: { background: GRNLO, border: "1px solid " + GRN + "33", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13 } },
                         React.createElement("p", { style: { color: GRN, fontWeight: 700 } }, "Invoice will include:"),
                         React.createElement("p", { style: { color: TXT, marginTop: 4 } }, "שכט חודשי: " + fmtMoney(c.monthlyFee)),
-                        React.createElement("p", { style: { color: TXT } }, "מעמ 17%: " + fmtMoney(Math.round(c.monthlyFee * 0.17))),
-                        React.createElement("p", { style: { color: TXT, fontWeight: 700 } }, "סהכ: " + fmtMoney(Math.round(c.monthlyFee * 1.17)))),
+                        React.createElement("p", { style: { color: TXT } }, "מעמ 18%: " + fmtMoney(Math.round(c.monthlyFee * 0.18))),
+                        React.createElement("p", { style: { color: TXT, fontWeight: 700 } }, "סהכ: " + fmtMoney(Math.round(c.monthlyFee * 1.18)))),
                     React.createElement("div", { style: { marginBottom: 12 } },
                         React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "Billing Period"),
                         React.createElement("select", { value: selMonth, onChange: function (e) { setSelMonth(e.target.value); }, style: { background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "10px 12px", color: TXT, fontSize: 14, fontFamily: "inherit" } }, MONTH_OPTS.map(function (m) { return React.createElement("option", { key: m, value: m }, m); }))),
@@ -1070,7 +1063,7 @@ function BillingModal(p) {
     function addMonthly() {
         if (!c.monthlyFee)
             return;
-        var a = Math.round(c.monthlyFee * 1.17);
+        var a = Math.round(c.monthlyFee * 1.18);
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         var d = new Date();
         var entry = { id: Date.now(), date: d.toISOString().slice(0, 10), type: "חיוב", desc: "שכר טרחה - " + months[d.getMonth()] + " " + d.getFullYear(), amount: a, vat: true, status: "ממתין" };
@@ -1089,7 +1082,7 @@ function BillingModal(p) {
             setErr("נדרש סכום תקין");
             return;
         }
-        var finalAmt = vat && etype === "חיוב" ? Math.round(Number(amt) * 1.17) : Number(amt);
+        var finalAmt = vat && etype === "חיוב" ? Math.round(Number(amt) * 1.18) : Number(amt);
         var entry = { id: Date.now(), date: date, type: etype, desc: desc.trim(), amount: finalAmt, vat: vat && etype === "חיוב", status: etype === "זיכוי" ? "זיכוי" : "ממתין" };
         BILLING[c.id] = BILLING[c.id] || [];
         BILLING[c.id].unshift(entry);
@@ -1142,7 +1135,7 @@ function BillingModal(p) {
                     React.createElement("p", { style: { fontSize: 12, color: MUT, marginBottom: 3 } }, "יתרה לתשלום"),
                     React.createElement("p", { style: { fontSize: 18, fontWeight: 800, color: balance > 0 ? RED : GRN } }, fmtMoney(Math.abs(balance)) + (balance < 0 ? " זיכוי" : "")))),
             React.createElement("div", { style: { padding: "12px 26px", borderBottom: "1px solid " + BDR, display: "flex", gap: 8, flexWrap: "wrap" } },
-                c.monthlyFee > 0 && React.createElement(Btn, { bg: "linear-gradient(135deg," + GRNLO + "," + GRN + ")", onClick: addMonthly, pad: "8px 14px", fs: 12 }, "חודשי (" + fmtMoney(Math.round(c.monthlyFee * 1.17)) + ")"),
+                c.monthlyFee > 0 && React.createElement(Btn, { bg: "linear-gradient(135deg," + GRNLO + "," + GRN + ")", onClick: addMonthly, pad: "8px 14px", fs: 12 }, "חודשי (" + fmtMoney(Math.round(c.monthlyFee * 1.18)) + ")"),
                 React.createElement("button", { onClick: function () { setEtype("חיוב"); setShowAdd(true); }, style: { background: REDLO, border: "1px solid " + RED + "33", borderRadius: 7, padding: "8px 14px", color: RED, fontWeight: 600, fontSize: 13, cursor: "pointer" } }, "+ חיוב"),
                 React.createElement("button", { onClick: function () { setEtype("זיכוי"); setShowAdd(true); }, style: { background: GRNLO, border: "1px solid " + GRN + "33", borderRadius: 7, padding: "8px 14px", color: GRN, fontWeight: 600, fontSize: 13, cursor: "pointer" } }, "+ זיכוי")),
             showAdd && (React.createElement("div", { style: { padding: "16px 26px", background: CARD, borderBottom: "1px solid " + BDR } },
@@ -1153,8 +1146,8 @@ function BillingModal(p) {
                     React.createElement(Fld, { label: "\u05EA\u05D0\u05E8\u05D9\u05DA", value: date, onChange: setDate, type: "date" })),
                 etype === "חיוב" && (React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10, marginTop: -6 } },
                     React.createElement("input", { type: "checkbox", checked: vat, onChange: function (e) { setVat(e.target.checked); }, id: "vat_chk", style: { cursor: "pointer" } }),
-                    React.createElement("label", { htmlFor: "vat_chk", style: { fontSize: 13, color: MUT, cursor: "pointer" } }, "Add VAT 17%"),
-                    amt && !isNaN(Number(amt)) && vat && React.createElement("span", { style: { fontSize: 13, color: AMB } }, "סהכ עם מעמ: " + fmtMoney(Math.round(Number(amt) * 1.17))))),
+                    React.createElement("label", { htmlFor: "vat_chk", style: { fontSize: 13, color: MUT, cursor: "pointer" } }, "Add VAT 18%"),
+                    amt && !isNaN(Number(amt)) && vat && React.createElement("span", { style: { fontSize: 13, color: AMB } }, "סהכ עם מעמ: " + fmtMoney(Math.round(Number(amt) * 1.18))))),
                 React.createElement("div", { style: { display: "flex", gap: 8 } },
                     React.createElement("button", { onClick: function () { setShowAdd(false); setDesc(""); setAmt(""); setErr(""); }, style: { background: SUB, border: "1px solid " + BDR, borderRadius: 7, padding: "7px 14px", color: MUT, fontSize: 13, cursor: "pointer" } }, "ביטול"),
                     React.createElement("button", { onClick: save, style: { background: etype === "חיוב" ? RED : GRN, border: "none", borderRadius: 7, padding: "7px 18px", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, etype === "חיוב" ? "שמור חיוב" : "שמור זיכוי")))),
@@ -4478,11 +4471,11 @@ function NewClientModal(p) {
             React.createElement("div", { style: { background: CARD, border: "1px solid " + BDR, borderRadius: 12, padding: "16px 18px", marginBottom: 14 } },
                 React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: TXT, marginBottom: 12 } }, "Monthly Fee"),
                 React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px" } },
-                    React.createElement(Fld, { label: "\u05E1\u05DB\u05D5\u05DD (\u05E9\u05D7, \u05DC\u05E4\u05E0\u05D9 \u05DE\u05E2\u05DE)", value: fee, onChange: setFee, ph: "5000", type: "number", err: errs.fee, hint: "\u05DE\u05E2\u05DE 17% \u05D9\u05EA\u05D5\u05D5\u05E1\u05E3 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA" }),
+                    React.createElement(Fld, { label: "\u05E1\u05DB\u05D5\u05DD (\u05E9\u05D7, \u05DC\u05E4\u05E0\u05D9 \u05DE\u05E2\u05DE)", value: fee, onChange: setFee, ph: "5000", type: "number", err: errs.fee, hint: "\u05DE\u05E2\u05DE 18% \u05D9\u05EA\u05D5\u05D5\u05E1\u05E3 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA" }),
                     React.createElement("div", { style: { marginBottom: 14 } },
                         React.createElement("label", { style: { fontSize: 13, color: MUT, display: "block", marginBottom: 5 } }, "Billing Day"),
                         React.createElement("select", { value: billingDay, onChange: function (e) { setBillingDay(e.target.value); }, style: { width: "100%", background: BG, border: "1px solid " + BDR, borderRadius: 9, padding: "11px 14px", color: TXT, fontSize: 14, fontFamily: "inherit" } }, [1, 5, 10, 15, 20, 25, 28].map(function (d) { return React.createElement("option", { key: d, value: d }, "יום " + d + " בחודש"); })))),
-                fee && !isNaN(Number(fee)) && Number(fee) > 0 && (React.createElement("div", { style: { background: GRNLO, border: "1px solid " + GRN + "33", borderRadius: 7, padding: "8px 12px", fontSize: 13, color: GRN } }, "חודשי: " + fmtMoney(fee) + " + מעמ = " + fmtMoney(Math.round(Number(fee) * 1.17))))),
+                fee && !isNaN(Number(fee)) && Number(fee) > 0 && (React.createElement("div", { style: { background: GRNLO, border: "1px solid " + GRN + "33", borderRadius: 7, padding: "8px 12px", fontSize: 13, color: GRN } }, "חודשי: " + fmtMoney(fee) + " + מעמ = " + fmtMoney(Math.round(Number(fee) * 1.18))))),
             React.createElement("div", { style: { display: "flex", gap: 8 } },
                 React.createElement("button", { onClick: p.onClose, style: { flex: 1, background: SUB, border: "1px solid " + BDR, borderRadius: 9, padding: "11px", color: MUT, fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit" } }, "ביטול"),
                 React.createElement(Btn, { style: { flex: 2 }, onClick: save }, "צור לקוח")))));
@@ -4515,66 +4508,256 @@ function AuditView() {
             React.createElement("div", { style: { padding: "8px 12px", background: BG, borderTop: "1px solid " + BDR, fontSize: 11, color: MUT } }, "RLS: DELETE USING (false) - audit logs cannot be deleted"))));
 }
 // ---- Root ----
+
+// ============================================================
+// WelcomeScreen — דף פתיחה
+// ============================================================
+function WelcomeScreen(p) {
+    var T2 = THEMES[p.theme] || THEMES.sky;
+    return React.createElement("div", {
+        style: {
+            minHeight: "100vh", background: T2.BG,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            fontFamily: "'Segoe UI',sans-serif", direction: "rtl", padding: 24
+        }
+    },
+        // Logo + title
+        React.createElement("div", { style: { textAlign: "center", marginBottom: 48 } },
+            React.createElement("div", { style: {
+                width: 72, height: 72, borderRadius: 20,
+                background: "linear-gradient(135deg,#1a6fb5,#4a9eff)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 36, margin: "0 auto 16px", boxShadow: "0 8px 32px rgba(26,111,181,0.4)"
+            }}, "📊"),
+            React.createElement("h1", { style: { fontSize: 32, fontWeight: 800, color: T2.TXT, marginBottom: 8 } }, "MisradPro"),
+            React.createElement("p", { style: { fontSize: 15, color: T2.MUT } }, "מערכת ניהול משרד רואי חשבון")
+        ),
+        // Two cards
+        React.createElement("div", { style: { display: "flex", gap: 20, width: "100%", maxWidth: 640, flexWrap: "wrap", justifyContent: "center" } },
+            // משרד קיים — RIGHT
+            React.createElement("div", {
+                onClick: p.onExisting,
+                style: {
+                    flex: 1, minWidth: 240, background: T2.CARD, border: "2px solid " + T2.BDR,
+                    borderRadius: 18, padding: "32px 28px", cursor: "pointer", textAlign: "center",
+                    transition: "all 0.2s", boxShadow: "0 4px 20px rgba(0,0,0,0.2)"
+                },
+                onMouseEnter: function(e) { e.currentTarget.style.borderColor = T2.ACC; e.currentTarget.style.transform = "translateY(-3px)"; },
+                onMouseLeave: function(e) { e.currentTarget.style.borderColor = T2.BDR; e.currentTarget.style.transform = "translateY(0)"; }
+            },
+                React.createElement("div", { style: { fontSize: 48, marginBottom: 14 } }, "🔑"),
+                React.createElement("h2", { style: { fontSize: 19, fontWeight: 800, color: T2.TXT, marginBottom: 8 } }, "משרד קיים"),
+                React.createElement("p", { style: { fontSize: 13, color: T2.MUT, lineHeight: 1.6 } }, "כניסה למשרד שכבר נרשם במערכת")
+            ),
+            // משרד חדש — LEFT
+            React.createElement("div", {
+                onClick: p.onNew,
+                style: {
+                    flex: 1, minWidth: 240,
+                    background: "linear-gradient(135deg,rgba(26,111,181,0.15),rgba(74,158,255,0.08))",
+                    border: "2px solid " + T2.ACC + "66",
+                    borderRadius: 18, padding: "32px 28px", cursor: "pointer", textAlign: "center",
+                    transition: "all 0.2s", boxShadow: "0 4px 20px rgba(26,111,181,0.2)"
+                },
+                onMouseEnter: function(e) { e.currentTarget.style.borderColor = T2.ACC; e.currentTarget.style.transform = "translateY(-3px)"; },
+                onMouseLeave: function(e) { e.currentTarget.style.borderColor = T2.ACC + "66"; e.currentTarget.style.transform = "translateY(0)"; }
+            },
+                React.createElement("div", { style: { fontSize: 48, marginBottom: 14 } }, "✨"),
+                React.createElement("h2", { style: { fontSize: 19, fontWeight: 800, color: T2.ACC, marginBottom: 8 } }, "משרד חדש"),
+                React.createElement("p", { style: { fontSize: 13, color: T2.MUT, lineHeight: 1.6 } }, "הרשמה ו-30 ימי ניסיון חינם")
+            )
+        ),
+        React.createElement("p", { style: { marginTop: 32, fontSize: 12, color: T2.MUT } },
+            "לתמיכה: 04-6444925"
+        ),
+        p.notFound && React.createElement("div", {
+            style: {
+                marginTop: 20, background: T2.REDLO || "rgba(239,68,68,0.1)",
+                border: "1px solid " + T2.RED + "44",
+                borderRadius: 10, padding: "12px 20px", maxWidth: 480,
+                textAlign: "center"
+            }
+        },
+            React.createElement("p", { style: { color: T2.RED, fontWeight: 700, fontSize: 14 } },
+                "⚠ לא נמצא משרד שמור במכשיר זה"
+            ),
+            React.createElement("p", { style: { color: T2.MUT, fontSize: 12, marginTop: 4 } },
+                "ייתכן שנרשמת במכשיר אחר, או שהנתונים נמחקו. פנה ל-04-6444925"
+            )
+        )
+    );
+}
+
+// ============================================================
+// ExpiredScreen — תקופת ניסיון הסתיימה
+// ============================================================
+function ExpiredScreen(p) {
+    var T2 = THEMES[p.theme] || THEMES.sky;
+    return React.createElement("div", {
+        style: {
+            minHeight: "100vh", background: T2.BG,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            fontFamily: "'Segoe UI',sans-serif", direction: "rtl", padding: 24
+        }
+    },
+        React.createElement("div", { style: {
+            background: T2.CARD, border: "1px solid " + T2.AMB + "66",
+            borderRadius: 20, padding: "40px 36px", maxWidth: 480, width: "100%",
+            textAlign: "center", boxShadow: "0 8px 40px rgba(0,0,0,0.3)"
+        }},
+            React.createElement("div", { style: { fontSize: 56, marginBottom: 16 } }, "⏰"),
+            React.createElement("h2", { style: { fontSize: 22, fontWeight: 800, color: T2.TXT, marginBottom: 10 } },
+                "תקופת הניסיון הסתיימה"
+            ),
+            React.createElement("p", { style: { fontSize: 14, color: T2.MUT, lineHeight: 1.7, marginBottom: 24 } },
+                "30 ימי הניסיון החינמיים הסתיימו.", React.createElement("br"),
+                "לרישיון שנתי מלא, אנא פנה אלינו:"
+            ),
+            React.createElement("a", {
+                href: "tel:04-6444925",
+                style: {
+                    display: "inline-block",
+                    background: "linear-gradient(135deg,#1a6fb5,#4a9eff)",
+                    color: "#fff", fontWeight: 800, fontSize: 22,
+                    borderRadius: 12, padding: "14px 32px",
+                    textDecoration: "none", marginBottom: 16,
+                    boxShadow: "0 4px 20px rgba(26,111,181,0.4)"
+                }
+            }, "📞 04-6444925"),
+            React.createElement("p", { style: { fontSize: 12, color: T2.MUT } },
+                "לאחר שיחה יישלח קוד פתיחה לשנה"
+            ),
+            React.createElement("button", {
+                onClick: p.onLogout,
+                style: {
+                    marginTop: 20, background: "none", border: "1px solid " + T2.BDR,
+                    borderRadius: 8, padding: "8px 20px", color: T2.MUT,
+                    fontSize: 13, cursor: "pointer"
+                }
+            }, "חזרה לדף הראשי")
+        )
+    );
+}
+
+// ============================================================
+// Root — ניהול מצב ראשי
+// ============================================================
 function Root() {
     var [firm, setFirm] = useState(null);
     var [loading, setLoad] = useState(true);
     var [authed, setAuthed] = useState(false);
     var [theme, setTheme] = useState("sky");
+    var [screen, setScreen] = useState("welcome"); // welcome | existing | new
+
     function applyTheme(tid) {
-        if (!THEMES[tid])
-            return;
+        if (!THEMES[tid]) return;
         CURRENT_THEME = tid;
         var T2 = THEMES[tid];
-        BG = T2.BG;
-        SURF = T2.SURF;
-        CARD = T2.CARD;
-        BDR = T2.BDR;
-        SUB = T2.SUB;
-        TXT = T2.TXT;
-        MUT = T2.MUT;
-        ACC = T2.ACC;
-        ACCLO = T2.ACCLO;
-        GRN = T2.GRN;
-        GRNLO = T2.GRNLO;
-        RED = T2.RED;
-        REDLO = T2.REDLO;
-        AMB = T2.AMB;
-        AMBLO = T2.AMBLO;
+        BG=T2.BG; SURF=T2.SURF; CARD=T2.CARD; BDR=T2.BDR; SUB=T2.SUB;
+        TXT=T2.TXT; MUT=T2.MUT;
+        ACC=T2.ACC; ACCLO=T2.ACCLO;
+        GRN=T2.GRN; GRNLO=T2.GRNLO;
+        RED=T2.RED; REDLO=T2.REDLO;
+        AMB=T2.AMB; AMBLO=T2.AMBLO;
         setTheme(tid);
     }
-    useEffect(function () {
-        // הפעלת מנוע משימות אוטומטיות
-        var count = runAutoTaskEngine(true);
-        if (count > 0)
-            setTimeout(function () { toast("⚡ נוצרו " + count + " משימות אוטומטיות חדשות לקראת הגשות"); }, 1500);
-    }, []);
-    useEffect(function () {
-        var t = setTimeout(function () { setLoad(false); }, 2500);
-        sLoad(function (d) {
+
+    useEffect(function() {
+        var t = setTimeout(function() { setLoad(false); }, 1500);
+        sLoad(function(d) {
             clearTimeout(t);
-            setFirm(d);
-            if (d && d.theme) {
-                applyTheme(d.theme);
+            if (d && d.ok) {
+                setFirm(d);
+                if (d.theme) applyTheme(d.theme);
+                setScreen("existing");
+            } else {
+                setScreen("welcome");
             }
             setLoad(false);
         });
-        return function () { clearTimeout(t); };
+        return function() { clearTimeout(t); };
     }, []);
+
     var T2 = THEMES[theme] || THEMES.sky;
+
+    // Loading spinner
     if (loading) {
-        return (React.createElement("div", { style: { minHeight: "100vh", background: T2.BG, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 10 } },
-            React.createElement("div", { style: { width: 32, height: 32, border: "3px solid " + T2.BDR, borderTopColor: T2.ACC, borderRadius: "50%", animation: "spin 0.8s linear infinite" } }),
-            React.createElement("p", { style: { color: T2.MUT, fontSize: 14 } }, "Loading...")));
+        return React.createElement("div", {
+            style: { minHeight: "100vh", background: T2.BG, display: "flex",
+                     alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 10 }
+        },
+            React.createElement("div", { style: {
+                width: 36, height: 36, border: "3px solid " + T2.BDR,
+                borderTopColor: T2.ACC, borderRadius: "50%", animation: "spin 0.8s linear infinite"
+            }}),
+            React.createElement("div", { style: { fontSize: 28, marginTop: 8 }}, "📊"),
+            React.createElement("p", { style: { color: T2.MUT, fontSize: 13 }}, "MisradPro...")
+        );
     }
-    if (!firm || !firm.ok) {
-        return React.createElement(Onboard, { onDone: function (d) { setFirm(d); if (d && d.theme)
-                applyTheme(d.theme); }, theme: theme, onTheme: applyTheme });
+
+    // משרד קיים שנרשם — בדוק רישיון
+    if (firm && firm.ok) {
+        var days = daysLeft(firm.expiry);
+        // ניסיון או מנוי — בדוק פג תוקף
+        if (days <= 0) {
+            return React.createElement(ExpiredScreen, {
+                theme: theme,
+                onLogout: function() { setFirm(null); setAuthed(false); setScreen("welcome"); }
+            });
+        }
+        // מחובר — הצג אפליקציה
+        if (authed) {
+            return React.createElement(App, {
+                firm: firm,
+                onLogout: function() { setAuthed(false); },
+                theme: theme,
+                onTheme: applyTheme
+            });
+        }
+        // לא מחובר — Login
+        return React.createElement(Login, {
+            firm: firm,
+            onLogin: function() { setAuthed(true); },
+            onReset: function() { sClear(function() { setFirm(null); setAuthed(false); setScreen("welcome"); }); },
+            theme: theme,
+            onTheme: applyTheme
+        });
     }
-    if (!authed) {
-        return React.createElement(Login, { firm: firm, onLogin: function () { setAuthed(true); }, onReset: function () { sClear(function () { setFirm(null); setAuthed(false); }); }, theme: theme, onTheme: applyTheme });
+
+    // הרשמה חדשה
+    if (screen === "new") {
+        return React.createElement(Onboard, {
+            onDone: function(d) {
+                setFirm(d);
+                if (d && d.theme) applyTheme(d.theme);
+                setAuthed(true);
+            },
+            onBack: function() { setScreen("welcome"); },
+            theme: theme,
+            onTheme: applyTheme
+        });
     }
-    return React.createElement(App, { firm: firm, onLogout: function () { setAuthed(false); }, theme: theme, onTheme: applyTheme });
+
+    // ברירת מחדל — דף פתיחה
+    return React.createElement(WelcomeScreen, {
+        theme: theme,
+        notFound: screen === "notfound",
+        onNew: function() { setScreen("new"); },
+        onExisting: function() {
+            sLoad(function(d) {
+                if (d && d.ok) {
+                    setFirm(d);
+                    if (d.theme) applyTheme(d.theme);
+                } else {
+                    setScreen("notfound");
+                }
+            });
+        }
+    });
 }
+
 
   var container = document.getElementById('root');
   if (container) {
