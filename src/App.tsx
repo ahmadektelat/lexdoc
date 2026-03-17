@@ -1,4 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
+// UPDATED: 2026-03-17 16:00 IST (Jerusalem)
+//          - Added auth routes, ProtectedRoute, AuthInitializer
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,6 +9,12 @@ import { Toaster } from 'sonner';
 import { AppShell } from '@/components/layout/AppShell';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { WelcomeScreen } from '@/components/auth/WelcomeScreen';
+import { Login } from '@/components/auth/Login';
+import { Onboard } from '@/components/auth/Onboard';
+import { ExpiredScreen } from '@/components/auth/ExpiredScreen';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,14 +33,34 @@ function ThemeInitializer() {
   return null;
 }
 
+function AuthInitializer() {
+  useAuth();
+  return null;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <ThemeInitializer />
+        <AuthInitializer />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<AppShell />}>
+            {/* Public routes */}
+            <Route path="/welcome" element={<WelcomeScreen />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Onboard />} />
+            <Route path="/expired" element={<ExpiredScreen />} />
+
+            {/* Protected routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPlaceholder />} />
               <Route path="clients" element={<SectionPlaceholder section="clients" />} />
@@ -47,6 +75,9 @@ export default function App() {
               <Route path="audit" element={<SectionPlaceholder section="audit" />} />
               <Route path="backup" element={<SectionPlaceholder section="backup" />} />
             </Route>
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/welcome" replace />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-center" dir="rtl" richColors />

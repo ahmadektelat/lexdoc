@@ -44,19 +44,22 @@
 | `PageHeader.tsx` | `PageHeader` — page title + action buttons | Phase 1 |
 | `FormField.tsx` | `FormField` — label + input + error wrapper | Phase 1 |
 | `SearchInput.tsx` | `SearchInput` — debounced search input | Phase 1 |
+| `ThemePicker.tsx` | `ThemePicker` — reusable theme picker (extracted from Sidebar) | Auth |
+| `LanguageSelector.tsx` | `LanguageSelector` — reusable language selector (extracted from Sidebar) | Auth |
 
 ## Hooks (`src/hooks/`)
 
 | File | Exports | Created In |
 |------|---------|------------|
-| *(populated after Phase 3+)* | | |
+| `useAuth.ts` | `useAuth` — auth lifecycle hook (initialization, session persistence) | Auth |
 
 ## Services (`src/services/`)
 
 | File | Exports | Created In |
 |------|---------|------------|
-| *(populated after Phase 3+)* | | |
+| `authService.ts` | `authService` — Supabase Auth operations + login lockout tracking | Auth |
+| `firmService.ts` | `firmService` — firm CRUD, registration, logo upload, plan updates | Auth |
 
 ---
 
-*Last updated: Phase 0 (Scaffold)*
+*Last updated: Auth & Onboarding phase*

@@ -1,9 +1,10 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
+// UPDATED: 2026-03-17 16:00 IST (Jerusalem)
+//          - Extracted ThemePicker and LanguageSelector to shared components
 // Sidebar - Navigation sidebar with theme picker and language selector
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAppStore } from '@/stores/useAppStore';
-import { useThemeStore, Theme } from '@/stores/useThemeStore';
 import {
   LayoutDashboard,
   Users,
@@ -18,12 +19,9 @@ import {
   ScrollText,
   HardDrive,
   X,
-  Sun,
-  Moon,
-  Palette,
-  Languages,
 } from 'lucide-react';
-import type { Language } from '@/contexts/LanguageContext';
+import { ThemePicker } from '@/components/shared/ThemePicker';
+import { LanguageSelector } from '@/components/shared/LanguageSelector';
 
 const NAV_ITEMS = [
   { path: '/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
@@ -40,25 +38,11 @@ const NAV_ITEMS = [
   { path: '/backup', icon: HardDrive, labelKey: 'nav.backup' },
 ];
 
-const THEMES: { value: Theme; labelKey: string; icon: typeof Sun }[] = [
-  { value: 'sky', labelKey: 'theme.sky', icon: Sun },
-  { value: 'dark', labelKey: 'theme.dark', icon: Moon },
-  { value: 'blue', labelKey: 'theme.blue', icon: Palette },
-];
-
-const LANGUAGES: { value: Language; labelKey: string }[] = [
-  { value: 'he', labelKey: 'language.hebrew' },
-  { value: 'ar', labelKey: 'language.arabic' },
-  { value: 'en', labelKey: 'language.english' },
-];
-
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, direction } = useLanguage();
   const { sidebarOpen, setSidebarOpen } = useAppStore();
-  const { theme, setTheme } = useThemeStore();
-  const { language, setLanguage } = useLanguage();
 
   return (
     <>
@@ -122,48 +106,8 @@ export function Sidebar() {
 
         {/* Footer — Theme & Language */}
         <div className="p-3 border-t border-sidebar-border space-y-3">
-          {/* Theme picker */}
-          <div className="flex items-center gap-1">
-            {THEMES.map(({ value, labelKey, icon: Icon }) => (
-              <button
-                key={value}
-                onClick={() => setTheme(value)}
-                title={t(labelKey)}
-                className={`
-                  flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs
-                  transition-colors
-                  ${
-                    theme === value
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                      : 'hover:bg-sidebar-accent/30 text-sidebar-foreground/60'
-                  }
-                `}
-              >
-                <Icon className="h-3.5 w-3.5" />
-              </button>
-            ))}
-          </div>
-
-          {/* Language selector */}
-          <div className="flex items-center gap-1">
-            <Languages className="h-3.5 w-3.5 text-sidebar-foreground/60 shrink-0" />
-            {LANGUAGES.map(({ value, labelKey }) => (
-              <button
-                key={value}
-                onClick={() => setLanguage(value)}
-                className={`
-                  flex-1 py-1 rounded text-xs text-center transition-colors
-                  ${
-                    language === value
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-                      : 'hover:bg-sidebar-accent/30 text-sidebar-foreground/60'
-                  }
-                `}
-              >
-                {t(labelKey)}
-              </button>
-            ))}
-          </div>
+          <ThemePicker />
+          <LanguageSelector />
         </div>
       </aside>
     </>

@@ -49,6 +49,71 @@ export const he: Record<string, string> = {
   'auth.forgotPassword': 'שכחתי סיסמה',
   'auth.register': 'הרשמה',
 
+  // Auth — WelcomeScreen
+  'auth.appName': 'LexDoc — ניהול משרד',
+  'auth.appDescription': 'מערכת ניהול משרד מתקדמת',
+  'auth.loginButton': 'התחברות',
+  'auth.registerButton': 'הרשמה',
+
+  // Auth — Onboarding
+  'auth.onboard.title': 'הגדרת משרד חדש',
+  'auth.onboard.step': 'שלב {n} מתוך {total}',
+  'auth.onboard.firmDetails': 'פרטי המשרד',
+  'auth.onboard.firmName': 'שם המשרד',
+  'auth.onboard.firmType': 'סוג משרד',
+  'auth.onboard.firmType.lawyer': 'עורכי דין',
+  'auth.onboard.firmType.cpa': 'רואי חשבון',
+  'auth.onboard.firmType.combined': 'עו"ד + רו"ח',
+  'auth.onboard.firmType.notary': 'נוטריון',
+  'auth.onboard.regNum': 'מספר ח.פ.',
+  'auth.onboard.city': 'עיר',
+  'auth.onboard.logo': 'לוגו (אופציונלי)',
+  'auth.onboard.logoUpload': 'העלה לוגו',
+  'auth.onboard.logoReplace': 'החלף לוגו',
+  'auth.onboard.logoHint': 'PNG, JPG עד 2MB',
+  'auth.onboard.defaultFee': 'אגרה חודשית ברירת מחדל (ללא מע"מ)',
+  'auth.onboard.vatPreview': 'כולל מע"מ 18%: {amount}',
+  'auth.onboard.continueToCredentials': 'המשך להגדרת כניסה',
+  'auth.onboard.credentials': 'פרטי כניסה',
+  'auth.onboard.confirmPassword': 'אישור סיסמה',
+  'auth.onboard.passwordHint': 'מינימום 6 תווים',
+  'auth.onboard.finishSetup': 'סיים הגדרה',
+  'auth.onboard.saving': 'שומר...',
+  'auth.onboard.success': 'המשרד הוגדר בהצלחה!',
+  'auth.onboard.firmConfigured': 'משרד הוגדר',
+  'auth.onboard.subscriptionActive': 'מנוי פעיל',
+  'auth.onboard.securityEnabled': 'אבטחת RLS מופעלת',
+  'auth.onboard.auditReady': 'יומן פעילות מוכן',
+  'auth.onboard.goToLogin': 'עבור להתחברות',
+
+  // Auth — Login
+  'auth.login.title': 'התחברות',
+  'auth.login.submit': 'כניסה',
+  'auth.login.authenticating': 'מאמת...',
+  'auth.login.wrongPassword': 'סיסמה שגויה',
+  'auth.login.attemptCount': 'ניסיון {n} מתוך 5',
+  'auth.login.locked': 'החשבון נעול. נסה שוב בעוד 15 דקות.',
+  'auth.login.noAccount': 'אין לך חשבון?',
+  'auth.login.registerHere': 'הרשמה כאן',
+  'auth.login.subscription': 'מנוי {plan}',
+  'auth.login.daysRemaining': '{n} ימים נותרים',
+  'auth.login.until': 'עד {date}',
+
+  // Auth — ExpiredScreen
+  'auth.expired.title': 'המנוי פג תוקף',
+  'auth.expired.message': 'המנוי שלך פג תוקף. בחר מנוי חדש כדי להמשיך.',
+  'auth.expired.selectPlan': 'בחר מנוי',
+  'auth.expired.perMonth': 'לחודש',
+
+  // Auth — Validation errors
+  'auth.errors.required': 'שדה חובה',
+  'auth.errors.invalidEmail': 'אימייל לא תקין',
+  'auth.errors.invalidPhone': 'טלפון לא תקין',
+  'auth.errors.passwordTooShort': 'מינימום 6 תווים',
+  'auth.errors.passwordMismatch': 'הסיסמאות לא תואמות',
+  'auth.errors.signUpFailed': 'ההרשמה נכשלה',
+  'auth.errors.signInFailed': 'ההתחברות נכשלה',
+
   // Dashboard
   'dashboard.title': 'לוח בקרה',
   'dashboard.welcome': 'ברוכים הבאים',
@@ -192,6 +257,7 @@ export const he: Record<string, string> = {
   'systemRoles.managerDesc': 'ניהול צוות ולקוחות',
 
   // Subscription plans
+  'subscriptionPlans.trial': 'ניסיון 30 יום',
   'subscriptionPlans.monthly': 'חודשי',
   'subscriptionPlans.yearly': 'שנתי',
   'subscriptionPlans.twoYear': 'דו-שנתי',
