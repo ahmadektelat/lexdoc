@@ -114,4 +114,115 @@ export const ar: Record<string, string> = {
   'language.arabic': 'عربية',
   'language.english': 'English',
   'language.label': 'اللغة',
+
+  // Shared component keys (added for Phase 1)
+  'common.confirmAction': 'تأكيد الإجراء',
+  'common.areYouSure': 'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.',
+  'common.noData': 'لا توجد بيانات للعرض',
+  'common.searchPlaceholder': 'بحث...',
+  'common.page': 'صفحة',
+  'common.of': 'من',
+  'common.rowsPerPage': 'صفوف في الصفحة',
+  'common.previous': 'السابق',
+  'common.required': 'حقل مطلوب',
+  'common.showing': 'عرض',
+  'common.results': 'نتائج',
+
+  // Status labels
+  'status.filed': 'تم التقديم',
+  'status.pending': 'معلق',
+  'status.late': 'متأخر',
+  'status.active': 'نشط',
+  'status.archived': 'مؤرشف',
+  'status.sent': 'تم الإرسال',
+  'status.paid': 'مدفوع',
+  'status.open': 'مفتوح',
+  'status.done': 'مكتمل',
+  'status.cancelled': 'ملغى',
+  'status.failed': 'فشل',
+
+  // Priority labels
+  'priority.high': 'عالية',
+  'priority.medium': 'متوسطة',
+  'priority.low': 'منخفضة',
+
+  // Staff roles
+  'staffRoles.partner': 'شريك',
+  'staffRoles.attorney': 'محامي',
+  'staffRoles.juniorAttorney': 'محامي متدرب',
+  'staffRoles.accountant': 'محاسب',
+  'staffRoles.consultant': 'مستشار',
+  'staffRoles.secretary': 'سكرتير/ة',
+  'staffRoles.manager': 'مدير/ة',
+  'staffRoles.student': 'طالب/ة',
+
+  // Task categories
+  'taskCategories.client': 'عميل',
+  'taskCategories.taxAuth': 'مصلحة الضرائب',
+  'taskCategories.nii': 'التأمين الوطني',
+  'taskCategories.internal': 'داخلي',
+
+  // Interaction channels
+  'channels.call': 'مكالمة',
+  'channels.email': 'بريد إلكتروني',
+  'channels.meeting': 'اجتماع',
+  'channels.letter': 'رسالة',
+  'channels.portal': 'بوابة',
+
+  // Document sensitivity
+  'sensitivity.internal': 'داخلي',
+  'sensitivity.confidential': 'سري',
+  'sensitivity.restricted': 'مقيد',
+  'sensitivity.public': 'عام',
+
+  // Client types
+  'clientTypes.selfEmployed': 'عامل مستقل',
+  'clientTypes.company': 'شركة',
+  'clientTypes.economic': 'معفى',
+  'clientTypes.private': 'خاص',
+
+  // System roles
+  'systemRoles.admin': 'مدير النظام',
+  'systemRoles.adminDesc': 'وصول كامل لجميع النظام',
+  'systemRoles.editor': 'محرر',
+  'systemRoles.editorDesc': 'تحرير وعرض جميع الوحدات',
+  'systemRoles.viewer': 'مشاهد',
+  'systemRoles.viewerDesc': 'عرض فقط',
+  'systemRoles.manager': 'مدير',
+  'systemRoles.managerDesc': 'إدارة الفريق والعملاء',
+
+  // Subscription plans
+  'subscriptionPlans.monthly': 'شهري',
+  'subscriptionPlans.yearly': 'سنوي',
+  'subscriptionPlans.twoYear': 'سنتين',
+
+  // Permission labels
+  'permissions.clients.view': 'عرض العملاء',
+  'permissions.clients.create': 'إضافة عميل',
+  'permissions.clients.edit': 'تعديل عميل',
+  'permissions.clients.delete': 'حذف عميل',
+  'permissions.filings.view': 'عرض التقارير',
+  'permissions.filings.create': 'إضافة تقرير',
+  'permissions.filings.edit': 'تعديل تقرير',
+  'permissions.filings.delete': 'حذف تقرير',
+  'permissions.billing.view': 'عرض الفواتير',
+  'permissions.billing.create': 'إضافة فاتورة',
+  'permissions.billing.edit': 'تعديل فاتورة',
+  'permissions.billing.delete': 'حذف فاتورة',
+  'permissions.billing.invoices': 'إدارة الفواتير',
+  'permissions.staff.view': 'عرض الفريق',
+  'permissions.staff.manage': 'إدارة الفريق',
+  'permissions.crm.view': 'عرض جهات الاتصال',
+  'permissions.crm.manage': 'إدارة جهات الاتصال',
+  'permissions.documents.view': 'عرض المستندات',
+  'permissions.documents.upload': 'رفع المستندات',
+  'permissions.documents.delete': 'حذف المستندات',
+  'permissions.reports.view': 'عرض التقارير',
+  'permissions.reports.export': 'تصدير التقارير',
+  'permissions.messaging.view': 'عرض الرسائل',
+  'permissions.messaging.send': 'إرسال الرسائل',
+  'permissions.settings.roles': 'إدارة الصلاحيات',
+  'permissions.settings.firm': 'إعدادات المكتب',
+  'permissions.settings.audit': 'عرض سجل النشاط',
+  'permissions.settings.backup': 'نسخ احتياطي واستعادة',
 };
