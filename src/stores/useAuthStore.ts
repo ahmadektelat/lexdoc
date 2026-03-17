@@ -1,12 +1,9 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
+// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
+//          - Import User from @/types/user instead of local interface
 // useAuthStore - Auth state: current user, firm, session
 import { create } from 'zustand';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import type { User } from '@/types/user';
 
 interface AuthStore {
   user: User | null;

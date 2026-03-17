@@ -114,4 +114,115 @@ export const en: Record<string, string> = {
   'language.arabic': 'عربية',
   'language.english': 'English',
   'language.label': 'Language',
+
+  // Shared component keys (added for Phase 1)
+  'common.confirmAction': 'Confirm Action',
+  'common.areYouSure': 'Are you sure? This action cannot be undone.',
+  'common.noData': 'No data to display',
+  'common.searchPlaceholder': 'Search...',
+  'common.page': 'Page',
+  'common.of': 'of',
+  'common.rowsPerPage': 'Rows per page',
+  'common.previous': 'Previous',
+  'common.required': 'Required',
+  'common.showing': 'Showing',
+  'common.results': 'results',
+
+  // Status labels
+  'status.filed': 'Filed',
+  'status.pending': 'Pending',
+  'status.late': 'Late',
+  'status.active': 'Active',
+  'status.archived': 'Archived',
+  'status.sent': 'Sent',
+  'status.paid': 'Paid',
+  'status.open': 'Open',
+  'status.done': 'Done',
+  'status.cancelled': 'Cancelled',
+  'status.failed': 'Failed',
+
+  // Priority labels
+  'priority.high': 'High',
+  'priority.medium': 'Medium',
+  'priority.low': 'Low',
+
+  // Staff roles
+  'staffRoles.partner': 'Partner',
+  'staffRoles.attorney': 'Attorney',
+  'staffRoles.juniorAttorney': 'Junior Attorney',
+  'staffRoles.accountant': 'Accountant',
+  'staffRoles.consultant': 'Consultant',
+  'staffRoles.secretary': 'Secretary',
+  'staffRoles.manager': 'Manager',
+  'staffRoles.student': 'Student',
+
+  // Task categories
+  'taskCategories.client': 'Client',
+  'taskCategories.taxAuth': 'Tax Authority',
+  'taskCategories.nii': 'National Insurance',
+  'taskCategories.internal': 'Internal',
+
+  // Interaction channels
+  'channels.call': 'Call',
+  'channels.email': 'Email',
+  'channels.meeting': 'Meeting',
+  'channels.letter': 'Letter',
+  'channels.portal': 'Portal',
+
+  // Document sensitivity
+  'sensitivity.internal': 'Internal',
+  'sensitivity.confidential': 'Confidential',
+  'sensitivity.restricted': 'Restricted',
+  'sensitivity.public': 'Public',
+
+  // Client types
+  'clientTypes.selfEmployed': 'Self Employed',
+  'clientTypes.company': 'Company',
+  'clientTypes.economic': 'Exempt Dealer',
+  'clientTypes.private': 'Private',
+
+  // System roles
+  'systemRoles.admin': 'System Admin',
+  'systemRoles.adminDesc': 'Full system access',
+  'systemRoles.editor': 'Editor',
+  'systemRoles.editorDesc': 'Edit and view all modules',
+  'systemRoles.viewer': 'Viewer',
+  'systemRoles.viewerDesc': 'View only',
+  'systemRoles.manager': 'Manager',
+  'systemRoles.managerDesc': 'Manage staff and clients',
+
+  // Subscription plans
+  'subscriptionPlans.monthly': 'Monthly',
+  'subscriptionPlans.yearly': 'Yearly',
+  'subscriptionPlans.twoYear': 'Two-Year',
+
+  // Permission labels
+  'permissions.clients.view': 'View Clients',
+  'permissions.clients.create': 'Add Client',
+  'permissions.clients.edit': 'Edit Client',
+  'permissions.clients.delete': 'Delete Client',
+  'permissions.filings.view': 'View Filings',
+  'permissions.filings.create': 'Add Filing',
+  'permissions.filings.edit': 'Edit Filing',
+  'permissions.filings.delete': 'Delete Filing',
+  'permissions.billing.view': 'View Billing',
+  'permissions.billing.create': 'Add Billing',
+  'permissions.billing.edit': 'Edit Billing',
+  'permissions.billing.delete': 'Delete Billing',
+  'permissions.billing.invoices': 'Manage Invoices',
+  'permissions.staff.view': 'View Staff',
+  'permissions.staff.manage': 'Manage Staff',
+  'permissions.crm.view': 'View Contacts',
+  'permissions.crm.manage': 'Manage Contacts',
+  'permissions.documents.view': 'View Documents',
+  'permissions.documents.upload': 'Upload Documents',
+  'permissions.documents.delete': 'Delete Documents',
+  'permissions.reports.view': 'View Reports',
+  'permissions.reports.export': 'Export Reports',
+  'permissions.messaging.view': 'View Messages',
+  'permissions.messaging.send': 'Send Messages',
+  'permissions.settings.roles': 'Manage Roles',
+  'permissions.settings.firm': 'Firm Settings',
+  'permissions.settings.audit': 'View Audit Log',
+  'permissions.settings.backup': 'Backup & Restore',
 };
