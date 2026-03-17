@@ -49,6 +49,71 @@ export const ar: Record<string, string> = {
   'auth.forgotPassword': 'نسيت كلمة المرور',
   'auth.register': 'التسجيل',
 
+  // Auth — WelcomeScreen
+  'auth.appName': 'LexDoc — إدارة مكتب',
+  'auth.appDescription': 'نظام إدارة مكتب متقدم',
+  'auth.loginButton': 'تسجيل الدخول',
+  'auth.registerButton': 'التسجيل',
+
+  // Auth — Onboarding
+  'auth.onboard.title': 'إعداد مكتب جديد',
+  'auth.onboard.step': 'الخطوة {n} من {total}',
+  'auth.onboard.firmDetails': 'تفاصيل المكتب',
+  'auth.onboard.firmName': 'اسم المكتب',
+  'auth.onboard.firmType': 'نوع المكتب',
+  'auth.onboard.firmType.lawyer': 'محاماة',
+  'auth.onboard.firmType.cpa': 'محاسبة',
+  'auth.onboard.firmType.combined': 'محاماة + محاسبة',
+  'auth.onboard.firmType.notary': 'كاتب عدل',
+  'auth.onboard.regNum': 'رقم التسجيل',
+  'auth.onboard.city': 'المدينة',
+  'auth.onboard.logo': 'الشعار (اختياري)',
+  'auth.onboard.logoUpload': 'رفع شعار',
+  'auth.onboard.logoReplace': 'استبدال الشعار',
+  'auth.onboard.logoHint': 'PNG, JPG حتى 2MB',
+  'auth.onboard.defaultFee': 'الرسوم الشهرية الافتراضية (بدون ضريبة)',
+  'auth.onboard.vatPreview': 'شامل ضريبة 18%: {amount}',
+  'auth.onboard.continueToCredentials': 'متابعة لإعداد الدخول',
+  'auth.onboard.credentials': 'بيانات الدخول',
+  'auth.onboard.confirmPassword': 'تأكيد كلمة المرور',
+  'auth.onboard.passwordHint': '6 أحرف على الأقل',
+  'auth.onboard.finishSetup': 'إنهاء الإعداد',
+  'auth.onboard.saving': 'جارٍ الحفظ...',
+  'auth.onboard.success': 'تم إعداد المكتب بنجاح!',
+  'auth.onboard.firmConfigured': 'تم تكوين المكتب',
+  'auth.onboard.subscriptionActive': 'الاشتراك فعّال',
+  'auth.onboard.securityEnabled': 'أمان RLS مفعّل',
+  'auth.onboard.auditReady': 'سجل التدقيق جاهز',
+  'auth.onboard.goToLogin': 'الانتقال لتسجيل الدخول',
+
+  // Auth — Login
+  'auth.login.title': 'تسجيل الدخول',
+  'auth.login.submit': 'دخول',
+  'auth.login.authenticating': 'جارٍ التحقق...',
+  'auth.login.wrongPassword': 'كلمة مرور خاطئة',
+  'auth.login.attemptCount': 'المحاولة {n} من 5',
+  'auth.login.locked': 'الحساب مقفل. حاول مرة أخرى بعد 15 دقيقة.',
+  'auth.login.noAccount': 'ليس لديك حساب؟',
+  'auth.login.registerHere': 'سجّل هنا',
+  'auth.login.subscription': 'اشتراك {plan}',
+  'auth.login.daysRemaining': '{n} أيام متبقية',
+  'auth.login.until': 'حتى {date}',
+
+  // Auth — ExpiredScreen
+  'auth.expired.title': 'انتهى الاشتراك',
+  'auth.expired.message': 'انتهى اشتراكك. اختر اشتراكًا جديدًا للمتابعة.',
+  'auth.expired.selectPlan': 'اختر اشتراك',
+  'auth.expired.perMonth': 'شهريًا',
+
+  // Auth — Validation errors
+  'auth.errors.required': 'حقل مطلوب',
+  'auth.errors.invalidEmail': 'بريد إلكتروني غير صالح',
+  'auth.errors.invalidPhone': 'رقم هاتف غير صالح',
+  'auth.errors.passwordTooShort': '6 أحرف على الأقل',
+  'auth.errors.passwordMismatch': 'كلمات المرور غير متطابقة',
+  'auth.errors.signUpFailed': 'فشل التسجيل',
+  'auth.errors.signInFailed': 'فشل تسجيل الدخول',
+
   // Dashboard
   'dashboard.title': 'لوحة التحكم',
   'dashboard.welcome': 'مرحباً',
@@ -192,6 +257,7 @@ export const ar: Record<string, string> = {
   'systemRoles.managerDesc': 'إدارة الفريق والعملاء',
 
   // Subscription plans
+  'subscriptionPlans.trial': 'تجربة 30 يوم',
   'subscriptionPlans.monthly': 'شهري',
   'subscriptionPlans.yearly': 'سنوي',
   'subscriptionPlans.twoYear': 'سنتين',

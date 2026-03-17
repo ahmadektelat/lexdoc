@@ -49,6 +49,71 @@ export const en: Record<string, string> = {
   'auth.forgotPassword': 'Forgot Password',
   'auth.register': 'Register',
 
+  // Auth — WelcomeScreen
+  'auth.appName': 'LexDoc — Office Management',
+  'auth.appDescription': 'Advanced Office Management System',
+  'auth.loginButton': 'Login',
+  'auth.registerButton': 'Register',
+
+  // Auth — Onboarding
+  'auth.onboard.title': 'Set Up New Firm',
+  'auth.onboard.step': 'Step {n} of {total}',
+  'auth.onboard.firmDetails': 'Firm Details',
+  'auth.onboard.firmName': 'Firm Name',
+  'auth.onboard.firmType': 'Firm Type',
+  'auth.onboard.firmType.lawyer': 'Law Firm',
+  'auth.onboard.firmType.cpa': 'CPA Firm',
+  'auth.onboard.firmType.combined': 'Law + CPA',
+  'auth.onboard.firmType.notary': 'Notary',
+  'auth.onboard.regNum': 'Registration Number',
+  'auth.onboard.city': 'City',
+  'auth.onboard.logo': 'Logo (optional)',
+  'auth.onboard.logoUpload': 'Upload Logo',
+  'auth.onboard.logoReplace': 'Replace Logo',
+  'auth.onboard.logoHint': 'PNG, JPG up to 2MB',
+  'auth.onboard.defaultFee': 'Default Monthly Fee (excl. VAT)',
+  'auth.onboard.vatPreview': 'Incl. 18% VAT: {amount}',
+  'auth.onboard.continueToCredentials': 'Continue to Login Setup',
+  'auth.onboard.credentials': 'Login Credentials',
+  'auth.onboard.confirmPassword': 'Confirm Password',
+  'auth.onboard.passwordHint': 'Minimum 6 characters',
+  'auth.onboard.finishSetup': 'Finish Setup',
+  'auth.onboard.saving': 'Saving...',
+  'auth.onboard.success': 'Firm setup complete!',
+  'auth.onboard.firmConfigured': 'Firm configured',
+  'auth.onboard.subscriptionActive': 'Subscription active',
+  'auth.onboard.securityEnabled': 'RLS security enabled',
+  'auth.onboard.auditReady': 'Audit log ready',
+  'auth.onboard.goToLogin': 'Go to Login',
+
+  // Auth — Login
+  'auth.login.title': 'Login',
+  'auth.login.submit': 'Sign In',
+  'auth.login.authenticating': 'Authenticating...',
+  'auth.login.wrongPassword': 'Wrong password',
+  'auth.login.attemptCount': 'Attempt {n} of 5',
+  'auth.login.locked': 'Account locked. Try again in 15 minutes.',
+  'auth.login.noAccount': "Don't have an account?",
+  'auth.login.registerHere': 'Register here',
+  'auth.login.subscription': '{plan} subscription',
+  'auth.login.daysRemaining': '{n} days remaining',
+  'auth.login.until': 'Until {date}',
+
+  // Auth — ExpiredScreen
+  'auth.expired.title': 'Subscription Expired',
+  'auth.expired.message': 'Your subscription has expired. Choose a new plan to continue.',
+  'auth.expired.selectPlan': 'Select Plan',
+  'auth.expired.perMonth': 'per month',
+
+  // Auth — Validation errors
+  'auth.errors.required': 'Required field',
+  'auth.errors.invalidEmail': 'Invalid email',
+  'auth.errors.invalidPhone': 'Invalid phone number',
+  'auth.errors.passwordTooShort': 'Minimum 6 characters',
+  'auth.errors.passwordMismatch': "Passwords don't match",
+  'auth.errors.signUpFailed': 'Registration failed',
+  'auth.errors.signInFailed': 'Login failed',
+
   // Dashboard
   'dashboard.title': 'Dashboard',
   'dashboard.welcome': 'Welcome',
@@ -192,6 +257,7 @@ export const en: Record<string, string> = {
   'systemRoles.managerDesc': 'Manage staff and clients',
 
   // Subscription plans
+  'subscriptionPlans.trial': '30-day Trial',
   'subscriptionPlans.monthly': 'Monthly',
   'subscriptionPlans.yearly': 'Yearly',
   'subscriptionPlans.twoYear': 'Two-Year',
