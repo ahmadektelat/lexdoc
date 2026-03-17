@@ -3,7 +3,6 @@
 
 import type { ReactNode } from 'react';
 import { Label } from '@/components/ui/label';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface FormFieldProps {
   label: string;
@@ -15,7 +14,6 @@ export interface FormFieldProps {
 }
 
 export function FormField({ label, error, required, hint, children, htmlFor }: FormFieldProps) {
-  const { t } = useLanguage();
 
   return (
     <div className="space-y-1.5">

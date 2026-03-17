@@ -12,6 +12,7 @@ export function validateTaxId(id: string): boolean {
   const cleaned = id.replace(/\D/g, '');
   if (cleaned.length > 9 || cleaned.length === 0) return false;
   const padded = cleaned.padStart(9, '0');
+  if (/^0+$/.test(padded)) return false;
 
   let sum = 0;
   for (let i = 0; i < 9; i++) {
