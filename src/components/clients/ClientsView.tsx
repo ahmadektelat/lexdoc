@@ -1,12 +1,13 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-18 21:00 IST (Jerusalem)
+//          - Use shared useIsMobile hook
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useClients } from '@/hooks/useClients';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { CLIENT_TYPES } from '@/lib/constants';
 import { formatMoney } from '@/lib/money';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -23,20 +24,6 @@ import { ClientForm } from './ClientForm';
 import { Plus, Users } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Client, ClientType } from '@/types';
-
-// Detect mobile via media query — proper useEffect with cleanup
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false
-  );
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 767px)');
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-  return isMobile;
-}
 
 export function ClientsView() {
   const { t } = useLanguage();

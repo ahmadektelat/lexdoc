@@ -84,13 +84,32 @@ CREATE POLICY "client_staff_delete" ON client_staff FOR DELETE
 GRANT SELECT, INSERT, UPDATE, DELETE ON client_staff TO authenticated;
 
 -- ============================================================
+-- RPC: Atomic setPrimary
+-- ============================================================
+CREATE OR REPLACE FUNCTION set_primary_staff(p_client_id UUID, p_staff_id UUID)
+RETURNS void LANGUAGE plpgsql SECURITY INVOKER AS $$
+BEGIN
+  UPDATE client_staff SET is_primary = false
+    WHERE client_id = p_client_id AND is_primary = true;
+  UPDATE client_staff SET is_primary = true
+    WHERE client_id = p_client_id AND staff_id = p_staff_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Assignment not found for client_id=% staff_id=%', p_client_id, p_staff_id;
+  END IF;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION set_primary_staff(UUID, UUID) TO authenticated;
+
+-- ============================================================
 -- 3. MIGRATE assigned_staff_id DATA TO JUNCTION TABLE
 -- ============================================================
 INSERT INTO client_staff (client_id, staff_id, is_primary)
-SELECT id, assigned_staff_id, true
-FROM clients
-WHERE assigned_staff_id IS NOT NULL
-  AND deleted_at IS NULL;
+SELECT c.id, c.assigned_staff_id, true
+FROM clients c
+WHERE c.assigned_staff_id IS NOT NULL
+  AND c.deleted_at IS NULL
+  AND EXISTS (SELECT 1 FROM staff s WHERE s.id = c.assigned_staff_id);
 
 -- Drop the legacy column
 ALTER TABLE clients DROP COLUMN assigned_staff_id;

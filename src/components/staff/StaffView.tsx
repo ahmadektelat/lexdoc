@@ -1,12 +1,13 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 14:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-18 21:00 IST (Jerusalem)
+//          - Use shared useIsMobile hook
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useStaff, useDeleteStaff } from '@/hooks/useStaff';
 import { useStaffClientAssignments } from '@/hooks/useClientStaff';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { STAFF_ROLES } from '@/lib/constants';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { SearchInput } from '@/components/shared/SearchInput';
@@ -23,20 +24,6 @@ import { StaffTasksPanel } from './StaffTasksPanel';
 import { Plus, UserCog, Pencil, Trash2 } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Staff } from '@/types';
-
-// Detect mobile via media query
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false
-  );
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 767px)');
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-  return isMobile;
-}
 
 // Active client count cell — fetches count per staff member
 function ActiveClientsCell({ staffId }: { staffId: string }) {

@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-18 14:00 IST (Jerusalem)
-//          - Added ClientStaffAssignment interface for junction table
+// UPDATED: 2026-03-18 21:00 IST (Jerusalem)
+//          - ClientStaffAssignment interface uses camelCase properties
 
 export type StaffRole = 'partner' | 'attorney' | 'junior_attorney' | 'accountant' | 'consultant' | 'secretary' | 'manager' | 'student';
 
@@ -22,8 +22,8 @@ export type UpdateStaffInput = Partial<Omit<Staff, 'id' | 'firm_id' | 'created_a
 
 export interface ClientStaffAssignment {
   id: string;
-  client_id: string;
-  staff_id: string;
-  is_primary: boolean;
-  created_at: string;
+  clientId: string;
+  staffId: string;
+  isPrimary: boolean;
+  createdAt: string;
 }
