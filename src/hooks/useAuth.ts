@@ -1,9 +1,12 @@
 // CREATED: 2026-03-17 16:00 IST (Jerusalem)
+// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
+//          - Added permission loading after firm data fetch
 // useAuth - React hook managing auth lifecycle: initialization, session persistence
 
 import { useEffect } from 'react';
 import { authService } from '@/services/authService';
 import { firmService } from '@/services/firmService';
+import { roleService } from '@/services/roleService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export function useAuth() {
@@ -24,6 +27,21 @@ export function useAuth() {
                 name: session.user.email!,
               });
               useAuthStore.getState().setFirmData(result.firm, result.role);
+
+              // Load granular permissions for this user
+              try {
+                const permissions = await roleService.getPermissionsForUser(
+                  result.firm.id
+                );
+                const permissionsRecord: Record<string, boolean> = {};
+                for (const p of permissions) {
+                  permissionsRecord[p] = true;
+                }
+                useAuthStore.getState().setPermissions(permissionsRecord);
+              } catch {
+                // Permission loading failure = default deny (empty permissions).
+                // superAdmin bypass in can() ensures firm owners always have access.
+              }
             } else {
               // Orphaned user: auth session exists but no firm record.
               useAuthStore.getState().setUser({
