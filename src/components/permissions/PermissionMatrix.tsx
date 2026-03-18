@@ -1,7 +1,8 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 11:00 IST (Jerusalem)
+//          - Added optimistic local state to prevent race conditions on rapid toggles
 
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useUpdateRole } from '@/hooks/useRoles';
@@ -18,14 +19,25 @@ export function PermissionMatrix({ role, disabled }: PermissionMatrixProps) {
   const firmId = useAuthStore((s) => s.firmId);
   const updateRole = useUpdateRole();
 
+  // Optimistic local state — prevents race conditions when toggling fast
+  const [localPermissions, setLocalPermissions] = useState<string[]>(role.permissions ?? []);
+
+  // Reset local state when the role prop changes (different role selected or server data refreshes)
+  useEffect(() => {
+    setLocalPermissions(role.permissions ?? []);
+  }, [role.id, role.permissions]);
+
   const handleToggle = (permissionId: string) => {
     if (disabled || !firmId) return;
 
-    const current = role.permissions ?? [];
-    const newPermissions = current.includes(permissionId)
-      ? current.filter((p) => p !== permissionId)
-      : [...current, permissionId];
+    const newPermissions = localPermissions.includes(permissionId)
+      ? localPermissions.filter((p) => p !== permissionId)
+      : [...localPermissions, permissionId];
 
+    // Update local state immediately (optimistic)
+    setLocalPermissions(newPermissions);
+
+    // Fire mutation with the latest local state
     updateRole.mutate({
       firmId,
       id: role.id,
@@ -42,7 +54,7 @@ export function PermissionMatrix({ role, disabled }: PermissionMatrixProps) {
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {group.permissions.map((permission) => {
-              const isChecked = role.permissions?.includes(permission.id) ?? false;
+              const isChecked = localPermissions.includes(permission.id);
               return (
                 <label
                   key={permission.id}

@@ -378,6 +378,7 @@ export const en: Record<string, string> = {
   'permissions.deleteSuccess': 'Role deleted successfully',
   'permissions.permissionUpdated': 'Permission updated',
   'permissions.roleAssigned': 'Role assigned successfully',
+  'permissions.roleRemoved': 'Role removed successfully',
   'permissions.noRoles': 'No roles',
   'permissions.noRolesDesc': 'Add roles to manage permissions',
   'permissions.staffInRole': 'Staff in role',

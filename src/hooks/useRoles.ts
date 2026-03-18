@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 11:00 IST (Jerusalem)
+//          - Fixed useRemoveRole toast to use roleRemoved key instead of roleAssigned
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { roleService } from '@/services/roleService';
@@ -142,7 +142,7 @@ export function useRemoveRole() {
     mutationFn: (staffId: string) => roleService.removeRole(staffId),
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: roleKeys.staffRoles() });
-      toast.success(t('permissions.roleAssigned'));
+      toast.success(t('permissions.roleRemoved'));
 
       // Re-fetch own permissions
       try {

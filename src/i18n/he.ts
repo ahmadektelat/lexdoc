@@ -378,6 +378,7 @@ export const he: Record<string, string> = {
   'permissions.deleteSuccess': 'תפקיד הוסר בהצלחה',
   'permissions.permissionUpdated': 'הרשאה עודכנה',
   'permissions.roleAssigned': 'תפקיד שויך בהצלחה',
+  'permissions.roleRemoved': 'התפקיד הוסר בהצלחה',
   'permissions.noRoles': 'אין תפקידים',
   'permissions.noRolesDesc': 'הוסף תפקידים לניהול הרשאות',
   'permissions.staffInRole': 'עובדים בתפקיד',

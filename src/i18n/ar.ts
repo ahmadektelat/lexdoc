@@ -378,6 +378,7 @@ export const ar: Record<string, string> = {
   'permissions.deleteSuccess': 'تم حذف الدور بنجاح',
   'permissions.permissionUpdated': 'تم تحديث الصلاحية',
   'permissions.roleAssigned': 'تم تعيين الدور بنجاح',
+  'permissions.roleRemoved': 'تم إزالة الدور بنجاح',
   'permissions.noRoles': 'لا توجد أدوار',
   'permissions.noRolesDesc': 'أضف أدوار لإدارة الصلاحيات',
   'permissions.staffInRole': 'موظفون في الدور',

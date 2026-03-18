@@ -1,8 +1,8 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 11:00 IST (Jerusalem)
+//          - Fixed auto-select to use useEffect instead of setState-during-render
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useRoles, useDeleteRole } from '@/hooks/useRoles';
@@ -30,16 +30,14 @@ export function PermissionsView() {
   const [editingRole, setEditingRole] = useState<Role | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
 
-  // Auto-select first role when data loads and nothing is selected
   const roleList = roles ?? [];
-  if (roleList.length > 0 && !selectedRole) {
-    // Find the role object in case it was stale
-    const firstRole = roleList[0];
-    if (firstRole) {
-      // Defer state update to avoid setting state during render
-      setTimeout(() => setSelectedRole(firstRole), 0);
+
+  // Auto-select first role when data loads and nothing is selected
+  useEffect(() => {
+    if (roleList.length > 0 && !selectedRole) {
+      setSelectedRole(roleList[0]);
     }
-  }
+  }, [roleList, selectedRole]);
 
   // Keep selected role in sync with data updates
   const currentSelected = selectedRole
