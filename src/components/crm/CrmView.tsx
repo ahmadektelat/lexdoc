@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Replace empty string Select value with __all__ sentinel
 
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -26,7 +26,7 @@ export function CrmView() {
   const can = useAuthStore((s) => s.can);
   const { data: clients, isLoading: clientsLoading } = useClients(firmId);
 
-  const [selectedClientId, setSelectedClientId] = useState<string>('');
+  const [selectedClientId, setSelectedClientId] = useState<string>('__all__');
 
   if (!can('crm.view')) {
     return (
@@ -40,7 +40,7 @@ export function CrmView() {
     return <LoadingSpinner size="lg" className="py-20" />;
   }
 
-  const clientFilter = selectedClientId || undefined;
+  const clientFilter = selectedClientId === '__all__' ? undefined : selectedClientId;
 
   return (
     <div className="p-6 animate-fade-in">
@@ -51,7 +51,7 @@ export function CrmView() {
             <SelectValue placeholder={t('crm.allClients')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">{t('crm.allClients')}</SelectItem>
+            <SelectItem value="__all__">{t('crm.allClients')}</SelectItem>
             {clients?.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.name}

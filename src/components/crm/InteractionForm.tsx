@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Replace empty string Select values with __none__ sentinels
 
 import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -92,7 +92,7 @@ export function InteractionForm({ open, onOpenChange, interaction, defaultClient
               channel: interaction.channel,
               subject: interaction.subject,
               notes: interaction.notes ?? '',
-              authorityType: (interaction.authorityType as AuthorityType) ?? '',
+              authorityType: interaction.authorityType ?? '',
               staffId: interaction.staffId ?? '',
               outcome: interaction.outcome ?? '',
             }
@@ -172,12 +172,12 @@ export function InteractionForm({ open, onOpenChange, interaction, defaultClient
         <div className="space-y-4 py-4">
           {/* Client */}
           <FormField label={t('interactions.client')}>
-            <Select value={form.client_id} onValueChange={(v) => setField('client_id', v)}>
+            <Select value={form.client_id || '__none__'} onValueChange={(v) => setField('client_id', v === '__none__' ? '' : v)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('interactions.generalInteraction')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t('interactions.generalInteraction')}</SelectItem>
+                <SelectItem value="__none__">{t('interactions.generalInteraction')}</SelectItem>
                 {clients?.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -190,12 +190,12 @@ export function InteractionForm({ open, onOpenChange, interaction, defaultClient
           {/* Contact (only when client is selected) */}
           {form.client_id && contactOptions.length > 0 && (
             <FormField label={t('interactions.contact')}>
-              <Select value={form.contact_id} onValueChange={(v) => setField('contact_id', v)}>
+              <Select value={form.contact_id || '__none__'} onValueChange={(v) => setField('contact_id', v === '__none__' ? '' : v)}>
                 <SelectTrigger>
                   <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('common.all')}</SelectItem>
+                  <SelectItem value="__none__">{t('common.all')}</SelectItem>
                   {contactOptions.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -234,12 +234,12 @@ export function InteractionForm({ open, onOpenChange, interaction, defaultClient
 
           {/* Authority */}
           <FormField label={t('interactions.authority')}>
-            <Select value={form.authorityType} onValueChange={(v) => setField('authorityType', v)}>
+            <Select value={form.authorityType || '__none__'} onValueChange={(v) => setField('authorityType', v === '__none__' ? '' : v)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('authorityTypes.client')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t('authorityTypes.client')}</SelectItem>
+                <SelectItem value="__none__">{t('authorityTypes.client')}</SelectItem>
                 {Object.entries(AUTHORITY_TYPES).map(([value, labelKey]) => (
                   <SelectItem key={value} value={value}>
                     {t(labelKey)}

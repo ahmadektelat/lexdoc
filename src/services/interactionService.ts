@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Fix authorityType cast to use AuthorityType instead of string
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Interaction, CreateInteractionInput } from '@/types';
@@ -15,7 +15,7 @@ function rowToInteraction(row: Record<string, unknown>): Interaction {
     channel: row.channel as Interaction['channel'],
     subject: row.subject as string,
     notes: (row.notes as string) ?? undefined,
-    authorityType: (row.authority_type as string) ?? undefined,
+    authorityType: (row.authority_type as Interaction['authorityType']) ?? undefined,
     staffId: (row.staff_id as string) ?? undefined,
     outcome: (row.outcome as string) ?? undefined,
     deleted_at: (row.deleted_at as string) ?? undefined,

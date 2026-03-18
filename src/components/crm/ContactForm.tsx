@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Replace empty string Select value with __none__ sentinel
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -148,12 +148,12 @@ export function ContactForm({ open, onOpenChange, contact, defaultClientId }: Co
         <div className="space-y-4 py-4">
           {/* Client */}
           <FormField label={t('contacts.client')}>
-            <Select value={form.client_id} onValueChange={(v) => setField('client_id', v)}>
+            <Select value={form.client_id || '__none__'} onValueChange={(v) => setField('client_id', v === '__none__' ? '' : v)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('crm.allClients')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t('crm.allClients')}</SelectItem>
+                <SelectItem value="__none__">{t('crm.allClients')}</SelectItem>
                 {clients?.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}

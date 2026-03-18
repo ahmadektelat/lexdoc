@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Replace empty string Select value with __none__ sentinel, remove server-controlled fields from create call
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -134,14 +134,11 @@ export function TaskForm({ open, onOpenChange, task, defaultClientId }: TaskForm
         {
           firmId,
           input: {
-            seq: 0,
             title: form.title.trim(),
             desc: form.description.trim() || undefined,
             dueDate: form.dueDate || undefined,
             priority: form.priority,
-            status: 'open',
             category: form.category,
-            isAuto: false,
             assignedTo: form.assignedTo || undefined,
             client_id: form.client_id || undefined,
           },
@@ -182,12 +179,12 @@ export function TaskForm({ open, onOpenChange, task, defaultClientId }: TaskForm
 
           {/* Client */}
           <FormField label={t('tasks.client')}>
-            <Select value={form.client_id} onValueChange={(v) => setField('client_id', v)}>
+            <Select value={form.client_id || '__none__'} onValueChange={(v) => setField('client_id', v === '__none__' ? '' : v)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('tasks.noClient')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t('tasks.noClient')}</SelectItem>
+                <SelectItem value="__none__">{t('tasks.noClient')}</SelectItem>
                 {clients?.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}

@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
-//          - Excluded firm_id from CreateTaskInput (security audit)
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Refined CreateTaskInput: exclude server-controlled fields, make auto-task fields optional
 
 import type { FilingType } from './filing';
 
@@ -33,4 +33,9 @@ export interface Task {
   updated_at: string;
 }
 
-export type CreateTaskInput = Omit<Task, 'id' | 'firm_id' | 'deleted_at' | 'created_at' | 'updated_at'>;
+export type CreateTaskInput = Omit<Task, 'id' | 'firm_id' | 'seq' | 'status' | 'doneAt' | 'isAuto' | 'filingType' | 'filingDue' | 'period' | 'deleted_at' | 'created_at' | 'updated_at'> & {
+  isAuto?: boolean;
+  filingType?: FilingType;
+  filingDue?: string;
+  period?: string;
+};

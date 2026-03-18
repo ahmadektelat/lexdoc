@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Added 'court' to ContactType, added AuthorityType, made contact_id optional
+// UPDATED: 2026-03-19 13:00 IST (Jerusalem)
+//          - Changed Interaction.authorityType from string to AuthorityType
 
 export type ContactType = 'client' | 'taxAuth' | 'nii' | 'court' | 'other';
 
@@ -32,7 +32,7 @@ export interface Interaction {
   channel: InteractionChannel;
   subject: string;
   notes?: string;
-  authorityType?: string;
+  authorityType?: AuthorityType;
   staffId?: string;
   outcome?: string;
   deleted_at?: string;
