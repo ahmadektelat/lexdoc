@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
-// UPDATED: 2026-03-17 16:00 IST (Jerusalem)
-//          - Added auth routes, ProtectedRoute, AuthInitializer
+// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
+//          - Replaced clients placeholder route with ClientsView and ClientDetailView
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +15,8 @@ import { Login } from '@/components/auth/Login';
 import { Onboard } from '@/components/auth/Onboard';
 import { ExpiredScreen } from '@/components/auth/ExpiredScreen';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ClientsView } from '@/components/clients/ClientsView';
+import { ClientDetailView } from '@/components/clients/ClientDetailView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,7 +65,8 @@ export default function App() {
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPlaceholder />} />
-              <Route path="clients" element={<SectionPlaceholder section="clients" />} />
+              <Route path="clients" element={<ClientsView />} />
+              <Route path="clients/:id" element={<ClientDetailView />} />
               <Route path="filings" element={<SectionPlaceholder section="filings" />} />
               <Route path="billing" element={<SectionPlaceholder section="billing" />} />
               <Route path="staff" element={<SectionPlaceholder section="staff" />} />
