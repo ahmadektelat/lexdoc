@@ -1,6 +1,7 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Initial implementation for clients module
+// UPDATED: 2026-03-18 11:00 IST (Jerusalem)
+//          - Added firm_id defense-in-depth filtering to getById, update, archive, restore, delete
+//          - Replaced moddatetime with update_updated_at() in migration
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Client, CreateClientInput, UpdateClientInput } from '@/types';
@@ -87,12 +88,13 @@ export const clientService = {
     return (data as Record<string, unknown>[]).map(rowToClient);
   },
 
-  /** Fetch a single client by ID. */
-  async getById(id: string): Promise<Client> {
+  /** Fetch a single client by ID. firm_id filter provides defense-in-depth beyond RLS. */
+  async getById(firmId: string, id: string): Promise<Client> {
     const { data, error } = await supabase
       .from('clients')
       .select('*')
       .eq('id', id)
+      .eq('firm_id', firmId)
       .is('deleted_at', null)
       .maybeSingle();
 
@@ -116,14 +118,15 @@ export const clientService = {
     return rowToClient(data as Record<string, unknown>);
   },
 
-  /** Update an existing client. */
-  async update(id: string, input: UpdateClientInput): Promise<Client> {
+  /** Update an existing client. firm_id filter provides defense-in-depth beyond RLS. */
+  async update(firmId: string, id: string, input: UpdateClientInput): Promise<Client> {
     const row = updateInputToRow(input);
 
     const { data, error } = await supabase
       .from('clients')
       .update(row)
       .eq('id', id)
+      .eq('firm_id', firmId)
       .select('*')
       .single();
 
@@ -131,32 +134,35 @@ export const clientService = {
     return rowToClient(data as Record<string, unknown>);
   },
 
-  /** Archive a client (set status to 'archived'). */
-  async archive(id: string): Promise<void> {
+  /** Archive a client (set status to 'archived'). firm_id filter provides defense-in-depth beyond RLS. */
+  async archive(firmId: string, id: string): Promise<void> {
     const { error } = await supabase
       .from('clients')
       .update({ status: 'archived' })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('firm_id', firmId);
 
     if (error) throw new Error(error.message);
   },
 
-  /** Restore an archived client (set status to 'active'). */
-  async restore(id: string): Promise<void> {
+  /** Restore an archived client (set status to 'active'). firm_id filter provides defense-in-depth beyond RLS. */
+  async restore(firmId: string, id: string): Promise<void> {
     const { error } = await supabase
       .from('clients')
       .update({ status: 'active' })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('firm_id', firmId);
 
     if (error) throw new Error(error.message);
   },
 
-  /** Soft delete a client (set deleted_at). */
-  async delete(id: string): Promise<void> {
+  /** Soft delete a client (set deleted_at). firm_id filter provides defense-in-depth beyond RLS. */
+  async delete(firmId: string, id: string): Promise<void> {
     const { error } = await supabase
       .from('clients')
       .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('firm_id', firmId);
 
     if (error) throw new Error(error.message);
   },

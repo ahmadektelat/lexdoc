@@ -91,11 +91,11 @@ CREATE TRIGGER clients_case_num_trigger
   FOR EACH ROW
   EXECUTE FUNCTION clients_auto_case_num();
 
--- Trigger: auto-update updated_at
+-- Trigger: auto-update updated_at (uses existing update_updated_at() from helper functions migration)
 CREATE TRIGGER clients_updated_at
   BEFORE UPDATE ON clients
   FOR EACH ROW
-  EXECUTE FUNCTION moddatetime(updated_at);
+  EXECUTE FUNCTION update_updated_at();
 
 -- GRANTs — Supabase does NOT auto-grant to authenticated when RLS is enabled
 GRANT SELECT, INSERT, UPDATE, DELETE ON clients TO authenticated;

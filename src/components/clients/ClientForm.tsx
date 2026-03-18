@@ -171,7 +171,7 @@ export function ClientForm({ open, onOpenChange, client }: ClientFormProps) {
         notes: form.notes || undefined,
       };
       updateClient.mutate(
-        { id: client.id, input },
+        { firmId, id: client.id, input },
         { onSuccess: () => onOpenChange(false) }
       );
     } else {

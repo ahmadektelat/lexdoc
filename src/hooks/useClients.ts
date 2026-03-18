@@ -1,11 +1,13 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Initial implementation for clients module
+// UPDATED: 2026-03-18 11:00 IST (Jerusalem)
+//          - Added firmId parameter to all mutation hooks for defense-in-depth
+//          - useClient now requires firmId for scoped getById
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientService } from '@/services/clientService';
 import type { CreateClientInput, UpdateClientInput } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { toast } from 'sonner';
 
 export const clientKeys = {
@@ -25,10 +27,12 @@ export function useClients(firmId: string | null) {
 }
 
 export function useClient(id: string | undefined) {
+  const firmId = useAuthStore((s) => s.firmId);
+
   return useQuery({
     queryKey: clientKeys.detail(id ?? ''),
-    queryFn: () => clientService.getById(id!),
-    enabled: !!id,
+    queryFn: () => clientService.getById(firmId!, id!),
+    enabled: !!id && !!firmId,
   });
 }
 
@@ -54,8 +58,8 @@ export function useUpdateClient() {
   const { t } = useLanguage();
 
   return useMutation({
-    mutationFn: ({ id, input }: { id: string; input: UpdateClientInput }) =>
-      clientService.update(id, input),
+    mutationFn: ({ firmId, id, input }: { firmId: string; id: string; input: UpdateClientInput }) =>
+      clientService.update(firmId, id, input),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
       queryClient.invalidateQueries({ queryKey: clientKeys.detail(variables.id) });
@@ -69,10 +73,11 @@ export function useUpdateClient() {
 
 export function useArchiveClient() {
   const queryClient = useQueryClient();
+  const firmId = useAuthStore((s) => s.firmId);
   const { t } = useLanguage();
 
   return useMutation({
-    mutationFn: (id: string) => clientService.archive(id),
+    mutationFn: (id: string) => clientService.archive(firmId!, id),
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
       queryClient.invalidateQueries({ queryKey: clientKeys.detail(id) });
@@ -86,10 +91,11 @@ export function useArchiveClient() {
 
 export function useRestoreClient() {
   const queryClient = useQueryClient();
+  const firmId = useAuthStore((s) => s.firmId);
   const { t } = useLanguage();
 
   return useMutation({
-    mutationFn: (id: string) => clientService.restore(id),
+    mutationFn: (id: string) => clientService.restore(firmId!, id),
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
       queryClient.invalidateQueries({ queryKey: clientKeys.detail(id) });
@@ -103,10 +109,11 @@ export function useRestoreClient() {
 
 export function useDeleteClient() {
   const queryClient = useQueryClient();
+  const firmId = useAuthStore((s) => s.firmId);
   const { t } = useLanguage();
 
   return useMutation({
-    mutationFn: (id: string) => clientService.delete(id),
+    mutationFn: (id: string) => clientService.delete(firmId!, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
       toast.success(t('clients.deleteSuccess'));
