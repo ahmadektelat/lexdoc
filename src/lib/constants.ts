@@ -1,10 +1,10 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
-//          - Constants use i18n keys where applicable (amendment 3)
-//          - Filing types use Hebrew transliteration codes (amendment 1)
-//          - SUBSCRIPTION_PLANS labels use i18n keys (amendment 6 note 5)
+// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
+//          - Updated SYSTEM_ROLES with permissions, locked, hex colors
+//          - Renamed desc to description for DB consistency
 
 import type { FilingType, ClientType, StaffRole, TaskPriority, TaskCategory, InteractionChannel, DocumentSensitivity } from '@/types';
+import { PERMISSION_GROUPS } from '@/types/role';
 
 // Financial constants
 export const VAT_RATE = 0.18;
@@ -89,10 +89,47 @@ export const SUBSCRIPTION_PLANS = [
 // Default document folders (Hebrew — domain-specific, not translated)
 export const DEFAULT_FOLDERS = ['חוזים', 'פיננסים', 'התכתבויות'];
 
+// All permission IDs (derived from PERMISSION_GROUPS)
+const ALL_PERMISSIONS = PERMISSION_GROUPS.flatMap(g => g.permissions.map(p => p.id));
+
 // System roles for RBAC
 export const SYSTEM_ROLES = [
-  { id: 'admin', label: 'systemRoles.admin', desc: 'systemRoles.adminDesc', color: 'red' },
-  { id: 'editor', label: 'systemRoles.editor', desc: 'systemRoles.editorDesc', color: 'blue' },
-  { id: 'viewer', label: 'systemRoles.viewer', desc: 'systemRoles.viewerDesc', color: 'gray' },
-  { id: 'manager', label: 'systemRoles.manager', desc: 'systemRoles.managerDesc', color: 'green' },
+  {
+    id: 'admin',
+    label: 'systemRoles.admin',
+    description: 'systemRoles.adminDesc',
+    color: '#ef4444',
+    locked: true,
+    permissions: ALL_PERMISSIONS,
+  },
+  {
+    id: 'editor',
+    label: 'systemRoles.editor',
+    description: 'systemRoles.editorDesc',
+    color: '#3b82f6',
+    locked: true,
+    permissions: ALL_PERMISSIONS.filter(p => !p.endsWith('.delete') && !p.startsWith('settings.')),
+  },
+  {
+    id: 'viewer',
+    label: 'systemRoles.viewer',
+    description: 'systemRoles.viewerDesc',
+    color: '#64748b',
+    locked: true,
+    permissions: ALL_PERMISSIONS.filter(p => p.endsWith('.view')),
+  },
+  {
+    id: 'manager',
+    label: 'systemRoles.manager',
+    description: 'systemRoles.managerDesc',
+    color: '#10b981',
+    locked: true,
+    permissions: [
+      'clients.view', 'clients.create', 'clients.edit', 'clients.delete',
+      'staff.view', 'staff.manage',
+      'crm.view', 'crm.manage',
+      'reports.view',
+      'documents.view', 'documents.upload',
+    ],
+  },
 ];

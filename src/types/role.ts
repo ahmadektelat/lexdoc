@@ -1,18 +1,31 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
-//          - Permission labels use i18n keys (amendment 3)
+// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
+//          - Renamed desc to description for DB consistency
+//          - Added CreateRoleInput, UpdateRoleInput, StaffRoleRow types
 
 export interface Role {
   id: string;
   firm_id: string;
   name: string;
-  desc?: string;
+  description?: string;
   color: string;
   locked: boolean;
   permissions: string[];
   deleted_at?: string;
   created_at: string;
   updated_at: string;
+}
+
+export type CreateRoleInput = Omit<Role, 'id' | 'firm_id' | 'deleted_at' | 'created_at' | 'updated_at'>;
+
+export type UpdateRoleInput = Partial<Omit<Role, 'id' | 'firm_id' | 'created_at' | 'updated_at'>>;
+
+export interface StaffRoleRow {
+  id: string;
+  staffId: string;
+  roleId: string;
+  roleName: string;
+  roleColor: string;
 }
 
 export interface Permission {

@@ -14,7 +14,7 @@
 | `task.ts` | `Task`, `TaskStatus`, `TaskPriority`, `TaskCategory`, `CreateTaskInput` | Phase 1 |
 | `crm.ts` | `Contact`, `ContactType`, `Interaction`, `InteractionChannel`, `CreateContactInput`, `CreateInteractionInput` | Phase 1 |
 | `document.ts` | `Document`, `DocumentFolder`, `DocumentSensitivity`, `CreateDocumentInput` | Phase 1 |
-| `role.ts` | `Role`, `Permission`, `StaffRoleAssignment`, `PermissionGroup` | Phase 1 |
+| `role.ts` | `Role`, `Permission`, `StaffRoleAssignment`, `PermissionGroup`, `CreateRoleInput`, `UpdateRoleInput`, `StaffRoleRow`, `PERMISSION_GROUPS` | Phase 1, Permissions |
 | `audit.ts` | `AuditEntry` | Phase 1 |
 | `message.ts` | `Message`, `MessageTemplate`, `ScheduledMessage`, `MessageChannel` | Phase 1 |
 | `firm.ts` | `Firm`, `FirmType`, `SubscriptionPlan` | Phase 1 |
@@ -52,6 +52,8 @@
 | File | Exports | Created In |
 |------|---------|------------|
 | `useAuth.ts` | `useAuth` — auth lifecycle hook (initialization, session persistence) | Auth |
+| `useRoles.ts` | `useRoles`, `useCreateRole`, `useUpdateRole`, `useDeleteRole`, `useStaffRoles`, `useAssignRole`, `useRemoveRole`, `roleKeys` | Permissions |
+| `usePermissions.ts` | `useCanAccess` — permission check wrapper hook | Permissions |
 
 ## Services (`src/services/`)
 
@@ -59,7 +61,8 @@
 |------|---------|------------|
 | `authService.ts` | `authService` — Supabase Auth operations + login lockout tracking | Auth |
 | `firmService.ts` | `firmService` — firm CRUD, registration, logo upload, plan updates | Auth |
+| `roleService.ts` | `roleService` — Supabase CRUD for roles and staff_roles | Permissions |
 
 ---
 
-*Last updated: Auth & Onboarding phase*
+*Last updated: Permissions phase*
