@@ -1,7 +1,6 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 11:00 IST (Jerusalem)
-//          - Added firm_id defense-in-depth filtering to getById, update, archive, restore, delete
-//          - Replaced moddatetime with update_updated_at() in migration
+// UPDATED: 2026-03-18 14:00 IST (Jerusalem)
+//          - Removed assignedStaffId (migrated to client_staff junction table)
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Client, CreateClientInput, UpdateClientInput } from '@/types';
@@ -24,7 +23,6 @@ function rowToClient(row: Record<string, unknown>): Client {
     tags: (row.tags as string[]) ?? [],
     monthlyFee: (row.monthly_fee as number) ?? 0,
     billingDay: (row.billing_day as number) ?? undefined,
-    assignedStaffId: (row.assigned_staff_id as string) ?? undefined,
     notes: (row.notes as string) ?? undefined,
     deleted_at: (row.deleted_at as string) ?? undefined,
     created_at: row.created_at as string,
@@ -48,7 +46,6 @@ function clientInputToRow(input: CreateClientInput): Record<string, unknown> {
     tags: input.tags ?? [],
     monthly_fee: input.monthlyFee ?? 0,
     billing_day: input.billingDay ?? null,
-    assigned_staff_id: input.assignedStaffId ?? null,
     notes: input.notes ?? null,
     case_num: '', // Safety net for NOT NULL constraint — DB trigger overwrites with generated value
   };
@@ -69,7 +66,6 @@ function updateInputToRow(input: UpdateClientInput): Record<string, unknown> {
   if (input.tags !== undefined) row.tags = input.tags;
   if (input.monthlyFee !== undefined) row.monthly_fee = input.monthlyFee;
   if (input.billingDay !== undefined) row.billing_day = input.billingDay;
-  if (input.assignedStaffId !== undefined) row.assigned_staff_id = input.assignedStaffId;
   if (input.notes !== undefined) row.notes = input.notes;
   return row;
 }

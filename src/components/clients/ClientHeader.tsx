@@ -61,9 +61,8 @@ export function ClientHeader({ client }: ClientHeaderProps) {
           )}
         </div>
 
-        {/* TODO: Display assigned staff name once staff module is built.
-            Currently only assignedStaffId (UUID) is available.
-            Add: .select('*, staff!assigned_staff_id(name)') to the service query. */}
+        {/* TODO: Display assigned staff names using client_staff junction table.
+            Use: useClientStaffAssignments(client.id) from '@/hooks/useClientStaff' */}
 
         {/* Tags */}
         {client.tags.length > 0 && (

@@ -1,7 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Updated CreateClientInput to omit caseNum and status (DB-generated / service-controlled)
-//          - Updated UpdateClientInput to omit caseNum and deleted_at
+// UPDATED: 2026-03-18 14:00 IST (Jerusalem)
+//          - Removed assignedStaffId (migrated to client_staff junction table)
 
 export type ClientType = 'self_employed' | 'company' | 'economic' | 'private';
 
@@ -21,7 +20,6 @@ export interface Client {
   tags: string[];
   monthlyFee?: number;               // agorot
   billingDay?: number;
-  assignedStaffId?: string;
   notes?: string;
   deleted_at?: string;
   created_at: string;
