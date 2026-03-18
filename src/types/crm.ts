@@ -1,8 +1,10 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
-//          - Excluded firm_id from Create*Input types (security audit)
+// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
+//          - Added 'court' to ContactType, added AuthorityType, made contact_id optional
 
-export type ContactType = 'client' | 'taxAuth' | 'nii' | 'other';
+export type ContactType = 'client' | 'taxAuth' | 'nii' | 'court' | 'other';
+
+export type AuthorityType = 'taxAuth' | 'vat' | 'nii' | 'court' | 'other';
 
 export type InteractionChannel = 'call' | 'email' | 'meeting' | 'letter' | 'portal';
 
@@ -25,7 +27,7 @@ export interface Interaction {
   id: string;
   firm_id: string;
   client_id?: string;
-  contact_id: string;
+  contact_id?: string;
   date: string;           // ISO date
   channel: InteractionChannel;
   subject: string;

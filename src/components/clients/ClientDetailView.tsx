@@ -1,6 +1,6 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
+//          - Pass clientId to ClientTabs for CRM integration
 
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -100,7 +100,7 @@ export function ClientDetailView() {
       </div>
 
       {/* Tabs */}
-      <ClientTabs />
+      <ClientTabs clientId={client.id} />
 
       {/* Edit form dialog */}
       <ClientForm open={editOpen} onOpenChange={setEditOpen} client={client} />
