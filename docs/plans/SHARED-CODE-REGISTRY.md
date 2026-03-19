@@ -25,7 +25,7 @@
 | File | Exports | Created In |
 |------|---------|------------|
 | `utils.ts` | `cn()` | Scaffold |
-| `constants.ts` | `VAT_RATE`, `AGOROT_PER_SHEKEL`, `FILING_TYPES`, `CLIENT_TYPES`, `ROLES`, `TASK_PRIORITIES`, `TASK_CATEGORIES`, `INTERACTION_CHANNELS`, `DOCUMENT_SENSITIVITIES`, `SUBSCRIPTION_PLANS` | Phase 1 |
+| `constants.ts` | `VAT_RATE`, `AGOROT_PER_SHEKEL`, `FILING_TYPES`, `CLIENT_TYPES`, `ROLES`, `TASK_PRIORITIES`, `TASK_CATEGORIES`, `INTERACTION_CHANNELS`, `DOCUMENT_SENSITIVITIES`, `SUBSCRIPTION_PLANS`, `CONTACT_TYPES`, `AUTHORITY_TYPES` | Phase 1, CRM |
 | `money.ts` | `shekelToAgorot()`, `agorotToShekel()`, `formatMoney()`, `calculateVat()`, `calculateInvoiceTotal()` | Phase 1 |
 | `dates.ts` | `formatDate()`, `formatDateTime()`, `daysLeft()`, `addMonths()`, `addDays()`, `isOverdue()` | Phase 1 |
 | `filing-utils.ts` | `calculateDueDate()`, `getMonthlyPeriods()`, `getBimonthlyPeriods()`, `generateFilingSchedule()`, `getFilingTypeLabel()`, `taskDueDateForFiling()` | Phase 1 |
@@ -54,6 +54,9 @@
 | `useAuth.ts` | `useAuth` — auth lifecycle hook (initialization, session persistence) | Auth |
 | `useRoles.ts` | `useRoles`, `useCreateRole`, `useUpdateRole`, `useDeleteRole`, `useStaffRoles`, `useAssignRole`, `useRemoveRole`, `roleKeys` | Permissions |
 | `usePermissions.ts` | `useCanAccess` — permission check wrapper hook | Permissions |
+| `useContacts.ts` | `contactKeys`, `useContacts`, `useCreateContact`, `useUpdateContact`, `useDeleteContact` | CRM |
+| `useInteractions.ts` | `interactionKeys`, `useInteractions`, `useCreateInteraction`, `useUpdateInteraction`, `useDeleteInteraction` | CRM |
+| `useTasks.ts` | `taskKeys`, `useTasks`, `useTask`, `useCreateTask`, `useUpdateTask`, `useToggleTaskStatus`, `useDeleteTask`, `useRunAutoTaskEngine`, `useCancelAutoTaskForFiling` | CRM |
 
 ## Services (`src/services/`)
 
@@ -62,7 +65,10 @@
 | `authService.ts` | `authService` — Supabase Auth operations + login lockout tracking | Auth |
 | `firmService.ts` | `firmService` — firm CRUD, registration, logo upload, plan updates | Auth |
 | `roleService.ts` | `roleService` — Supabase CRUD for roles and staff_roles | Permissions |
+| `contactService.ts` | `contactService` — contact CRUD | CRM |
+| `interactionService.ts` | `interactionService` — interaction CRUD | CRM |
+| `taskService.ts` | `taskService` — task CRUD, toggleStatus, auto-task stubs | CRM |
 
 ---
 
-*Last updated: Permissions phase*
+*Last updated: CRM phase*

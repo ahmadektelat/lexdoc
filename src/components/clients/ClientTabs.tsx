@@ -1,13 +1,14 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 10:00 IST (Jerusalem)
-//          - Initial implementation with placeholder tabs
+// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
+//          - Replaced Tasks tab placeholder with ClientTasksWidget
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ClientTasksWidget } from '@/components/crm/ClientTasksWidget';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FileText, BarChart3, CheckSquare, Activity } from 'lucide-react';
+import { FileText, BarChart3, Activity } from 'lucide-react';
 
-export function ClientTabs() {
+export function ClientTabs({ clientId }: { clientId: string }) {
   const { t } = useLanguage();
 
   return (
@@ -36,11 +37,7 @@ export function ClientTabs() {
       </TabsContent>
 
       <TabsContent value="tasks">
-        <EmptyState
-          icon={CheckSquare}
-          title={t('clients.tabs.tasks')}
-          description={t('clients.tabs.tasksPlaceholder')}
-        />
+        <ClientTasksWidget clientId={clientId} />
       </TabsContent>
 
       <TabsContent value="activity">

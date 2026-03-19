@@ -1,9 +1,8 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-19 10:00 IST (Jerusalem)
-//          - Updated SYSTEM_ROLES with permissions, locked, hex colors
-//          - Renamed desc to description for DB consistency
+// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
+//          - Added CONTACT_TYPES, AUTHORITY_TYPES constants for CRM module
 
-import type { FilingType, ClientType, StaffRole, TaskPriority, TaskCategory, InteractionChannel, DocumentSensitivity } from '@/types';
+import type { FilingType, ClientType, StaffRole, TaskPriority, TaskCategory, InteractionChannel, DocumentSensitivity, ContactType, AuthorityType } from '@/types';
 import { PERMISSION_GROUPS } from '@/types/role';
 
 // Financial constants
@@ -70,6 +69,22 @@ export const INTERACTION_CHANNELS: Record<InteractionChannel, string> = {
   meeting: 'channels.meeting',
   letter: 'channels.letter',
   portal: 'channels.portal',
+};
+
+export const CONTACT_TYPES: Record<ContactType, string> = {
+  client: 'contactTypes.client',
+  taxAuth: 'contactTypes.taxAuth',
+  nii: 'contactTypes.nii',
+  court: 'contactTypes.court',
+  other: 'contactTypes.other',
+};
+
+export const AUTHORITY_TYPES: Record<AuthorityType, string> = {
+  taxAuth: 'authorityTypes.taxAuth',
+  vat: 'authorityTypes.vat',
+  nii: 'authorityTypes.nii',
+  court: 'authorityTypes.court',
+  other: 'authorityTypes.other',
 };
 
 export const DOCUMENT_SENSITIVITIES: Record<DocumentSensitivity, string> = {
