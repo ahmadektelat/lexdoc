@@ -1,6 +1,7 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 16:00 IST (Jerusalem)
+//          - Replaced raw Input with SearchInput
+//          - Imported shared FILING_TYPE_I18N_KEYS from constants
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,22 +11,16 @@ import { useFilings, useFilingLateCounts } from '@/hooks/useFilings';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { SearchInput } from '@/components/shared/SearchInput';
 import { FilingSettingsPanel } from './FilingSettingsPanel';
 import { FilingScheduleTable } from './FilingScheduleTable';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { isOverdue } from '@/lib/dates';
+import { FILING_TYPE_I18N_KEYS } from '@/lib/constants';
 import { ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import type { FilingType } from '@/types';
-
-const FILING_TYPE_I18N_KEYS: Record<FilingType, string> = {
-  maam: 'filings.vatReport',
-  mekadmot: 'filings.taxAdvances',
-  nikuyim: 'filings.incomeTaxDeductions',
-  nii: 'filings.niiDeductions',
-};
 
 export function FilingsView() {
   const { t } = useLanguage();
@@ -110,11 +105,9 @@ export function FilingsView() {
         {/* Left sidebar — client list */}
         <div className="w-64 shrink-0 space-y-2">
           <h3 className="text-sm font-medium">{t('filings.clients')}</h3>
-          <Input
-            placeholder={t('filings.clients')}
+          <SearchInput
             value={clientSearch}
-            onChange={(e) => setClientSearch(e.target.value)}
-            className="h-8 text-sm"
+            onChange={setClientSearch}
           />
           <div className="border rounded-md max-h-[calc(100vh-220px)] overflow-y-auto">
             {filteredClients.map((client) => (

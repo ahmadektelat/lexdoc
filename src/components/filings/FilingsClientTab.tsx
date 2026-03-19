@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 16:00 IST (Jerusalem)
+//          - Added permission guard, imported shared FILING_TYPE_I18N_KEYS
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,23 +11,18 @@ import { FilingScheduleTable } from './FilingScheduleTable';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { isOverdue } from '@/lib/dates';
+import { FILING_TYPE_I18N_KEYS } from '@/lib/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Filing, FilingType } from '@/types';
+import type { FilingType } from '@/types';
 
 interface FilingsClientTabProps {
   clientId: string;
 }
 
-const FILING_TYPE_I18N_KEYS: Record<FilingType, string> = {
-  maam: 'filings.vatReport',
-  mekadmot: 'filings.taxAdvances',
-  nikuyim: 'filings.incomeTaxDeductions',
-  nii: 'filings.niiDeductions',
-};
-
 export function FilingsClientTab({ clientId }: FilingsClientTabProps) {
   const { t } = useLanguage();
   const firmId = useAuthStore((s) => s.firmId);
+  const can = useAuthStore((s) => s.can);
   const currentYear = new Date().getFullYear();
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
@@ -52,7 +47,7 @@ export function FilingsClientTab({ clientId }: FilingsClientTabProps) {
     return { filed, pending, late };
   }, [filings]);
 
-  if (!firmId) return null;
+  if (!firmId || !can('filings.view')) return null;
 
   return (
     <div className="space-y-4">

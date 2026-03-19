@@ -1,6 +1,7 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 16:00 IST (Jerusalem)
+//          - Fixed dynamic Tailwind classes with static badge lookup
+//          - Added dark mode support for action buttons
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -9,15 +10,8 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, isOverdue } from '@/lib/dates';
-import { FILING_TYPE_COLORS } from '@/lib/constants';
-import type { Filing, FilingType, FilingStatus } from '@/types';
-
-const FILING_TYPE_I18N_KEYS: Record<FilingType, string> = {
-  maam: 'filings.vatReport',
-  mekadmot: 'filings.taxAdvances',
-  nikuyim: 'filings.incomeTaxDeductions',
-  nii: 'filings.niiDeductions',
-};
+import { FILING_TYPE_I18N_KEYS, FILING_TYPE_BADGE_CLASSES } from '@/lib/constants';
+import type { Filing, FilingStatus } from '@/types';
 
 function getEffectiveStatus(filing: Filing): FilingStatus {
   if (filing.status === 'pending' && isOverdue(filing.due)) return 'late';
@@ -59,7 +53,6 @@ export function FilingScheduleTable({ filings, firmId }: FilingScheduleTableProp
           {filings.map((filing) => {
             const isOverdueRow = filing.status === 'pending' && isOverdue(filing.due);
             const effectiveStatus = getEffectiveStatus(filing);
-            const color = FILING_TYPE_COLORS[filing.type];
 
             return (
               <tr
@@ -67,7 +60,7 @@ export function FilingScheduleTable({ filings, firmId }: FilingScheduleTableProp
                 className={`border-b last:border-b-0 ${isOverdueRow ? 'bg-red-50 dark:bg-red-950/20' : ''}`}
               >
                 <td className="px-4 py-3">
-                  <Badge className={`bg-${color}-100 text-${color}-800 dark:bg-${color}-900/30 dark:text-${color}-400 border-transparent`}>
+                  <Badge className={`${FILING_TYPE_BADGE_CLASSES[filing.type]} border-transparent`}>
                     {t(FILING_TYPE_I18N_KEYS[filing.type])}
                   </Badge>
                 </td>
@@ -86,7 +79,7 @@ export function FilingScheduleTable({ filings, firmId }: FilingScheduleTableProp
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-700 border-green-300 hover:bg-green-50"
+                          className="text-green-700 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-700 dark:hover:bg-green-950/20"
                           onClick={() => markFiled.mutate({ firmId, id: filing.id })}
                           disabled={markFiled.isPending}
                         >
@@ -97,7 +90,7 @@ export function FilingScheduleTable({ filings, firmId }: FilingScheduleTableProp
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-700 border-red-300 hover:bg-red-50"
+                          className="text-red-700 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-950/20"
                           onClick={() => markLate.mutate({ firmId, id: filing.id })}
                           disabled={markLate.isPending}
                         >

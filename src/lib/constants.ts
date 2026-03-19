@@ -30,6 +30,22 @@ export const FILING_TYPE_COLORS: Record<FilingType, string> = {
   nii: 'red',
 };
 
+// Filing type i18n key mapping (for translated badge/filter labels)
+export const FILING_TYPE_I18N_KEYS: Record<FilingType, string> = {
+  maam: 'filings.vatReport',
+  mekadmot: 'filings.taxAdvances',
+  nikuyim: 'filings.incomeTaxDeductions',
+  nii: 'filings.niiDeductions',
+};
+
+// Filing type badge classes — static lookup for Tailwind CSS purge safety
+export const FILING_TYPE_BADGE_CLASSES: Record<FilingType, string> = {
+  maam: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+  mekadmot: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+  nikuyim: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  nii: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+};
+
 // These constants store i18n keys. Components call t(CLIENT_TYPES[type]) to get localized text.
 export const CLIENT_TYPES: Record<ClientType, string> = {
   self_employed: 'clientTypes.selfEmployed',

@@ -1,6 +1,7 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 16:00 IST (Jerusalem)
+//          - Added mutation permission guard
+//          - Fixed edit button label to use common.edit
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -60,6 +61,7 @@ export function FilingSettingsPanel({ firmId, clientId, year }: FilingSettingsPa
   }, [fetchedSettings, clientId]);
 
   const handleSaveAndGenerate = async () => {
+    if (!can('filings.edit')) return;
     try {
       await saveSettings.mutateAsync({ firmId, setting: localSettings });
       await regenerateSchedule.mutateAsync({ firmId, clientId, year, settings: localSettings });
@@ -92,7 +94,7 @@ export function FilingSettingsPanel({ firmId, clientId, year }: FilingSettingsPa
           <h3 className="font-medium">{t('filings.settings')}</h3>
           {can('filings.edit') && (
             <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-              {t('filings.settings')}
+              {t('common.edit')}
             </Button>
           )}
         </div>
