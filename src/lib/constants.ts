@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Added CONTACT_TYPES, AUTHORITY_TYPES constants for CRM module
+// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
+//          - Added filings.view, filings.edit to manager role permissions
 
 import type { FilingType, ClientType, StaffRole, TaskPriority, TaskCategory, InteractionChannel, DocumentSensitivity, ContactType, AuthorityType } from '@/types';
 import { PERMISSION_GROUPS } from '@/types/role';
@@ -28,6 +28,22 @@ export const FILING_TYPE_COLORS: Record<FilingType, string> = {
   mekadmot: 'amber',
   nikuyim: 'green',
   nii: 'red',
+};
+
+// Filing type i18n key mapping (for translated badge/filter labels)
+export const FILING_TYPE_I18N_KEYS: Record<FilingType, string> = {
+  maam: 'filings.vatReport',
+  mekadmot: 'filings.taxAdvances',
+  nikuyim: 'filings.incomeTaxDeductions',
+  nii: 'filings.niiDeductions',
+};
+
+// Filing type badge classes — static lookup for Tailwind CSS purge safety
+export const FILING_TYPE_BADGE_CLASSES: Record<FilingType, string> = {
+  maam: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+  mekadmot: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+  nikuyim: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  nii: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 };
 
 // These constants store i18n keys. Components call t(CLIENT_TYPES[type]) to get localized text.
@@ -143,6 +159,7 @@ export const SYSTEM_ROLES = [
       'clients.view', 'clients.create', 'clients.edit', 'clients.delete',
       'staff.view', 'staff.manage',
       'crm.view', 'crm.manage',
+      'filings.view', 'filings.edit',
       'reports.view',
       'documents.view', 'documents.upload',
     ],
