@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Added CONTACT_TYPES, AUTHORITY_TYPES constants for CRM module
+// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
+//          - Added filings.view, filings.edit to manager role permissions
 
 import type { FilingType, ClientType, StaffRole, TaskPriority, TaskCategory, InteractionChannel, DocumentSensitivity, ContactType, AuthorityType } from '@/types';
 import { PERMISSION_GROUPS } from '@/types/role';
@@ -143,6 +143,7 @@ export const SYSTEM_ROLES = [
       'clients.view', 'clients.create', 'clients.edit', 'clients.delete',
       'staff.view', 'staff.manage',
       'crm.view', 'crm.manage',
+      'filings.view', 'filings.edit',
       'reports.view',
       'documents.view', 'documents.upload',
     ],

@@ -1,12 +1,13 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Replaced Tasks tab placeholder with ClientTasksWidget
+// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
+//          - Replaced filings tab placeholder with FilingsClientTab
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ClientTasksWidget } from '@/components/crm/ClientTasksWidget';
+import { FilingsClientTab } from '@/components/filings/FilingsClientTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FileText, BarChart3, Activity } from 'lucide-react';
+import { FileText, Activity } from 'lucide-react';
 
 export function ClientTabs({ clientId }: { clientId: string }) {
   const { t } = useLanguage();
@@ -29,11 +30,7 @@ export function ClientTabs({ clientId }: { clientId: string }) {
       </TabsContent>
 
       <TabsContent value="filings">
-        <EmptyState
-          icon={BarChart3}
-          title={t('clients.tabs.filings')}
-          description={t('clients.tabs.filingsPlaceholder')}
-        />
+        <FilingsClientTab clientId={clientId} />
       </TabsContent>
 
       <TabsContent value="tasks">

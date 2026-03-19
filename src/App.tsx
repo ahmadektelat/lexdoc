@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Replaced CRM placeholder route with CrmView
+// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
+//          - Replaced filings placeholder route with FilingsView
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -20,6 +20,7 @@ import { ClientDetailView } from '@/components/clients/ClientDetailView';
 import { StaffView } from '@/components/staff/StaffView';
 import { PermissionsView } from '@/components/permissions/PermissionsView';
 import { CrmView } from '@/components/crm/CrmView';
+import { FilingsView } from '@/components/filings/FilingsView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,7 +71,7 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPlaceholder />} />
               <Route path="clients" element={<ClientsView />} />
               <Route path="clients/:id" element={<ClientDetailView />} />
-              <Route path="filings" element={<SectionPlaceholder section="filings" />} />
+              <Route path="filings" element={<FilingsView />} />
               <Route path="billing" element={<SectionPlaceholder section="billing" />} />
               <Route path="staff" element={<StaffView />} />
               <Route path="crm" element={<CrmView />} />

@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
+//          - Implemented cancelAutoTaskForFiling (replaced stub)
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Task, CreateTaskInput } from '@/types';
@@ -154,8 +154,15 @@ export const taskService = {
     return 0;
   },
 
-  // TODO: Implement when filings module is built.
-  async cancelAutoTaskForFiling(_firmId: string, _filingId: string): Promise<void> {
-    // Stub: cancels auto-task linked to a filing when it's marked as filed
+  async cancelAutoTaskForFiling(firmId: string, filingId: string): Promise<void> {
+    const { error } = await supabase
+      .from('tasks')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('firm_id', firmId)
+      .eq('filing_id', filingId)
+      .eq('is_auto', true)
+      .is('deleted_at', null);
+
+    if (error) throw new Error(error.message);
   },
 };
