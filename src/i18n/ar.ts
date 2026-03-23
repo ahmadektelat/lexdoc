@@ -248,6 +248,7 @@ export const ar: Record<string, string> = {
   'hours.selectStaff': 'اختر موظف',
   'hours.noHoursYet': 'لم يتم تسجيل ساعات بعد',
   'hours.logSuccess': 'تم تسجيل الساعات بنجاح',
+  'hours.deleteSuccess': 'تم حذف سجل الساعات بنجاح',
 
   // Invoices
   'invoices.title': 'الفواتير',
@@ -271,6 +272,7 @@ export const ar: Record<string, string> = {
   'invoices.createSuccess': 'تم إنشاء الفاتورة بنجاح',
   'invoices.downloadSuccess': 'تم تحميل الفاتورة',
   'invoices.paidSuccess': 'تم التحديد كمدفوع',
+  'invoices.deleteSuccess': 'تم حذف الفاتورة بنجاح',
   'invoices.professionalServices': 'خدمات مهنية',
   'invoices.transactionInvoice': 'فاتورة معاملة',
   'invoices.from': 'من',

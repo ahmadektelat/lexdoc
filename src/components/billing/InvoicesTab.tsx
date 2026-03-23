@@ -177,22 +177,30 @@ export function InvoicesTab({
       });
     }
 
-    createInvoice.mutate({
-      firmId,
-      input: {
-        client_id: clientId,
-        invoiceNum,
-        date: getToday(),
-        items,
-        subtotal: feePreview.subtotal,
-        vatAmount: feePreview.vatAmount,
-        total: feePreview.total,
+    createInvoice.mutate(
+      {
+        firmId,
+        input: {
+          client_id: clientId,
+          invoiceNum,
+          date: getToday(),
+          items,
+          subtotal: feePreview.subtotal,
+          vatAmount: feePreview.vatAmount,
+          total: feePreview.total,
+        },
       },
-    });
-    setShowCreate(false);
+      {
+        onSuccess: () => {
+          setShowCreate(false);
+        },
+      }
+    );
   }
 
   function handlePrint(invoice: Invoice) {
+    const invoiceMonth = invoice.date.substring(0, 7);
+    const invoiceHours = hoursEntries.filter(e => e.date.startsWith(invoiceMonth));
     const content = buildInvoiceText(
       invoice,
       firmData,
@@ -200,7 +208,7 @@ export function InvoicesTab({
       clientCaseNum,
       clientEmail,
       clientBillingDay,
-      monthHours,
+      invoiceHours,
       t
     );
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });

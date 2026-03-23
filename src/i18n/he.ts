@@ -248,6 +248,7 @@ export const he: Record<string, string> = {
   'hours.selectStaff': 'בחר עובד',
   'hours.noHoursYet': 'לא נרשמו שעות עדיין',
   'hours.logSuccess': 'שעות נרשמו בהצלחה',
+  'hours.deleteSuccess': 'רשומת שעות נמחקה בהצלחה',
 
   // Invoices
   'invoices.title': 'חשבוניות',
@@ -271,6 +272,7 @@ export const he: Record<string, string> = {
   'invoices.createSuccess': 'חשבונית נוצרה בהצלחה',
   'invoices.downloadSuccess': 'חשבונית הורדה',
   'invoices.paidSuccess': 'סומן כשולם',
+  'invoices.deleteSuccess': 'חשבונית נמחקה בהצלחה',
   'invoices.professionalServices': 'שירותים מקצועיים',
   'invoices.transactionInvoice': 'חשבון עסקה',
   'invoices.from': 'מאת',

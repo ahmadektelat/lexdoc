@@ -70,7 +70,7 @@ export const invoiceService = {
 
     // Auto-create billing entry for this invoice
     try {
-      await supabase.from('billing_entries').insert({
+      const { error: billingError } = await supabase.from('billing_entries').insert({
         firm_id: firmId,
         client_id: input.client_id,
         type: 'charge',
@@ -79,6 +79,9 @@ export const invoiceService = {
         notes: 'Invoice ' + input.invoiceNum,
         invoice_id: invoice.id,
       });
+      if (billingError) {
+        console.error('Failed to create billing entry for invoice', invoice.id, billingError.message);
+      }
     } catch (err) {
       console.error('Failed to create billing entry for invoice', invoice.id, err);
     }
@@ -99,11 +102,14 @@ export const invoiceService = {
 
     // Also update the linked billing entry status
     try {
-      await supabase
+      const { error: billingError } = await supabase
         .from('billing_entries')
         .update({ status: 'paid' })
         .eq('invoice_id', id)
         .eq('firm_id', firmId);
+      if (billingError) {
+        console.error('Failed to update billing entry status for invoice', id, billingError.message);
+      }
     } catch (err) {
       console.error('Failed to update billing entry for invoice', id, err);
     }

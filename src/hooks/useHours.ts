@@ -49,7 +49,7 @@ export function useDeleteHoursEntry() {
     mutationFn: (id: string) => hoursService.delete(firmId!, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: hoursKeys.lists() });
-      toast.success(t('common.delete'));
+      toast.success(t('hours.deleteSuccess'));
     },
     onError: () => {
       toast.error(t('errors.saveFailed'));

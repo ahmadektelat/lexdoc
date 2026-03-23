@@ -87,7 +87,7 @@ export function useDeleteInvoice() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: invoiceKeys.lists() });
       queryClient.invalidateQueries({ queryKey: billingKeys.lists() });
-      toast.success(t('common.delete'));
+      toast.success(t('invoices.deleteSuccess'));
     },
     onError: () => {
       toast.error(t('errors.saveFailed'));

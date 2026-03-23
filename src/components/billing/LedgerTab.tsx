@@ -87,22 +87,27 @@ export function LedgerTab({ clientId, clientName, clientCaseNum, clientMonthlyFe
       amountAgorot = amountAgorot + calculateVat(amountAgorot);
     }
 
-    createEntry.mutate({
-      firmId,
-      input: {
-        client_id: clientId,
-        type: entryType,
-        amount: amountAgorot,
-        date,
-        notes: desc,
+    createEntry.mutate(
+      {
+        firmId,
+        input: {
+          client_id: clientId,
+          type: entryType,
+          amount: amountAgorot,
+          date,
+          notes: desc,
+        },
       },
-    });
-
-    setDesc('');
-    setAmount('');
-    setDate(getToday());
-    setIncludeVat(false);
-    setShowAdd(false);
+      {
+        onSuccess: () => {
+          setDesc('');
+          setAmount('');
+          setDate(getToday());
+          setIncludeVat(false);
+          setShowAdd(false);
+        },
+      }
+    );
   }
 
   function handleMonthlyCharge() {

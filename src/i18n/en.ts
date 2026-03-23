@@ -248,6 +248,7 @@ export const en: Record<string, string> = {
   'hours.selectStaff': 'Select staff member',
   'hours.noHoursYet': 'No hours logged yet',
   'hours.logSuccess': 'Hours logged successfully',
+  'hours.deleteSuccess': 'Hours entry deleted successfully',
 
   // Invoices
   'invoices.title': 'Invoices',
@@ -271,6 +272,7 @@ export const en: Record<string, string> = {
   'invoices.createSuccess': 'Invoice created successfully',
   'invoices.downloadSuccess': 'Invoice downloaded',
   'invoices.paidSuccess': 'Marked as paid',
+  'invoices.deleteSuccess': 'Invoice deleted successfully',
   'invoices.professionalServices': 'Professional Services',
   'invoices.transactionInvoice': 'Transaction Invoice',
   'invoices.from': 'From',
