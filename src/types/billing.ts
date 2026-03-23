@@ -1,9 +1,8 @@
 // CREATED: 2026-03-17
-// UPDATED: 2026-03-17 14:30 IST (Jerusalem)
-//          - Added deleted_at to HoursEntry (amendment 5)
-//          - Added updated_at and deleted_at to Invoice (amendment 5)
-//          - Tightened CreateInvoiceInput (amendment 5)
-//          - Excluded firm_id from Create*Input types (security audit)
+// UPDATED: 2026-03-23 10:00 IST (Jerusalem)
+//          - Added status field to BillingEntry
+//          - Updated CreateBillingInput to exclude status
+//          - Added CreateHoursInput type
 
 export interface BillingEntry {
   id: string;
@@ -11,6 +10,7 @@ export interface BillingEntry {
   client_id: string;
   type: 'charge' | 'credit';
   amount: number;         // agorot
+  status: 'pending' | 'paid' | 'cancelled';
   date: string;           // ISO date
   notes?: string;
   invoice_id?: string;
@@ -58,6 +58,8 @@ export interface Invoice {
   created_at: string;
 }
 
-export type CreateBillingInput = Omit<BillingEntry, 'id' | 'firm_id' | 'deleted_at' | 'created_at' | 'updated_at'>;
+export type CreateBillingInput = Omit<BillingEntry, 'id' | 'firm_id' | 'status' | 'deleted_at' | 'created_at' | 'updated_at'>;
 
 export type CreateInvoiceInput = Omit<Invoice, 'id' | 'firm_id' | 'created_at' | 'updated_at' | 'deleted_at' | 'sent' | 'paid' | 'paidDate'>;
+
+export type CreateHoursInput = Omit<HoursEntry, 'id' | 'firm_id' | 'deleted_at' | 'created_at'>;
