@@ -13,7 +13,7 @@
 | `billing.ts` | `BillingEntry`, `HoursEntry`, `Invoice`, `InvoiceItem`, `CreateBillingInput`, `CreateInvoiceInput`, `CreateHoursInput` | Phase 1, Billing |
 | `task.ts` | `Task`, `TaskStatus`, `TaskPriority`, `TaskCategory`, `CreateTaskInput` | Phase 1 |
 | `crm.ts` | `Contact`, `ContactType`, `Interaction`, `InteractionChannel`, `CreateContactInput`, `CreateInteractionInput` | Phase 1 |
-| `document.ts` | `Document`, `DocumentFolder`, `DocumentSensitivity`, `CreateDocumentInput` | Phase 1 |
+| `document.ts` | `LegalDocument`, `DocumentFolder`, `DocumentSensitivity`, `CreateDocumentInput`, `CreateFolderInput`, `UpdateDocumentInput` | Phase 1, Documents |
 | `role.ts` | `Role`, `Permission`, `StaffRoleAssignment`, `PermissionGroup`, `CreateRoleInput`, `UpdateRoleInput`, `StaffRoleRow`, `PERMISSION_GROUPS` | Phase 1, Permissions |
 | `audit.ts` | `AuditEntry` | Phase 1 |
 | `message.ts` | `Message`, `MessageTemplate`, `ScheduledMessage`, `MessageChannel` | Phase 1 |
@@ -30,6 +30,7 @@
 | `dates.ts` | `formatDate()`, `formatDateTime()`, `daysLeft()`, `addMonths()`, `addDays()`, `isOverdue()` | Phase 1 |
 | `filing-utils.ts` | `calculateDueDate()`, `getMonthlyPeriods()`, `getBimonthlyPeriods()`, `generateFilingSchedule()`, `getFilingTypeLabel()`, `taskDueDateForFiling()` | Phase 1 |
 | `validation.ts` | `validateTaxId()`, `validatePhone()`, `validateEmail()`, `sanitizeSearchInput()` | Phase 1 |
+| `format.ts` | `formatFileSize()`, `sanitizePath()` | Documents |
 
 ## Shared Components (`src/components/shared/`)
 
@@ -60,6 +61,7 @@
 | `useBilling.ts` | `billingKeys`, `useBillingEntries`, `useBillingBalance`, `useCreateBillingEntry`, `useMarkBillingPaid`, `useCancelBillingEntry`, `useDeleteBillingEntry` | Billing |
 | `useHours.ts` | `hoursKeys`, `useHours`, `useCreateHoursEntry`, `useDeleteHoursEntry` | Billing |
 | `useInvoices.ts` | `invoiceKeys`, `useInvoices`, `useCreateInvoice`, `useMarkInvoicePaid`, `useMarkInvoiceSent`, `useDeleteInvoice` | Billing |
+| `useDocuments.ts` | `documentKeys`, `useFolders`, `useDocuments`, `useEnsureDefaultFolders`, `useCreateFolder`, `useDeleteFolder`, `useUploadDocument`, `useUpdateDocument`, `useDeleteDocument`, `useSaveGeneratedDocument` | Documents |
 
 ## Services (`src/services/`)
 
@@ -74,7 +76,8 @@
 | `billingService.ts` | `billingService` — billing entries CRUD, balance, status changes | Billing |
 | `hoursService.ts` | `hoursService` — hours log CRUD | Billing |
 | `invoiceService.ts` | `invoiceService` — invoices CRUD, invoice number generation, auto-billing-entry | Billing |
+| `documentService.ts` | `documentService` — document/folder CRUD, storage upload/download, default folders | Documents |
 
 ---
 
-*Last updated: Billing phase*
+*Last updated: Documents phase*
