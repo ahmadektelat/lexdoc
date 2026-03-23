@@ -1,6 +1,6 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-19 12:00 IST (Jerusalem)
-//          - Pass clientId to ClientTabs for CRM integration
+// UPDATED: 2026-03-24 13:00 IST (Jerusalem)
+//          - Added ClientMsgButton for quick messaging from client detail
 
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { ClientHeader } from './ClientHeader';
 import { ClientTabs } from './ClientTabs';
 import { ClientForm } from './ClientForm';
 import { ArrowRight, ArrowLeft, Pencil, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
+import { ClientMsgButton } from '@/components/messaging/ClientMsgButton';
 
 export function ClientDetailView() {
   const { id } = useParams<{ id: string }>();
@@ -62,6 +63,7 @@ export function ClientDetailView() {
 
       {/* Action buttons */}
       <div className="flex flex-wrap gap-2 mb-6">
+        <ClientMsgButton client={client} />
         <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
           <Pencil className="h-4 w-4 me-2" />
           {t('common.edit')}

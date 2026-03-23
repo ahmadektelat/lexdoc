@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Replaced filings placeholder route with FilingsView
+// UPDATED: 2026-03-24 12:30 IST (Jerusalem)
+//          - Replaced messaging placeholder route with MessagingView
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -22,6 +22,7 @@ import { PermissionsView } from '@/components/permissions/PermissionsView';
 import { CrmView } from '@/components/crm/CrmView';
 import { FilingsView } from '@/components/filings/FilingsView';
 import { BillingView } from '@/components/billing/BillingView';
+import { MessagingView } from '@/components/messaging/MessagingView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,7 +79,7 @@ export default function App() {
               <Route path="crm" element={<CrmView />} />
               <Route path="documents" element={<SectionPlaceholder section="documents" />} />
               <Route path="reports" element={<SectionPlaceholder section="reports" />} />
-              <Route path="messaging" element={<SectionPlaceholder section="messaging" />} />
+              <Route path="messaging" element={<MessagingView />} />
               <Route path="permissions" element={<PermissionsView />} />
               <Route path="audit" element={<SectionPlaceholder section="audit" />} />
               <Route path="backup" element={<SectionPlaceholder section="backup" />} />

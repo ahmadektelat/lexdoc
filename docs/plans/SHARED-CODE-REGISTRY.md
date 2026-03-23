@@ -16,7 +16,7 @@
 | `document.ts` | `LegalDocument`, `DocumentFolder`, `DocumentSensitivity`, `CreateDocumentInput`, `CreateFolderInput`, `UpdateDocumentInput` | Phase 1, Documents |
 | `role.ts` | `Role`, `Permission`, `StaffRoleAssignment`, `PermissionGroup`, `CreateRoleInput`, `UpdateRoleInput`, `StaffRoleRow`, `PERMISSION_GROUPS` | Phase 1, Permissions |
 | `audit.ts` | `AuditEntry` | Phase 1 |
-| `message.ts` | `Message`, `MessageTemplate`, `ScheduledMessage`, `MessageChannel` | Phase 1 |
+| `message.ts` | `MessageTemplate`, `Message`, `ScheduledMessage`, `MessageChannel`, `CreateMessageTemplateInput`, `UpdateMessageTemplateInput`, `CreateMessageInput`, `CreateScheduledInput` | Phase 1, Messaging |
 | `firm.ts` | `Firm`, `FirmType`, `SubscriptionPlan` | Phase 1 |
 | `common.ts` | `PaginatedResult`, `ListOptions` | Phase 1 |
 
@@ -62,6 +62,7 @@
 | `useHours.ts` | `hoursKeys`, `useHours`, `useCreateHoursEntry`, `useDeleteHoursEntry` | Billing |
 | `useInvoices.ts` | `invoiceKeys`, `useInvoices`, `useCreateInvoice`, `useMarkInvoicePaid`, `useMarkInvoiceSent`, `useDeleteInvoice` | Billing |
 | `useDocuments.ts` | `documentKeys`, `useFolders`, `useDocuments`, `useEnsureDefaultFolders`, `useCreateFolder`, `useDeleteFolder`, `useUploadDocument`, `useUpdateDocument`, `useDeleteDocument`, `useSaveGeneratedDocument` | Documents |
+| `useMessages.ts` | `messageKeys`, `useTemplates`, `useSeedTemplates`, `useCreateTemplate`, `useUpdateTemplate`, `useDeleteTemplate`, `useMessageLog`, `useSendMessage`, `useScheduledMessages`, `useScheduleMessage`, `useCancelScheduled`, `useRunScheduledMessages` | Messaging |
 
 ## Services (`src/services/`)
 
@@ -77,7 +78,8 @@
 | `hoursService.ts` | `hoursService` — hours log CRUD | Billing |
 | `invoiceService.ts` | `invoiceService` — invoices CRUD, invoice number generation, auto-billing-entry | Billing |
 | `documentService.ts` | `documentService` — document/folder CRUD, storage upload/download, default folders | Documents |
+| `messageService.ts` | `messageService` — template CRUD, message log, scheduled messages, template engine (buildMsgVars, fillTemplate), default template seeding | Messaging |
 
 ---
 
-*Last updated: Documents phase*
+*Last updated: Messaging phase*
