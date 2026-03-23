@@ -1,6 +1,6 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 15:00 IST (Jerusalem)
+//          - Fix: orphan storage cleanup in useSaveGeneratedDocument
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -172,18 +172,28 @@ export function useSaveGeneratedDocument() {
       const blob = new Blob([content], { type: 'text/plain' });
       const file = new File([blob], name, { type: 'text/plain' });
       const filePath = await documentService.upload(firmId, clientId, 'התכתבויות', file);
-      return documentService.create(firmId, {
-        client_id: clientId,
-        folder_id: resolvedFolderId,
-        name,
-        file_path: filePath,
-        size: blob.size,
-        mime_type: 'text/plain',
-        ver: 1,
-        sensitivity: 'internal',
-        generated: true,
-        content,
-      });
+      try {
+        return await documentService.create(firmId, {
+          client_id: clientId,
+          folder_id: resolvedFolderId,
+          name,
+          file_path: filePath,
+          size: blob.size,
+          mime_type: 'text/plain',
+          ver: 1,
+          sensitivity: 'internal',
+          generated: true,
+          content,
+        });
+      } catch (dbError) {
+        // DB insert failed — clean up the orphan storage file
+        try {
+          await supabase.storage.from('client-documents').remove([filePath]);
+        } catch {
+          // Storage cleanup is best-effort; don't mask the original error
+        }
+        throw dbError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: documentKeys.all });

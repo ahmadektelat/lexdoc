@@ -1,6 +1,7 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 15:00 IST (Jerusalem)
+//          - Fix: delete dialog race condition — setDeleteId in onSuccess
+//          - Fix: show toast on download failure
 
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -34,6 +35,7 @@ import { formatDate } from '@/lib/dates';
 import { formatFileSize } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { DOCUMENT_SENSITIVITIES } from '@/lib/constants';
+import { toast } from 'sonner';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { LegalDocument, DocumentSensitivity } from '@/types';
 
@@ -92,7 +94,7 @@ export function DocumentTable({ clientId, folderId, folderName }: DocumentTableP
       const url = await documentService.getDownloadUrl(doc.file_path);
       window.open(url, '_blank');
     } catch {
-      // Error handled silently — signed URL generation may fail if file was removed
+      toast.error(t('errors.saveFailed'));
     }
   }
 
@@ -206,9 +208,11 @@ export function DocumentTable({ clientId, folderId, folderName }: DocumentTableP
         variant="destructive"
         onConfirm={() => {
           if (deleteId && firmId) {
-            deleteDocument.mutate({ firmId, id: deleteId });
+            deleteDocument.mutate(
+              { firmId, id: deleteId },
+              { onSuccess: () => setDeleteId(null) }
+            );
           }
-          setDeleteId(null);
         }}
       />
 

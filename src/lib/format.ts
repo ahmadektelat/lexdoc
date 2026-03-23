@@ -1,6 +1,6 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
-//          - Initial implementation: formatFileSize, sanitizePath
+// UPDATED: 2026-03-23 15:00 IST (Jerusalem)
+//          - Fix: sanitizePath returns 'unnamed' fallback if result is empty
 
 /**
  * Format byte count to human-readable string (B, KB, MB).
@@ -17,11 +17,12 @@ export function formatFileSize(bytes: number): string {
  * and other dangerous chars while preserving Hebrew/Arabic/English text.
  */
 export function sanitizePath(segment: string): string {
-  return segment
+  const result = segment
     .replace(/\.\./g, '')        // strip path traversal
     .replace(/[/\\]/g, '')       // strip directory separators
     // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x1f\x7f]/g, '') // strip control characters
     .replace(/[<>:"|?*]/g, '')   // strip Windows-reserved chars
     .trim();
+  return result || 'unnamed';
 }
