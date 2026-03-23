@@ -10,7 +10,7 @@
 | `client.ts` | `Client`, `CreateClientInput`, `UpdateClientInput`, `ClientType` | Phase 1 |
 | `staff.ts` | `Staff`, `CreateStaffInput`, `UpdateStaffInput`, `StaffRole` | Phase 1 |
 | `filing.ts` | `Filing`, `FilingType`, `FilingStatus`, `FilingSetting`, `CreateFilingInput` | Phase 1 |
-| `billing.ts` | `BillingEntry`, `Invoice`, `InvoiceItem`, `CreateBillingInput`, `CreateInvoiceInput` | Phase 1 |
+| `billing.ts` | `BillingEntry`, `HoursEntry`, `Invoice`, `InvoiceItem`, `CreateBillingInput`, `CreateInvoiceInput`, `CreateHoursInput` | Phase 1, Billing |
 | `task.ts` | `Task`, `TaskStatus`, `TaskPriority`, `TaskCategory`, `CreateTaskInput` | Phase 1 |
 | `crm.ts` | `Contact`, `ContactType`, `Interaction`, `InteractionChannel`, `CreateContactInput`, `CreateInteractionInput` | Phase 1 |
 | `document.ts` | `Document`, `DocumentFolder`, `DocumentSensitivity`, `CreateDocumentInput` | Phase 1 |
@@ -57,6 +57,9 @@
 | `useContacts.ts` | `contactKeys`, `useContacts`, `useCreateContact`, `useUpdateContact`, `useDeleteContact` | CRM |
 | `useInteractions.ts` | `interactionKeys`, `useInteractions`, `useCreateInteraction`, `useUpdateInteraction`, `useDeleteInteraction` | CRM |
 | `useTasks.ts` | `taskKeys`, `useTasks`, `useTask`, `useCreateTask`, `useUpdateTask`, `useToggleTaskStatus`, `useDeleteTask`, `useRunAutoTaskEngine`, `useCancelAutoTaskForFiling` | CRM |
+| `useBilling.ts` | `billingKeys`, `useBillingEntries`, `useBillingBalance`, `useCreateBillingEntry`, `useMarkBillingPaid`, `useCancelBillingEntry`, `useDeleteBillingEntry` | Billing |
+| `useHours.ts` | `hoursKeys`, `useHours`, `useCreateHoursEntry`, `useDeleteHoursEntry` | Billing |
+| `useInvoices.ts` | `invoiceKeys`, `useInvoices`, `useCreateInvoice`, `useMarkInvoicePaid`, `useMarkInvoiceSent`, `useDeleteInvoice` | Billing |
 
 ## Services (`src/services/`)
 
@@ -68,7 +71,10 @@
 | `contactService.ts` | `contactService` — contact CRUD | CRM |
 | `interactionService.ts` | `interactionService` — interaction CRUD | CRM |
 | `taskService.ts` | `taskService` — task CRUD, toggleStatus, auto-task stubs | CRM |
+| `billingService.ts` | `billingService` — billing entries CRUD, balance, status changes | Billing |
+| `hoursService.ts` | `hoursService` — hours log CRUD | Billing |
+| `invoiceService.ts` | `invoiceService` — invoices CRUD, invoice number generation, auto-billing-entry | Billing |
 
 ---
 
-*Last updated: CRM phase*
+*Last updated: Billing phase*

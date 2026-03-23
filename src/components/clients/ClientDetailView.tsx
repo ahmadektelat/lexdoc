@@ -100,7 +100,7 @@ export function ClientDetailView() {
       </div>
 
       {/* Tabs */}
-      <ClientTabs clientId={client.id} />
+      <ClientTabs clientId={client.id} client={client} />
 
       {/* Edit form dialog */}
       <ClientForm open={editOpen} onOpenChange={setEditOpen} client={client} />

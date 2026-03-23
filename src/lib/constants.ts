@@ -160,6 +160,7 @@ export const SYSTEM_ROLES = [
       'staff.view', 'staff.manage',
       'crm.view', 'crm.manage',
       'filings.view', 'filings.edit',
+      'billing.view', 'billing.create', 'billing.edit', 'billing.invoices',
       'reports.view',
       'documents.view', 'documents.upload',
     ],
