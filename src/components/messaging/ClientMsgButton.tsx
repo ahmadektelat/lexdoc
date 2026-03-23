@@ -1,12 +1,12 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 13:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
+//          - Import shared extractVars from messageService
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTemplates, useSendMessage, useSeedTemplates } from '@/hooks/useMessages';
-import { messageService } from '@/services/messageService';
+import { messageService, extractVars } from '@/services/messageService';
 import { FormField } from '@/components/shared/FormField';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,17 +25,8 @@ import {
 } from '@/components/ui/dialog';
 import { MessageSquare, Send } from 'lucide-react';
 import type { Client } from '@/types/client';
-import type { MessageTemplate, MessageChannel, CreateMessageInput } from '@/types';
+import type { MessageChannel, CreateMessageInput } from '@/types';
 import { useEffect, useRef } from 'react';
-
-function extractVars(template: MessageTemplate): string[] {
-  const matches = (template.subject + template.body).matchAll(/\{\{(\w+)\}\}/g);
-  const vars = new Set<string>();
-  for (const m of matches) vars.add(m[1]);
-  const autoFilled = ['client_name', 'staff_name', 'firm_name', 'today', 'phone', 'email'];
-  autoFilled.forEach((v) => vars.delete(v));
-  return Array.from(vars);
-}
 
 interface ClientMsgButtonProps {
   client: Client;

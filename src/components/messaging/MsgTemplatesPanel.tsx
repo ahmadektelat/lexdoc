@@ -1,6 +1,7 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 10:30 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
+//          - Fix hardcoded i18n strings: Topic ID, variable descriptions
+//          - Move AVAILABLE_VARS inside component for i18n support
 
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,19 +30,19 @@ import {
 import { MessageSquare, Plus, Pencil, Trash2, X, Info } from 'lucide-react';
 import type { MessageTemplate, CreateMessageTemplateInput, MessageChannel } from '@/types';
 
-const AVAILABLE_VARS = [
-  { key: 'client_name', desc: 'שם הלקוח' },
-  { key: 'staff_name', desc: 'שם איש הצוות' },
-  { key: 'firm_name', desc: 'שם המשרד' },
-  { key: 'period', desc: 'תקופה' },
-  { key: 'due_date', desc: 'מועד הגשה' },
-  { key: 'task_due', desc: 'מועד העברת חומר' },
-  { key: 'amount', desc: 'סכום' },
-  { key: 'today', desc: 'תאריך היום' },
-  { key: 'phone', desc: 'טלפון הלקוח' },
-  { key: 'email', desc: 'מייל הלקוח' },
-  { key: 'subject', desc: 'נושא חופשי' },
-  { key: 'body', desc: 'תוכן חופשי' },
+const AVAILABLE_VAR_KEYS = [
+  { key: 'client_name', i18nKey: 'messaging.varClientName' },
+  { key: 'staff_name', i18nKey: 'messaging.varStaffName' },
+  { key: 'firm_name', i18nKey: 'messaging.varFirmName' },
+  { key: 'period', i18nKey: 'messaging.varPeriod' },
+  { key: 'due_date', i18nKey: 'messaging.varDueDate' },
+  { key: 'task_due', i18nKey: 'messaging.varTaskDue' },
+  { key: 'amount', i18nKey: 'messaging.varAmount' },
+  { key: 'today', i18nKey: 'messaging.varToday' },
+  { key: 'phone', i18nKey: 'messaging.varPhone' },
+  { key: 'email', i18nKey: 'messaging.varEmail' },
+  { key: 'subject', i18nKey: 'messaging.varSubject' },
+  { key: 'body', i18nKey: 'messaging.varBody' },
 ];
 
 const CHANNEL_OPTIONS: { value: MessageChannel; label: string }[] = [
@@ -143,10 +144,10 @@ export function MsgTemplatesPanel() {
         <div className="rounded-md border border-border bg-muted/30 p-4">
           <h4 className="text-sm font-medium mb-2">{t('messaging.templateVarsHint')}</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {AVAILABLE_VARS.map((v) => (
+            {AVAILABLE_VAR_KEYS.map((v) => (
               <div key={v.key} className="text-xs">
                 <code className="bg-muted px-1 py-0.5 rounded">{`{{${v.key}}}`}</code>
-                <span className="text-muted-foreground ms-1">{v.desc}</span>
+                <span className="text-muted-foreground ms-1">{t(v.i18nKey)}</span>
               </div>
             ))}
           </div>
@@ -293,7 +294,7 @@ function TemplateForm({
             onChange={(e) => onChange({ ...value, topicLabel: e.target.value })}
           />
         </FormField>
-        <FormField label="Topic ID" required>
+        <FormField label={t('messaging.templateTopicId')} required>
           <Input
             value={value.topic ?? ''}
             onChange={(e) => onChange({ ...value, topic: e.target.value })}

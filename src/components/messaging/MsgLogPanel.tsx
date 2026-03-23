@@ -1,6 +1,6 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 11:30 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
+//          - Fix hardcoded Email/Phone labels to use t() i18n calls
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -211,13 +211,13 @@ export function MsgLogPanel() {
                 </div>
                 {selectedMessage.toEmail && (
                   <div>
-                    <span className="text-muted-foreground">Email:</span>{' '}
+                    <span className="text-muted-foreground">{t('common.email')}:</span>{' '}
                     <span dir="ltr">{selectedMessage.toEmail}</span>
                   </div>
                 )}
                 {selectedMessage.toPhone && (
                   <div>
-                    <span className="text-muted-foreground">Phone:</span>{' '}
+                    <span className="text-muted-foreground">{t('common.phone')}:</span>{' '}
                     <span dir="ltr">{selectedMessage.toPhone}</span>
                   </div>
                 )}

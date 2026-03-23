@@ -1,6 +1,6 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 12:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
+//          - Import shared extractVars from messageService
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,7 +13,7 @@ import {
   useCancelScheduled,
   useRunScheduledMessages,
 } from '@/hooks/useMessages';
-import { messageService } from '@/services/messageService';
+import { messageService, extractVars } from '@/services/messageService';
 import { FormField } from '@/components/shared/FormField';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -29,17 +29,7 @@ import {
 } from '@/components/ui/select';
 import { CalendarClock, Play, X } from 'lucide-react';
 import { formatDate } from '@/lib/dates';
-import type { MessageTemplate, MessageChannel, CreateScheduledInput } from '@/types';
-
-/** Extract user-fillable variables from template (excluding auto-filled ones) */
-function extractVars(template: MessageTemplate): string[] {
-  const matches = (template.subject + template.body).matchAll(/\{\{(\w+)\}\}/g);
-  const vars = new Set<string>();
-  for (const m of matches) vars.add(m[1]);
-  const autoFilled = ['client_name', 'staff_name', 'firm_name', 'today', 'phone', 'email'];
-  autoFilled.forEach((v) => vars.delete(v));
-  return Array.from(vars);
-}
+import type { MessageChannel, CreateScheduledInput } from '@/types';
 
 export function MsgSchedulePanel() {
   const { t } = useLanguage();

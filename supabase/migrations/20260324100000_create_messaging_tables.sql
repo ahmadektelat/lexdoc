@@ -131,8 +131,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON scheduled_messages TO authenticated;
 -- ========== PROCESS SCHEDULED MESSAGES — FIRM-SCOPED ==========
 -- Parameterized by firm_id so authenticated users can only process their own firm.
 -- The "Run Now" button calls this via RPC with the user's firmId.
--- Since it takes p_firm_id and runs through the authenticated client,
--- RLS on the messages INSERT policy also validates firm membership.
+-- RLS on the messages INSERT policy validates firm membership for authenticated callers.
+-- No explicit user_firm_ids() check here — that would break the pg_cron path
+-- where auth.uid() is NULL. The cron wrapper uses SECURITY DEFINER to bypass RLS.
 CREATE OR REPLACE FUNCTION process_scheduled_messages(p_firm_id UUID)
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -143,11 +144,6 @@ DECLARE
   v_template RECORD;
   v_count INTEGER := 0;
 BEGIN
-  -- Explicit firm ownership validation
-  IF p_firm_id NOT IN (SELECT user_firm_ids()) THEN
-    RAISE EXCEPTION 'Access denied';
-  END IF;
-
   FOR v_rec IN
     SELECT sm.*
     FROM scheduled_messages sm

@@ -1,6 +1,6 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
+//          - Extract extractVars as shared utility function
 
 import { supabase } from '@/integrations/supabase/client';
 import type {
@@ -160,6 +160,17 @@ function messageInputToRow(input: CreateMessageInput): Record<string, unknown> {
 }
 
 const MAX_BATCH_SIZE = 200;
+
+const AUTO_FILLED_VARS = ['client_name', 'staff_name', 'firm_name', 'today', 'phone', 'email'];
+
+/** Extract user-fillable variables from template (excluding auto-filled ones) */
+export function extractVars(template: MessageTemplate): string[] {
+  const matches = (template.subject + template.body).matchAll(/\{\{(\w+)\}\}/g);
+  const vars = new Set<string>();
+  for (const m of matches) vars.add(m[1]);
+  AUTO_FILLED_VARS.forEach((v) => vars.delete(v));
+  return Array.from(vars);
+}
 
 export const messageService = {
   // ===== TEMPLATES =====
