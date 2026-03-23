@@ -1,6 +1,6 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-23 10:00 IST (Jerusalem)
-//          - Added billing tabs: hours, invoices, ledger
+// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
+//          - Integrated DocumentsTab replacing placeholder
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -9,8 +9,9 @@ import { FilingsClientTab } from '@/components/filings/FilingsClientTab';
 import { HoursTab } from '@/components/billing/HoursTab';
 import { InvoicesTab } from '@/components/billing/InvoicesTab';
 import { LedgerTab } from '@/components/billing/LedgerTab';
+import { DocumentsTab } from '@/components/documents/DocumentsTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FileText, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import type { Client } from '@/types';
 
 interface ClientTabsProps {
@@ -34,11 +35,7 @@ export function ClientTabs({ clientId, client }: ClientTabsProps) {
       </TabsList>
 
       <TabsContent value="documents">
-        <EmptyState
-          icon={FileText}
-          title={t('clients.tabs.documents')}
-          description={t('clients.tabs.documentsPlaceholder')}
-        />
+        <DocumentsTab clientId={clientId} clientName={client.name} clientCaseNum={client.caseNum} />
       </TabsContent>
 
       <TabsContent value="filings">
