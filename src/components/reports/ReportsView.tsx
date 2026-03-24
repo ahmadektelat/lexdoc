@@ -1,6 +1,6 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 18:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-24 18:30 IST (Jerusalem)
+//          - Removed year prop from FilingStatusReport
 
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -129,7 +129,7 @@ export function ReportsView() {
           <HoursByClientReport hours={hours} staff={staff} clients={clients} />
         </TabsContent>
         <TabsContent value="filingStatus" className="mt-4">
-          <FilingStatusReport filings={filings} clients={clients} year={filingYear} />
+          <FilingStatusReport filings={filings} clients={clients} />
         </TabsContent>
       </Tabs>
     </div>

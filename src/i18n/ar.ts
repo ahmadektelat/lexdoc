@@ -797,4 +797,12 @@ export const ar: Record<string, string> = {
   'reports.noFilings': 'لا توجد بيانات تقديم',
   'reports.exportSuccess': 'تم تصدير التقرير بنجاح',
   'reports.summaryRow': 'الملخص',
+  'reports.export.dateLabel': 'التاريخ',
+  'reports.export.staffLabel': 'الموظف',
+  'reports.export.roleLabel': 'الدور',
+  'reports.export.clientLabel': 'العميل',
+  'reports.export.caseLabel': 'ملف',
+  'reports.export.hoursUnit': 'ساعات',
+  'reports.export.entryCount': 'عدد السجلات',
+  'reports.export.overallSummary': 'ملخص عام',
 };

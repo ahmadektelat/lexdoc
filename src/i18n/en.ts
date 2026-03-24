@@ -797,4 +797,12 @@ export const en: Record<string, string> = {
   'reports.noFilings': 'No filing data',
   'reports.exportSuccess': 'Report exported successfully',
   'reports.summaryRow': 'Summary',
+  'reports.export.dateLabel': 'Date',
+  'reports.export.staffLabel': 'Staff',
+  'reports.export.roleLabel': 'Role',
+  'reports.export.clientLabel': 'Client',
+  'reports.export.caseLabel': 'Case',
+  'reports.export.hoursUnit': 'hours',
+  'reports.export.entryCount': 'Entry count',
+  'reports.export.overallSummary': 'Overall summary',
 };

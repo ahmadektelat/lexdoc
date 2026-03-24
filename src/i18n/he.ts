@@ -797,4 +797,12 @@ export const he: Record<string, string> = {
   'reports.noFilings': 'אין נתוני הגשות',
   'reports.exportSuccess': 'הדוח יוצא בהצלחה',
   'reports.summaryRow': 'סיכום',
+  'reports.export.dateLabel': 'תאריך',
+  'reports.export.staffLabel': 'עובד',
+  'reports.export.roleLabel': 'תפקיד',
+  'reports.export.clientLabel': 'לקוח',
+  'reports.export.caseLabel': 'תיק',
+  'reports.export.hoursUnit': 'שעות',
+  'reports.export.entryCount': 'מספר רשומות',
+  'reports.export.overallSummary': 'סיכום כללי',
 };

@@ -1,6 +1,8 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 18:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-24 18:30 IST (Jerusalem)
+//          - Added dark: color variants for status colors
+//          - Removed unused year prop
+//          - Added flex-wrap to summary row for narrow screens
 
 import { useMemo } from 'react';
 import { FileText } from 'lucide-react';
@@ -16,10 +18,9 @@ import type { ColumnDef } from '@tanstack/react-table';
 interface FilingStatusReportProps {
   filings: Filing[];
   clients: Client[];
-  year: number;
 }
 
-export function FilingStatusReport({ filings, clients, year }: FilingStatusReportProps) {
+export function FilingStatusReport({ filings, clients }: FilingStatusReportProps) {
   const { t } = useLanguage();
 
   const { rows, summary } = useMemo(
@@ -36,21 +37,21 @@ export function FilingStatusReport({ filings, clients, year }: FilingStatusRepor
       accessorKey: 'filed',
       header: t('reports.filed'),
       cell: ({ row }) => (
-        <span className="text-green-600 font-medium">{row.original.filed}</span>
+        <span className="text-green-600 dark:text-green-500 font-medium">{row.original.filed}</span>
       ),
     },
     {
       accessorKey: 'pending',
       header: t('reports.pending'),
       cell: ({ row }) => (
-        <span className="text-amber-600 font-medium">{row.original.pending}</span>
+        <span className="text-amber-600 dark:text-amber-500 font-medium">{row.original.pending}</span>
       ),
     },
     {
       accessorKey: 'late',
       header: t('reports.late'),
       cell: ({ row }) => (
-        <span className={row.original.late > 0 ? 'text-red-600 font-bold' : 'text-muted-foreground'}>
+        <span className={row.original.late > 0 ? 'text-red-600 dark:text-red-500 font-bold' : 'text-muted-foreground'}>
           {row.original.late}
         </span>
       ),
@@ -93,12 +94,12 @@ export function FilingStatusReport({ filings, clients, year }: FilingStatusRepor
     <>
       <DataTable columns={columns} data={rows} searchable />
       {/* Summary row */}
-      <div className="mt-2 border rounded-md p-3 bg-muted/30 flex items-center justify-between text-sm font-medium">
+      <div className="mt-2 border rounded-md p-3 bg-muted/30 flex items-center justify-between text-sm font-medium flex-wrap gap-2">
         <span>{t('reports.summaryRow')}</span>
-        <div className="flex items-center gap-6">
-          <span className="text-green-600">{t('reports.filed')}: {summary.filed}</span>
-          <span className="text-amber-600">{t('reports.pending')}: {summary.pending}</span>
-          <span className={summary.late > 0 ? 'text-red-600 font-bold' : ''}>{t('reports.late')}: {summary.late}</span>
+        <div className="flex items-center gap-6 flex-wrap">
+          <span className="text-green-600 dark:text-green-500">{t('reports.filed')}: {summary.filed}</span>
+          <span className="text-amber-600 dark:text-amber-500">{t('reports.pending')}: {summary.pending}</span>
+          <span className={summary.late > 0 ? 'text-red-600 dark:text-red-500 font-bold' : ''}>{t('reports.late')}: {summary.late}</span>
           <span>{t('reports.total')}: {summary.total}</span>
           <span dir="ltr">{summary.completionPct}%</span>
         </div>
