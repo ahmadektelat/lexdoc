@@ -152,7 +152,7 @@ Three themes via CSS custom properties:
 All theme colors accessed via CSS variables (e.g., `var(--bg)`, `var(--text)`, `var(--accent)`). Never hardcode a single theme's colors directly.
 
 ## Supabase Project
-- **Project ID**: TBD (will be filled when Supabase project is created)
+- **Project ID**: huexcyhjmbpsvopaoxms
 - Use this ID for ALL Supabase MCP calls (apply_migration, execute_sql, list_tables, etc.)
 - Do NOT call list_projects to discover the ID — it is defined here
 

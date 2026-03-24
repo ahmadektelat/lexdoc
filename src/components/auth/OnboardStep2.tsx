@@ -61,7 +61,7 @@ export function OnboardStep2({
 
     try {
       // 1. Sign up with Supabase Auth
-      const { data: signUpData, error: signUpError } = await authService.signUp(
+      const { error: signUpError } = await authService.signUp(
         email,
         password
       );
@@ -71,7 +71,17 @@ export function OnboardStep2({
         return;
       }
 
-      // 2. Create firm via atomic RPC
+      // 2. Sign in to establish an authenticated session.
+      //    signUp alone may not create a session (depends on email confirmation setting).
+      //    auth.uid() in the register_firm RPC requires an active session.
+      const signInResult = await authService.signIn(email, password);
+      if (signInResult.error) {
+        setSubmitError(t('auth.errors.signUpFailed'));
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 3. Create firm via atomic RPC (auth.uid() is now available)
       const { firmId, error: firmError } = await firmService.registerFirm(
         firmData as CreateFirmInput
       );
@@ -81,7 +91,7 @@ export function OnboardStep2({
         return;
       }
 
-      // 3. Upload logo if provided
+      // 4. Upload logo if provided
       if (logoFile) {
         const { url, error: logoError } = await firmService.uploadLogo(
           firmId,
@@ -92,7 +102,7 @@ export function OnboardStep2({
         }
       }
 
-      // 4. Sign out to force login
+      // 5. Sign out to force login
       await authService.signOut();
 
       // 5. Advance to success step
