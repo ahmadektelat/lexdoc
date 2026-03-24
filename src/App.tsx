@@ -24,6 +24,7 @@ import { FilingsView } from '@/components/filings/FilingsView';
 import { BillingView } from '@/components/billing/BillingView';
 import { MessagingView } from '@/components/messaging/MessagingView';
 import { DashboardView } from '@/components/dashboard/DashboardView';
+import { ReportsView } from '@/components/reports/ReportsView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,7 +80,7 @@ export default function App() {
               <Route path="staff" element={<StaffView />} />
               <Route path="crm" element={<CrmView />} />
               <Route path="documents" element={<SectionPlaceholder section="documents" />} />
-              <Route path="reports" element={<SectionPlaceholder section="reports" />} />
+              <Route path="reports" element={<ReportsView />} />
               <Route path="messaging" element={<MessagingView />} />
               <Route path="permissions" element={<PermissionsView />} />
               <Route path="audit" element={<SectionPlaceholder section="audit" />} />
