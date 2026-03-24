@@ -1,6 +1,6 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-18 14:00 IST (Jerusalem)
-//          - Removed assignedStaffId (migrated to client_staff junction table)
+// UPDATED: 2026-03-24 16:00 IST (Jerusalem)
+//          - Added countActive and listRecent methods for dashboard module
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Client, CreateClientInput, UpdateClientInput } from '@/types';
@@ -161,5 +161,33 @@ export const clientService = {
       .eq('firm_id', firmId);
 
     if (error) throw new Error(error.message);
+  },
+
+  /** Count active (non-deleted) clients for a firm. */
+  async countActive(firmId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('clients')
+      .select('id', { count: 'exact', head: true })
+      .eq('firm_id', firmId)
+      .eq('status', 'active')
+      .is('deleted_at', null);
+
+    if (error) throw new Error(error.message);
+    return count ?? 0;
+  },
+
+  /** Fetch the most recently created active clients for a firm. */
+  async listRecent(firmId: string, limit: number): Promise<Client[]> {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('firm_id', firmId)
+      .eq('status', 'active')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+    return (data as Record<string, unknown>[]).map(rowToClient);
   },
 };
