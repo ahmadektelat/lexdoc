@@ -205,6 +205,8 @@ export const he: Record<string, string> = {
   'filings.incomeTaxDeductions': 'ניכויים מס הכנסה',
   'filings.niiDeductions': 'ניכויים ביטוח לאומי',
   'filings.dueDate': 'תאריך יעד',
+  'filings.period': 'תקופה',
+  'filings.filedDate': 'תאריך הגשה',
   'filings.status.pending': 'ממתין',
   'filings.status.filed': 'הוגש',
   'filings.status.late': 'באיחור',
@@ -957,4 +959,5 @@ export const he: Record<string, string> = {
   'docs.dragFiles': 'גרור קבצים לכאן',
   'docs.uploadButton': 'העלה קבצים',
   'docs.uploading': 'מעלה...',
+  'docs.uploadPartial': '{success} הועלו, {fail} נכשלו',
 };

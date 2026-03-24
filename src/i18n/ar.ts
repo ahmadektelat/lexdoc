@@ -205,6 +205,8 @@ export const ar: Record<string, string> = {
   'filings.incomeTaxDeductions': 'خصومات ضريبة الدخل',
   'filings.niiDeductions': 'خصومات التأمين الوطني',
   'filings.dueDate': 'تاريخ الاستحقاق',
+  'filings.period': 'الفترة',
+  'filings.filedDate': 'تاريخ التقديم',
   'filings.status.pending': 'معلق',
   'filings.status.filed': 'تم التقديم',
   'filings.status.late': 'متأخر',
@@ -957,4 +959,5 @@ export const ar: Record<string, string> = {
   'docs.dragFiles': 'اسحب الملفات هنا',
   'docs.uploadButton': 'رفع الملفات',
   'docs.uploading': 'جاري الرفع...',
+  'docs.uploadPartial': '{success} تم رفعها، {fail} فشلت',
 };

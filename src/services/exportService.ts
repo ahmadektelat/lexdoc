@@ -109,7 +109,7 @@ export const exportService = {
     if (error) throw new Error(error.message);
     const rows = data ?? [];
 
-    const headers = [t('common.type'), t('common.status'), 'Period', 'Due', 'Filed'];
+    const headers = [t('common.type'), t('common.status'), t('filings.period'), t('filings.dueDate'), t('filings.filedDate')];
     const csvRows = rows.map((r: Record<string, unknown>) => [
       csvEscape(String(r.type)),
       csvEscape(String(r.status)),

@@ -205,6 +205,8 @@ export const en: Record<string, string> = {
   'filings.incomeTaxDeductions': 'Income Tax Deductions',
   'filings.niiDeductions': 'NII Deductions',
   'filings.dueDate': 'Due Date',
+  'filings.period': 'Period',
+  'filings.filedDate': 'Filed',
   'filings.status.pending': 'Pending',
   'filings.status.filed': 'Filed',
   'filings.status.late': 'Late',
@@ -957,4 +959,5 @@ export const en: Record<string, string> = {
   'docs.dragFiles': 'Drag files here',
   'docs.uploadButton': 'Upload files',
   'docs.uploading': 'Uploading...',
+  'docs.uploadPartial': '{success} uploaded, {fail} failed',
 };

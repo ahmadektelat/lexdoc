@@ -109,7 +109,7 @@ export function DocsImportPanel() {
     setFiles([]);
 
     if (failCount > 0) {
-      toast.warning(`${successCount} uploaded, ${failCount} failed`);
+      toast.warning(t('docs.uploadPartial').replace('{success}', String(successCount)).replace('{fail}', String(failCount)));
     } else {
       toast.success(`${successCount} ${t('documents.uploadSuccess')}`);
     }
