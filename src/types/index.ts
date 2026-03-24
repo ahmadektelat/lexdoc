@@ -15,3 +15,4 @@ export * from './document';
 export * from './role';
 export * from './audit';
 export * from './message';
+export * from './backup';

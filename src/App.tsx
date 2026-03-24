@@ -26,6 +26,7 @@ import { MessagingView } from '@/components/messaging/MessagingView';
 import { DashboardView } from '@/components/dashboard/DashboardView';
 import { ReportsView } from '@/components/reports/ReportsView';
 import { AuditView } from '@/components/audit/AuditView';
+import { BackupView } from '@/components/backup/BackupView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,7 +86,7 @@ export default function App() {
               <Route path="messaging" element={<MessagingView />} />
               <Route path="permissions" element={<PermissionsView />} />
               <Route path="audit" element={<AuditView />} />
-              <Route path="backup" element={<SectionPlaceholder section="backup" />} />
+              <Route path="backup" element={<BackupView />} />
               <Route path="settings" element={<SectionPlaceholder section="settings" />} />
             </Route>
 
