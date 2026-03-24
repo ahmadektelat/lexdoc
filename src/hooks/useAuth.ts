@@ -18,6 +18,9 @@ export function useAuth() {
         // Only act on events that change auth state.
         // Ignore TOKEN_REFRESHED, PASSWORD_RECOVERY, USER_UPDATED, etc.
         if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          // Set loading while we fetch firm data — prevents ProtectedRoute
+          // from redirecting to /login before the async fetch completes.
+          useAuthStore.getState().setLoading(true);
           if (session?.user) {
             const result = await firmService.getFirmByUserId(session.user.id);
             if (result) {

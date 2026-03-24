@@ -50,7 +50,9 @@ export function Login() {
         );
         loginSucceededRef.current = false;
       }
-      navigate('/dashboard', { replace: true });
+      if (firmData) {
+        navigate('/dashboard', { replace: true });
+      }
     }
   }, [user, isLoading, firmData, navigate, t]);
 
@@ -80,9 +82,10 @@ export function Login() {
         return;
       }
 
-      // Success — mark that login succeeded so the useEffect can show the toast.
-      // The useAuth listener will populate the store, triggering the redirect.
+      // Success — navigate immediately. ProtectedRoute will show a spinner
+      // while useAuth finishes loading firm data in the background.
       loginSucceededRef.current = true;
+      navigate('/dashboard', { replace: true });
     } catch {
       setError(t('auth.errors.signInFailed'));
     } finally {
