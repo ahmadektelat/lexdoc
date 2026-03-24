@@ -1,9 +1,8 @@
 // CREATED: 2026-03-18
-// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
-//          - Integrated DocumentsTab replacing placeholder
+// UPDATED: 2026-03-24 22:00 IST (Jerusalem)
+//          - Replaced activity tab placeholder with AuditEntityPanel
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { EmptyState } from '@/components/shared/EmptyState';
 import { ClientTasksWidget } from '@/components/crm/ClientTasksWidget';
 import { FilingsClientTab } from '@/components/filings/FilingsClientTab';
 import { HoursTab } from '@/components/billing/HoursTab';
@@ -11,7 +10,7 @@ import { InvoicesTab } from '@/components/billing/InvoicesTab';
 import { LedgerTab } from '@/components/billing/LedgerTab';
 import { DocumentsTab } from '@/components/documents/DocumentsTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Activity } from 'lucide-react';
+import { AuditEntityPanel } from '@/components/audit/AuditEntityPanel';
 import type { Client } from '@/types';
 
 interface ClientTabsProps {
@@ -47,11 +46,7 @@ export function ClientTabs({ clientId, client }: ClientTabsProps) {
       </TabsContent>
 
       <TabsContent value="activity">
-        <EmptyState
-          icon={Activity}
-          title={t('clients.tabs.activity')}
-          description={t('clients.tabs.activityPlaceholder')}
-        />
+        <AuditEntityPanel entityType="client" entityId={clientId} />
       </TabsContent>
 
       <TabsContent value="hours">
