@@ -1,6 +1,6 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-24 16:00 IST (Jerusalem)
+//          - Added totalPending method for dashboard module
 
 import { supabase } from '@/integrations/supabase/client';
 import type { BillingEntry, CreateBillingInput } from '@/types';
@@ -112,5 +112,22 @@ export const billingService = {
       .eq('firm_id', firmId);
 
     if (error) throw new Error(error.message);
+  },
+
+  /** Sum pending charges minus credits for a firm (returns agorot). */
+  async totalPending(firmId: string): Promise<number> {
+    const { data, error } = await supabase
+      .from('billing_entries')
+      .select('type, amount')
+      .eq('firm_id', firmId)
+      .eq('status', 'pending')
+      .is('deleted_at', null);
+
+    if (error) throw new Error(error.message);
+
+    const rows = data as { type: string; amount: number }[];
+    const charges = rows.filter(r => r.type === 'charge').reduce((s, r) => s + r.amount, 0);
+    const credits = rows.filter(r => r.type === 'credit').reduce((s, r) => s + r.amount, 0);
+    return charges - credits;
   },
 };

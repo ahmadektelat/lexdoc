@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-24 16:00 IST (Jerusalem)
+//          - Added upcomingByFirm method for dashboard module
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Filing, FilingSetting, CreateFilingInput } from '@/types';
@@ -147,6 +147,25 @@ export const filingService = {
         if (error) throw new Error(error.message);
       }
     }
+  },
+
+  /** List upcoming/overdue filings for a firm, with client name. */
+  async upcomingByFirm(firmId: string, limit: number): Promise<(Filing & { clientName: string })[]> {
+    const { data, error } = await supabase
+      .from('filings')
+      .select('*, clients!inner(name)')
+      .eq('firm_id', firmId)
+      .in('status', ['pending', 'late'])
+      .is('deleted_at', null)
+      .order('due', { ascending: true })
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+
+    return (data as Record<string, unknown>[]).map(row => ({
+      ...rowToFiling(row),
+      clientName: (row.clients as { name: string }).name,
+    }));
   },
 
   async lateCountsByFirm(firmId: string, year: number): Promise<Record<string, number>> {

@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
-// UPDATED: 2026-03-24 12:30 IST (Jerusalem)
-//          - Replaced messaging placeholder route with MessagingView
+// UPDATED: 2026-03-24 16:00 IST (Jerusalem)
+//          - Replaced DashboardPlaceholder with DashboardView, added /settings route
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -23,6 +23,7 @@ import { CrmView } from '@/components/crm/CrmView';
 import { FilingsView } from '@/components/filings/FilingsView';
 import { BillingView } from '@/components/billing/BillingView';
 import { MessagingView } from '@/components/messaging/MessagingView';
+import { DashboardView } from '@/components/dashboard/DashboardView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,7 +71,7 @@ export default function App() {
               }
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<DashboardPlaceholder />} />
+              <Route path="dashboard" element={<DashboardView />} />
               <Route path="clients" element={<ClientsView />} />
               <Route path="clients/:id" element={<ClientDetailView />} />
               <Route path="filings" element={<FilingsView />} />
@@ -83,6 +84,7 @@ export default function App() {
               <Route path="permissions" element={<PermissionsView />} />
               <Route path="audit" element={<SectionPlaceholder section="audit" />} />
               <Route path="backup" element={<SectionPlaceholder section="backup" />} />
+              <Route path="settings" element={<SectionPlaceholder section="settings" />} />
             </Route>
 
             {/* Catch-all redirect */}
@@ -92,16 +94,6 @@ export default function App() {
         <Toaster position="top-center" dir="rtl" richColors />
       </LanguageProvider>
     </QueryClientProvider>
-  );
-}
-
-// Temporary placeholders — will be replaced by actual components during module migration
-function DashboardPlaceholder() {
-  return (
-    <div className="p-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-foreground mb-4">לוח בקרה</h1>
-      <p className="text-muted-foreground">מודול לוח הבקרה יועבר בשלב הבא.</p>
-    </div>
   );
 }
 

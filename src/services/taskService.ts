@@ -1,6 +1,6 @@
 // CREATED: 2026-03-19
-// UPDATED: 2026-03-19 15:00 IST (Jerusalem)
-//          - Implemented cancelAutoTaskForFiling (replaced stub)
+// UPDATED: 2026-03-24 16:00 IST (Jerusalem)
+//          - Added countOpen, countOverdue, listOpenByFirm methods for dashboard module
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Task, CreateTaskInput } from '@/types';
@@ -164,5 +164,64 @@ export const taskService = {
       .is('deleted_at', null);
 
     if (error) throw new Error(error.message);
+  },
+
+  /** Count open (non-deleted) tasks for a firm. */
+  async countOpen(firmId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('firm_id', firmId)
+      .eq('status', 'open')
+      .is('deleted_at', null);
+
+    if (error) throw new Error(error.message);
+    return count ?? 0;
+  },
+
+  /** Count overdue open tasks (due_date in the past) for a firm. */
+  async countOverdue(firmId: string): Promise<number> {
+    const today = new Date().toISOString().split('T')[0];
+    const { count, error } = await supabase
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('firm_id', firmId)
+      .eq('status', 'open')
+      .is('deleted_at', null)
+      .not('due_date', 'is', null)
+      .lt('due_date', today);
+
+    if (error) throw new Error(error.message);
+    return count ?? 0;
+  },
+
+  /** List open tasks for a firm, sorted by priority then due date, with client name. */
+  async listOpenByFirm(firmId: string, limit: number): Promise<(Task & { clientName?: string })[]> {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*, clients(name)')
+      .eq('firm_id', firmId)
+      .eq('status', 'open')
+      .is('deleted_at', null)
+      .order('due_date', { ascending: true, nullsFirst: false })
+      .limit(50);
+
+    if (error) throw new Error(error.message);
+
+    const tasks = (data as Record<string, unknown>[]).map(row => ({
+      ...rowToTask(row),
+      clientName: (row.clients as { name: string } | null)?.name,
+    }));
+
+    // Sort by priority rank (high=0, medium=1, low=2), then by due_date
+    const priorityRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    tasks.sort((a, b) => {
+      const pa = priorityRank[a.priority] ?? 1;
+      const pb = priorityRank[b.priority] ?? 1;
+      if (pa !== pb) return pa - pb;
+      return 0;
+    });
+
+    return tasks.slice(0, limit);
   },
 };
