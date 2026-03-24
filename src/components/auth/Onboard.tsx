@@ -15,15 +15,18 @@ export function Onboard() {
   const navigate = useNavigate();
   const { t, direction } = useLanguage();
   const user = useAuthStore((s) => s.user);
+  const firmId = useAuthStore((s) => s.firmId);
   const isLoading = useAuthStore((s) => s.isLoading);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to dashboard only if fully registered (has user AND firm)
+  // During registration, user gets set by SIGNED_IN event before registerFirm completes,
+  // so checking only user would cause a premature redirect.
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && firmId) {
       navigate('/dashboard', { replace: true });
     }
-  }, [user, isLoading, navigate]);
+  }, [user, firmId, isLoading, navigate]);
   const [firmData, setFirmData] = useState<Partial<CreateFirmInput>>({});
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
@@ -58,7 +61,7 @@ export function Onboard() {
               firmData={firmData}
               logoFile={logoFile}
               onBack={() => setStep(1)}
-              onComplete={() => setStep(3)}
+              onComplete={() => navigate('/dashboard', { replace: true })}
             />
           )}
           {step === 3 && <OnboardStep3 />}

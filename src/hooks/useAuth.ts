@@ -13,57 +13,71 @@ export function useAuth() {
   const store = useAuthStore();
 
   useEffect(() => {
-    const { data: { subscription } } = authService.onAuthStateChange(
-      async (event, session) => {
-        // Only act on events that change auth state.
-        // Ignore TOKEN_REFRESHED, PASSWORD_RECOVERY, USER_UPDATED, etc.
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-          if (session?.user) {
-            const result = await firmService.getFirmByUserId(session.user.id);
-            if (result) {
-              useAuthStore.getState().setUser({
-                id: session.user.id,
-                email: session.user.email!,
-                name: session.user.email!,
-              });
-              useAuthStore.getState().setFirmData(result.firm, result.role);
+    let cancelled = false;
 
-              // Load granular permissions for this user
-              try {
-                const permissions = await roleService.getPermissionsForUser(
-                  result.firm.id
-                );
-                const permissionsRecord: Record<string, boolean> = {};
-                for (const p of permissions) {
-                  permissionsRecord[p] = true;
-                }
-                useAuthStore.getState().setPermissions(permissionsRecord);
-              } catch {
-                // Permission loading failure = default deny (empty permissions).
-                // superAdmin bypass in can() ensures firm owners always have access.
+    // Load session data — called on mount and on SIGNED_IN events.
+    // Extracted so it works even if INITIAL_SESSION is missed (React StrictMode).
+    async function loadSession() {
+      useAuthStore.getState().setLoading(true);
+      try {
+        const session = await authService.getSession();
+        if (cancelled) return;
+        if (session?.user) {
+          const result = await firmService.getFirmByUserId(session.user.id);
+          if (cancelled) return;
+          if (result) {
+            useAuthStore.getState().setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              name: session.user.email!,
+            });
+            useAuthStore.getState().setFirmData(result.firm, result.role);
+
+            try {
+              const permissions = await roleService.getPermissionsForUser(
+                result.firm.id
+              );
+              if (cancelled) return;
+              const permissionsRecord: Record<string, boolean> = {};
+              for (const p of permissions) {
+                permissionsRecord[p] = true;
               }
-            } else {
-              // Orphaned user: auth session exists but no firm record.
-              useAuthStore.getState().setUser({
-                id: session.user.id,
-                email: session.user.email!,
-                name: session.user.email!,
-              });
+              useAuthStore.getState().setPermissions(permissionsRecord);
+            } catch {
+              // Permission loading failure = default deny (empty permissions).
             }
           } else {
-            // INITIAL_SESSION with no session — user never logged in
-            useAuthStore.getState().logout();
+            // Orphaned user: auth session exists but no firm record.
+            useAuthStore.getState().setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              name: session.user.email!,
+            });
           }
-          useAuthStore.getState().setLoading(false);
-        } else if (event === 'SIGNED_OUT') {
+        } else {
           useAuthStore.getState().logout();
+        }
+      } finally {
+        if (!cancelled) {
           useAuthStore.getState().setLoading(false);
         }
-        // All other events (TOKEN_REFRESHED, etc.) are ignored.
+      }
+    }
+
+    // Load on mount — handles existing session from localStorage.
+    loadSession();
+
+    // Listen for auth changes (sign in, sign out).
+    const { data: { subscription } } = authService.onAuthStateChange(
+      (event) => {
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+          loadSession();
+        }
       }
     );
 
     return () => {
+      cancelled = true;
       subscription.unsubscribe();
     };
   }, []);

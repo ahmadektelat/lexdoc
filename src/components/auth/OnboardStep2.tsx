@@ -102,10 +102,7 @@ export function OnboardStep2({
         }
       }
 
-      // 5. Sign out to force login
-      await authService.signOut();
-
-      // 5. Advance to success step
+      // 5. Advance to success step — user stays logged in
       onComplete();
     } catch {
       setSubmitError(t('auth.errors.signUpFailed'));
