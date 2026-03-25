@@ -505,6 +505,14 @@ export const ar: Record<string, string> = {
   'documents.editDocument': 'تعديل المستند',
   'documents.folderNameRequired': 'اسم المجلد مطلوب',
   'documents.folderCreationFailed': 'فشل إنشاء المجلد',
+  'documents.generatingPdf': 'جاري إنشاء المستند...',
+
+  // Invoice PDF
+  'invoices.pdfDescription': 'الوصف',
+  'invoices.pdfQty': 'الكمية',
+  'invoices.pdfUnitPrice': 'سعر الوحدة',
+  'invoices.pdfTotal': 'المجموع',
+  'invoices.pdfGenerating': 'جاري إنشاء الفاتورة...',
 
   // Client types
   'clientTypes.selfEmployed': 'عامل مستقل',
@@ -778,6 +786,8 @@ export const ar: Record<string, string> = {
   'messaging.varEmail': 'بريد العميل',
   'messaging.varSubject': 'موضوع حر',
   'messaging.varBody': 'محتوى حر',
+  'messaging.cronActive': 'المعالجة التلقائية نشطة',
+  'messaging.cronInactive': 'المعالجة اليدوية فقط',
 
   // Reports
   'reports.title': 'التقارير',
@@ -951,6 +961,35 @@ export const ar: Record<string, string> = {
   'export.field.tags': 'علامات',
   'export.field.notes': 'ملاحظات',
   'export.field.updatedAt': 'آخر تحديث',
+
+  // Settings
+  'settings.title': 'الإعدادات',
+  'settings.description': 'إدارة ملف المكتب والتفضيلات',
+  'settings.firmProfile': 'ملف المكتب',
+  'settings.firmName': 'اسم المكتب',
+  'settings.phone': 'هاتف',
+  'settings.email': 'بريد إلكتروني',
+  'settings.city': 'مدينة',
+  'settings.regNum': 'رقم التسجيل',
+  'settings.firmType': 'نوع المكتب',
+  'settings.logo': 'شعار',
+  'settings.uploadLogo': 'تحميل الشعار',
+  'settings.removeLogo': 'إزالة الشعار',
+  'settings.defaultFee': 'الرسوم الشهرية الافتراضية',
+  'settings.subscription': 'الاشتراك',
+  'settings.currentPlan': 'الخطة الحالية',
+  'settings.expiry': 'تاريخ الانتهاء',
+  'settings.daysRemaining': '{days} أيام متبقية',
+  'settings.preferences': 'التفضيلات',
+  'settings.theme': 'السمة',
+  'settings.language': 'اللغة',
+  'settings.saveSuccess': 'تم حفظ الإعدادات بنجاح',
+  'settings.saveFailed': 'فشل حفظ الإعدادات',
+  'settings.logoUploadSuccess': 'تم تحميل الشعار بنجاح',
+  'settings.logoRemoved': 'تمت إزالة الشعار',
+  'settings.noPermission': 'لا يوجد إذن لتعديل الإعدادات',
+  'settings.feeCurrency': '₪',
+  'settings.billingDefaults': 'إعدادات الفواتير',
 
   // Documents import
   'docs.importTitle': 'رفع مستندات',

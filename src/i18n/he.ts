@@ -505,6 +505,14 @@ export const he: Record<string, string> = {
   'documents.editDocument': 'עריכת מסמך',
   'documents.folderNameRequired': 'שם תיקייה נדרש',
   'documents.folderCreationFailed': 'יצירת התיקייה נכשלה',
+  'documents.generatingPdf': 'מייצר מסמך...',
+
+  // Invoice PDF
+  'invoices.pdfDescription': 'תיאור',
+  'invoices.pdfQty': 'כמות',
+  'invoices.pdfUnitPrice': 'מחיר ליחידה',
+  'invoices.pdfTotal': 'סה"כ',
+  'invoices.pdfGenerating': 'מייצר חשבונית...',
 
   // Client types
   'clientTypes.selfEmployed': 'עוסק מורשה',
@@ -778,6 +786,8 @@ export const he: Record<string, string> = {
   'messaging.varEmail': 'מייל הלקוח',
   'messaging.varSubject': 'נושא חופשי',
   'messaging.varBody': 'תוכן חופשי',
+  'messaging.cronActive': 'עיבוד אוטומטי פעיל',
+  'messaging.cronInactive': 'עיבוד ידני בלבד',
 
   // Reports
   'reports.title': 'דוחות',
@@ -951,6 +961,35 @@ export const he: Record<string, string> = {
   'export.field.tags': 'תגיות',
   'export.field.notes': 'הערות',
   'export.field.updatedAt': 'עדכון אחרון',
+
+  // Settings
+  'settings.title': 'הגדרות',
+  'settings.description': 'ניהול פרטי המשרד והעדפות',
+  'settings.firmProfile': 'פרטי משרד',
+  'settings.firmName': 'שם המשרד',
+  'settings.phone': 'טלפון',
+  'settings.email': 'דוא"ל',
+  'settings.city': 'עיר',
+  'settings.regNum': 'מספר רישום',
+  'settings.firmType': 'סוג המשרד',
+  'settings.logo': 'לוגו',
+  'settings.uploadLogo': 'העלאת לוגו',
+  'settings.removeLogo': 'הסרת לוגו',
+  'settings.defaultFee': 'שכר טרחה חודשי ברירת מחדל',
+  'settings.subscription': 'מנוי',
+  'settings.currentPlan': 'תוכנית נוכחית',
+  'settings.expiry': 'תאריך תפוגה',
+  'settings.daysRemaining': '{days} ימים נותרו',
+  'settings.preferences': 'העדפות',
+  'settings.theme': 'ערכת נושא',
+  'settings.language': 'שפה',
+  'settings.saveSuccess': 'ההגדרות נשמרו בהצלחה',
+  'settings.saveFailed': 'שמירת ההגדרות נכשלה',
+  'settings.logoUploadSuccess': 'הלוגו הועלה בהצלחה',
+  'settings.logoRemoved': 'הלוגו הוסר',
+  'settings.noPermission': 'אין הרשאה לערוך הגדרות',
+  'settings.feeCurrency': '₪',
+  'settings.billingDefaults': 'הגדרות חיוב',
 
   // Documents import
   'docs.importTitle': 'העלאת מסמכים',

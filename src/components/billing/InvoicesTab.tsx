@@ -1,8 +1,9 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-26 10:30 IST (Jerusalem)
+//          - Replaced buildInvoiceText + handlePrint with PDF generation via jsPDF
+//          - Uses dynamic import() for PDF modules (lazy loading)
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useInvoices, useCreateInvoice, useMarkInvoicePaid, useMarkInvoiceSent } from '@/hooks/useInvoices';
@@ -20,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatDate, getToday } from '@/lib/dates';
-import { formatMoney, calculateInvoiceTotal } from '@/lib/money';
+import { formatMoney, calculateInvoiceTotal, agorotToShekel } from '@/lib/money';
 import { Plus, Download, Check, Send } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Invoice, InvoiceItem, HoursEntry, Firm } from '@/types';
@@ -35,74 +36,8 @@ interface InvoicesTabProps {
   clientBillingDay?: number;
 }
 
-function buildInvoiceText(
-  invoice: Invoice,
-  firmData: Firm | null,
-  clientName: string,
-  clientCaseNum: string,
-  clientEmail: string | undefined,
-  clientBillingDay: number | undefined,
-  monthHours: HoursEntry[],
-  t: (key: string) => string
-): string {
-  const lines: string[] = [];
-  lines.push('='.repeat(50));
-  lines.push(t('invoices.transactionInvoice'));
-  lines.push('='.repeat(50));
-  lines.push('');
-  lines.push(`${t('invoices.invoiceNum')}: ${invoice.invoiceNum}`);
-  lines.push(`${t('invoices.date')}: ${formatDate(invoice.date)}`);
-  lines.push('');
-
-  if (firmData) {
-    lines.push(`${t('invoices.from')}: ${firmData.name}`);
-    if (firmData.regNum) lines.push(`  ${firmData.regNum}`);
-    if (firmData.city) lines.push(`  ${firmData.city}`);
-    lines.push('');
-  }
-
-  lines.push(`${t('invoices.to')}: ${clientName}`);
-  lines.push(`${t('invoices.caseFile')}: ${clientCaseNum}`);
-  if (clientEmail) lines.push(`  ${clientEmail}`);
-  lines.push('');
-  lines.push('-'.repeat(50));
-
-  for (const item of invoice.items) {
-    lines.push(`${item.desc}`);
-    if (item.qty !== 1 || item.unit > 0) {
-      lines.push(`  ${item.qty} x ${formatMoney(item.unit)} = ${formatMoney(item.total)}`);
-    }
-    if (item.note) lines.push(`  (${item.note})`);
-  }
-
-  lines.push('-'.repeat(50));
-  lines.push(`${t('invoices.beforeVat')}: ${formatMoney(invoice.subtotal)}`);
-  lines.push(`${t('billing.vat')} (18%): ${formatMoney(invoice.vatAmount)}`);
-  lines.push(`${t('invoices.totalDue')}: ${formatMoney(invoice.total)}`);
-  lines.push('');
-
-  if (clientBillingDay) {
-    lines.push(`${t('invoices.paymentDue')}: ${clientBillingDay}`);
-  }
-
-  if (monthHours.length > 0) {
-    lines.push('');
-    lines.push(`${t('hours.staffSummary')}:`);
-    const staffMap: Record<string, number> = {};
-    for (const h of monthHours) {
-      staffMap[h.staffName] = (staffMap[h.staffName] || 0) + h.hours;
-    }
-    for (const [name, hrs] of Object.entries(staffMap)) {
-      lines.push(`  ${name}: ${hrs}h`);
-    }
-  }
-
-  lines.push('');
-  lines.push(t('invoices.thanks'));
-  lines.push('='.repeat(50));
-
-  return lines.join('\n');
-}
+// Logo base64 cache — loaded once per session
+let cachedLogoBase64: string | null | undefined = undefined;
 
 export function InvoicesTab({
   clientId,
@@ -123,6 +58,7 @@ export function InvoicesTab({
   const markSent = useMarkInvoiceSent();
 
   const [showCreate, setShowCreate] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [selMonth, setSelMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -150,8 +86,6 @@ export function InvoicesTab({
     }
     return months;
   }, []);
-
-  if (!firmId || !can('billing.view')) return null;
 
   async function handleCreate() {
     if (!firmId || !clientMonthlyFee || !feePreview) return;
@@ -198,28 +132,120 @@ export function InvoicesTab({
     );
   }
 
-  function handlePrint(invoice: Invoice) {
-    const invoiceMonth = invoice.date.substring(0, 7);
-    const invoiceHours = hoursEntries.filter(e => e.date.startsWith(invoiceMonth));
-    const content = buildInvoiceText(
-      invoice,
-      firmData,
-      clientName,
-      clientCaseNum,
-      clientEmail,
-      clientBillingDay,
-      invoiceHours,
-      t
-    );
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${invoice.invoiceNum}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(t('invoices.downloadSuccess'));
-  }
+  const handlePrint = useCallback(async (invoice: Invoice) => {
+    if (isPrinting) return;
+    setIsPrinting(true);
+    try {
+      // Dynamic import for lazy loading PDF modules
+      const { createPdfDoc, renderLetterhead, fetchImageAsBase64 } = await import('@/lib/pdf');
+      await import('jspdf-autotable');
+
+      // Fetch logo (cached after first call)
+      if (cachedLogoBase64 === undefined) {
+        cachedLogoBase64 = await fetchImageAsBase64(firmData?.logo);
+      }
+
+      const doc = createPdfDoc();
+      const PAGE_W = 210;
+      const M = 15;
+      let y = renderLetterhead(doc, firmData, cachedLogoBase64);
+
+      // Invoice title
+      doc.setFontSize(14);
+      doc.text(t('invoices.transactionInvoice'), PAGE_W - M, y, { align: 'right' });
+      y += 8;
+
+      // Invoice meta (number, date)
+      doc.setFontSize(10);
+      doc.text(`${t('invoices.invoiceNum')}: ${invoice.invoiceNum}`, PAGE_W - M, y, { align: 'right' });
+      y += 5;
+      doc.text(`${t('invoices.date')}: ${formatDate(invoice.date)}`, PAGE_W - M, y, { align: 'right' });
+      y += 8;
+
+      // Client block
+      doc.text(`${t('invoices.to')}: ${clientName}`, PAGE_W - M, y, { align: 'right' });
+      y += 5;
+      doc.text(`${t('invoices.caseFile')}: ${clientCaseNum}`, PAGE_W - M, y, { align: 'right' });
+      y += 5;
+      if (clientEmail) {
+        doc.text(clientEmail, PAGE_W - M, y, { align: 'right' });
+        y += 5;
+      }
+      y += 5;
+
+      // Line items table (RTL: columns reversed visually)
+      const tableBody = invoice.items.map((item) => [
+        formatMoney(item.total),
+        `${formatMoney(item.unit)}`,
+        String(item.qty),
+        item.desc + (item.note ? ` (${item.note})` : ''),
+      ]);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (doc as any).autoTable({
+        startY: y,
+        head: [[
+          t('invoices.pdfTotal'),
+          t('invoices.pdfUnitPrice'),
+          t('invoices.pdfQty'),
+          t('invoices.pdfDescription'),
+        ]],
+        body: tableBody,
+        styles: { halign: 'right', fontSize: 9 },
+        headStyles: { fillColor: [59, 130, 246], halign: 'right', fontSize: 9 },
+        margin: { left: M, right: M },
+        tableWidth: 'auto',
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      y = (doc as any).lastAutoTable.finalY + 8;
+
+      // Totals section
+      doc.setFontSize(10);
+      doc.text(`${t('invoices.beforeVat')}: ${formatMoney(invoice.subtotal)}`, PAGE_W - M, y, { align: 'right' });
+      y += 5;
+      doc.text(`${t('billing.vat')} (18%): ${formatMoney(invoice.vatAmount)}`, PAGE_W - M, y, { align: 'right' });
+      y += 5;
+      doc.setFontSize(12);
+      doc.text(`${t('invoices.totalDue')}: ${formatMoney(invoice.total)}`, PAGE_W - M, y, { align: 'right' });
+      y += 10;
+
+      // Hours summary
+      const invoiceMonth = invoice.date.substring(0, 7);
+      const invoiceHours = hoursEntries.filter(e => e.date.startsWith(invoiceMonth));
+      if (invoiceHours.length > 0) {
+        doc.setFontSize(10);
+        doc.text(`${t('hours.staffSummary')}:`, PAGE_W - M, y, { align: 'right' });
+        y += 5;
+        const staffMap: Record<string, number> = {};
+        for (const h of invoiceHours) {
+          staffMap[h.staffName] = (staffMap[h.staffName] || 0) + h.hours;
+        }
+        for (const [name, hrs] of Object.entries(staffMap)) {
+          doc.text(`${name}: ${hrs}h`, PAGE_W - M - 5, y, { align: 'right' });
+          y += 4;
+        }
+        y += 5;
+      }
+
+      // Footer
+      if (clientBillingDay) {
+        doc.setFontSize(9);
+        doc.text(`${t('invoices.paymentDue')}: ${clientBillingDay}`, PAGE_W - M, y, { align: 'right' });
+        y += 5;
+      }
+      doc.text(t('invoices.thanks'), PAGE_W - M, y, { align: 'right' });
+
+      doc.save(`${invoice.invoiceNum}.pdf`);
+      toast.success(t('invoices.downloadSuccess'));
+    } catch {
+      toast.error(t('errors.saveFailed'));
+    } finally {
+      setIsPrinting(false);
+    }
+  }, [isPrinting, firmData, t, clientName, clientCaseNum, clientEmail, clientBillingDay, hoursEntries]);
+
+  if (!firmId || !can('billing.view')) return null;
 
   const columns: ColumnDef<Invoice, unknown>[] = [
     {
@@ -266,6 +292,7 @@ export function InvoicesTab({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
+            disabled={isPrinting}
             onClick={(e) => {
               e.stopPropagation();
               handlePrint(row.original);

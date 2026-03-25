@@ -1,6 +1,6 @@
 // CREATED: 2026-03-17 IST (Jerusalem)
-// UPDATED: 2026-03-24 22:00 IST (Jerusalem)
-//          - Replaced audit SectionPlaceholder with AuditView
+// UPDATED: 2026-03-26 11:00 IST (Jerusalem)
+//          - Replaced settings SectionPlaceholder with SettingsView
 // App - Root component with providers and routing
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -28,6 +28,7 @@ import { DashboardView } from '@/components/dashboard/DashboardView';
 import { ReportsView } from '@/components/reports/ReportsView';
 import { AuditView } from '@/components/audit/AuditView';
 import { BackupView } from '@/components/backup/BackupView';
+import { SettingsView } from '@/components/settings/SettingsView';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,7 +89,7 @@ export default function App() {
               <Route path="permissions" element={<PermissionsView />} />
               <Route path="audit" element={<AuditView />} />
               <Route path="backup" element={<BackupView />} />
-              <Route path="settings" element={<SectionPlaceholder section="settings" />} />
+              <Route path="settings" element={<SettingsView />} />
             </Route>
 
             {/* Catch-all redirect */}

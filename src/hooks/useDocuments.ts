@@ -1,6 +1,7 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 15:00 IST (Jerusalem)
-//          - Fix: orphan storage cleanup in useSaveGeneratedDocument
+// UPDATED: 2026-03-26 11:30 IST (Jerusalem)
+//          - Updated useSaveGeneratedDocument to support PDF blob uploads
+//          - Added JSDoc explaining the two modes (text-only vs PDF blob)
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -152,13 +153,23 @@ export function useDeleteDocument() {
   });
 }
 
+/**
+ * Saves a generated document to Supabase Storage and creates a DB row.
+ *
+ * Two modes:
+ * 1. **Text-only** (no `blob` parameter): Creates a text/plain file from `content`.
+ *    The `content` string is stored both in storage and in the DB row.
+ * 2. **PDF blob** (`blob` parameter provided): Uploads the blob directly with its
+ *    MIME type (e.g. application/pdf). The `content` string is still saved in the DB
+ *    row for text preview, but the storage file is the PDF blob.
+ */
 export function useSaveGeneratedDocument() {
   const queryClient = useQueryClient();
   const { t } = useLanguage();
 
   return useMutation({
-    mutationFn: async ({ firmId, clientId, folderId, name, content }:
-      { firmId: string; clientId: string; folderId: string | null; name: string; content: string }) => {
+    mutationFn: async ({ firmId, clientId, folderId, name, content, blob }:
+      { firmId: string; clientId: string; folderId: string | null; name: string; content: string; blob?: Blob }) => {
       // Resolve folder ID — if null, auto-create the "התכתבויות" folder
       let resolvedFolderId = folderId;
       if (!resolvedFolderId) {
@@ -169,8 +180,9 @@ export function useSaveGeneratedDocument() {
         resolvedFolderId = folder.id;
       }
 
-      const blob = new Blob([content], { type: 'text/plain' });
-      const file = new File([blob], name, { type: 'text/plain' });
+      const uploadBlob = blob ?? new Blob([content], { type: 'text/plain' });
+      const mimeType = blob ? blob.type : 'text/plain';
+      const file = new File([uploadBlob], name, { type: mimeType });
       const filePath = await documentService.upload(firmId, clientId, 'התכתבויות', file);
       try {
         return await documentService.create(firmId, {
@@ -178,8 +190,8 @@ export function useSaveGeneratedDocument() {
           folder_id: resolvedFolderId,
           name,
           file_path: filePath,
-          size: blob.size,
-          mime_type: 'text/plain',
+          size: uploadBlob.size,
+          mime_type: mimeType,
           ver: 1,
           sensitivity: 'internal',
           generated: true,

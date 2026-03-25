@@ -1,6 +1,6 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-23 16:00 IST (Jerusalem)
-//          - Import shared extractVars from messageService
+// UPDATED: 2026-03-26 12:30 IST (Jerusalem)
+//          - Added CronStatusBadge next to Pending heading
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/select';
 import { CalendarClock, Play, X } from 'lucide-react';
 import { formatDate } from '@/lib/dates';
+import { CronStatusBadge } from './CronStatusBadge';
 import type { MessageChannel, CreateScheduledInput } from '@/types';
 
 export function MsgSchedulePanel() {
@@ -241,9 +242,12 @@ export function MsgSchedulePanel() {
       {/* Right: Scheduled messages list */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium">
-            {t('messaging.schedulePending')} ({pendingCount})
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-medium">
+              {t('messaging.schedulePending')} ({pendingCount})
+            </h3>
+            <CronStatusBadge />
+          </div>
           {pendingCount > 0 && (
             <Button
               variant="outline"

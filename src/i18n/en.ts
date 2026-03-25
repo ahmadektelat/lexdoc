@@ -505,6 +505,14 @@ export const en: Record<string, string> = {
   'documents.editDocument': 'Edit Document',
   'documents.folderNameRequired': 'Folder name is required',
   'documents.folderCreationFailed': 'Folder creation failed',
+  'documents.generatingPdf': 'Generating document...',
+
+  // Invoice PDF
+  'invoices.pdfDescription': 'Description',
+  'invoices.pdfQty': 'Qty',
+  'invoices.pdfUnitPrice': 'Unit Price',
+  'invoices.pdfTotal': 'Total',
+  'invoices.pdfGenerating': 'Generating invoice...',
 
   // Client types
   'clientTypes.selfEmployed': 'Self Employed',
@@ -778,6 +786,8 @@ export const en: Record<string, string> = {
   'messaging.varEmail': 'Client email',
   'messaging.varSubject': 'Free-form subject',
   'messaging.varBody': 'Free-form body',
+  'messaging.cronActive': 'Automatic processing active',
+  'messaging.cronInactive': 'Manual processing only',
 
   // Reports
   'reports.title': 'Reports',
@@ -951,6 +961,35 @@ export const en: Record<string, string> = {
   'export.field.tags': 'Tags',
   'export.field.notes': 'Notes',
   'export.field.updatedAt': 'Last Updated',
+
+  // Settings
+  'settings.title': 'Settings',
+  'settings.description': 'Manage firm profile and preferences',
+  'settings.firmProfile': 'Firm Profile',
+  'settings.firmName': 'Firm Name',
+  'settings.phone': 'Phone',
+  'settings.email': 'Email',
+  'settings.city': 'City',
+  'settings.regNum': 'Registration Number',
+  'settings.firmType': 'Firm Type',
+  'settings.logo': 'Logo',
+  'settings.uploadLogo': 'Upload Logo',
+  'settings.removeLogo': 'Remove Logo',
+  'settings.defaultFee': 'Default Monthly Fee',
+  'settings.subscription': 'Subscription',
+  'settings.currentPlan': 'Current Plan',
+  'settings.expiry': 'Expiry Date',
+  'settings.daysRemaining': '{days} days remaining',
+  'settings.preferences': 'Preferences',
+  'settings.theme': 'Theme',
+  'settings.language': 'Language',
+  'settings.saveSuccess': 'Settings saved successfully',
+  'settings.saveFailed': 'Failed to save settings',
+  'settings.logoUploadSuccess': 'Logo uploaded successfully',
+  'settings.logoRemoved': 'Logo removed',
+  'settings.noPermission': 'No permission to edit settings',
+  'settings.feeCurrency': '₪',
+  'settings.billingDefaults': 'Billing Defaults',
 
   // Documents import
   'docs.importTitle': 'Upload Documents',
