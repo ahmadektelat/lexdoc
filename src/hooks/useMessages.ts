@@ -1,8 +1,9 @@
 // CREATED: 2026-03-24
-// UPDATED: 2026-03-24 10:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-26 12:30 IST (Jerusalem)
+//          - Added useCronStatus hook for cron status indicator
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { messageService } from '@/services/messageService';
 import type {
   CreateMessageTemplateInput, UpdateMessageTemplateInput,
@@ -185,5 +186,20 @@ export function useRunScheduledMessages() {
     onError: () => {
       toast.error(t('errors.saveFailed'));
     },
+  });
+}
+
+// --- Cron Status ---
+
+export function useCronStatus() {
+  return useQuery({
+    queryKey: ['cron-status'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('check_cron_status');
+      if (error) return false;
+      return data as boolean;
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    retry: false,
   });
 }

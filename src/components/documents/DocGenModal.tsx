@@ -1,6 +1,8 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-23 14:00 IST (Jerusalem)
-//          - Initial implementation
+// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
+//          - Moved cachedLogoBase64 to module level (review fix)
+//          - Upgraded download and save from .txt to .pdf using dynamic import of shared PDF utility
+//          - Fixed filename to use ISO date format instead of toLocaleDateString('he-IL')
 
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -24,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Download, Save } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface DocGenModalProps {
   clientId: string;
@@ -180,6 +183,9 @@ const TEMPLATE_GENERATORS: Record<string, (v: TemplateVars) => string> = {
   custom: generateCustomTemplate,
 };
 
+// Logo base64 cache — loaded once per session
+let cachedLogoBase64: string | null | undefined;
+
 export function DocGenModal({
   clientId,
   clientName,
@@ -218,39 +224,96 @@ export function DocGenModal({
   }, [templateId, vars]);
 
   const templateLabel = TEMPLATES.find((tpl) => tpl.id === templateId);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  function handleDownload() {
-    const blob = new Blob([letterText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${t(templateLabel?.label ?? 'documents.templateCustom')}_${clientName}_${new Date().toLocaleDateString('he-IL')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  function buildFileName(ext: string): string {
+    const isoDate = new Date().toISOString().slice(0, 10);
+    return `${t(templateLabel?.label ?? 'documents.templateCustom')}_${clientName}_${isoDate}.${ext}`;
   }
 
-  function handleSave() {
-    if (!firmId) return;
-    const correspondenceFolder = folders.find((f) => f.name === 'התכתבויות');
-    const fileName = `${t(templateLabel?.label ?? 'documents.templateCustom')}_${clientName}_${new Date().toLocaleDateString('he-IL')}.txt`;
+  async function generateLetterPdf(): Promise<{ doc: import('jspdf').jsPDF } | null> {
+    // Dynamic import for lazy loading PDF modules
+    const { createPdfDoc, renderLetterhead, fetchImageAsBase64, PAGE_WIDTH, MARGIN } = await import('@/lib/pdf');
 
-    saveGenerated.mutate(
-      {
-        firmId,
-        clientId,
-        folderId: correspondenceFolder?.id ?? null,
-        name: fileName,
-        content: letterText,
-      },
-      {
-        onSuccess: () => {
-          onSuccess();
-          onClose();
-        },
+    if (cachedLogoBase64 === undefined) {
+      cachedLogoBase64 = await fetchImageAsBase64(firmData?.logo);
+    }
+
+    const doc = createPdfDoc();
+    let y = renderLetterhead(doc, firmData, cachedLogoBase64);
+    const maxWidth = PAGE_WIDTH - 2 * MARGIN;
+    const pageHeight = 297; // A4 height in mm
+    const bottomMargin = 15;
+
+    doc.setFontSize(10);
+    const lines = letterText.split('\n');
+
+    for (const line of lines) {
+      if (line.trim() === '') {
+        y += 4;
+      } else {
+        const wrappedLines = doc.splitTextToSize(line, maxWidth);
+        for (const wl of wrappedLines) {
+          if (y > pageHeight - bottomMargin) {
+            doc.addPage();
+            y = MARGIN;
+          }
+          doc.text(wl, PAGE_WIDTH - MARGIN, y, { align: 'right' });
+          y += 5;
+        }
       }
-    );
+    }
+
+    return { doc };
+  }
+
+  async function handleDownload() {
+    if (isGenerating) return;
+    setIsGenerating(true);
+    try {
+      const result = await generateLetterPdf();
+      if (result) {
+        result.doc.save(buildFileName('pdf'));
+      }
+    } catch {
+      toast.error(t('errors.saveFailed'));
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function handleSave() {
+    if (!firmId || isGenerating) return;
+    setIsGenerating(true);
+    try {
+      const result = await generateLetterPdf();
+      if (!result) return;
+
+      const pdfBlob = result.doc.output('blob');
+      const correspondenceFolder = folders.find((f) => f.name === 'התכתבויות');
+      const fileName = buildFileName('pdf');
+
+      saveGenerated.mutate(
+        {
+          firmId,
+          clientId,
+          folderId: correspondenceFolder?.id ?? null,
+          name: fileName,
+          content: letterText,
+          blob: pdfBlob,
+        },
+        {
+          onSuccess: () => {
+            onSuccess();
+            onClose();
+          },
+        }
+      );
+    } catch {
+      toast.error(t('errors.saveFailed'));
+    } finally {
+      setIsGenerating(false);
+    }
   }
 
   return (
@@ -331,11 +394,11 @@ export function DocGenModal({
           <Button variant="outline" onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button variant="outline" onClick={handleDownload}>
+          <Button variant="outline" onClick={handleDownload} disabled={isGenerating}>
             <Download className="h-4 w-4 me-2" />
-            {t('documents.downloadLetter')}
+            {isGenerating ? t('documents.generatingPdf') : t('documents.downloadLetter')}
           </Button>
-          <Button onClick={handleSave} disabled={saveGenerated.isPending}>
+          <Button onClick={handleSave} disabled={saveGenerated.isPending || isGenerating}>
             <Save className="h-4 w-4 me-2" />
             {t('documents.saveToFolder')}
           </Button>
