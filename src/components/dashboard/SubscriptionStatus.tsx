@@ -32,7 +32,7 @@ export function SubscriptionStatus() {
           </Badge>
         </div>
 
-        <p className="text-sm text-foreground mb-1">{firmData.planLabel}</p>
+        <p className="text-sm text-foreground mb-1">{t(firmData.planLabel)}</p>
         <p className="text-sm text-muted-foreground mb-3">
           {t('dashboard.until')} {formatDate(firmData.expiry)}
         </p>

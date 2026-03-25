@@ -16,6 +16,7 @@ export const ar: Record<string, string> = {
   'nav.settings': 'الإعدادات',
 
   // Common
+  'common.comingSoon': 'سيتم نقل هذه الوحدة في المرحلة التالية.',
   'common.save': 'حفظ',
   'common.cancel': 'إلغاء',
   'common.delete': 'حذف',

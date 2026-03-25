@@ -5,7 +5,7 @@ description: >
   Orchestrates clarifier, architect, devil's advocate, security-auditor,
   implementer, and code-reviewer through a streamlined bugfix workflow.
 argument-hint: "[bug description or error message]"
-disable-model-invocation: true
+disable-model-invocation: false
 allowed-tools: Agent, TeamCreate, TeamDelete, TaskCreate, TaskUpdate, TaskList, TaskGet, SendMessage, Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 

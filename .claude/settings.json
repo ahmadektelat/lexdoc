@@ -2,19 +2,6 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "enabledPlugins": {
-    "supabase@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "context7-plugin@context7-marketplace": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
-    "postgres-best-practices@supabase-agent-skills": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
-  },
   "hooks": {
     "PreToolUse": [
       {
@@ -27,5 +14,19 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "supabase@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "context7-plugin@context7-marketplace": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "postgres-best-practices@supabase-agent-skills": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "playground@claude-plugins-official": true
   }
 }
