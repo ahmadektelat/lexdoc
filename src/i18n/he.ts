@@ -16,6 +16,7 @@ export const he: Record<string, string> = {
   'nav.settings': 'הגדרות',
 
   // Common
+  'common.comingSoon': 'מודול זה יועבר בשלב הבא.',
   'common.save': 'שמירה',
   'common.cancel': 'ביטול',
   'common.delete': 'מחיקה',

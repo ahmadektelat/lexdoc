@@ -69,7 +69,7 @@ export function useAuth() {
 
     // Listen for auth changes (sign in, sign out).
     const { data: { subscription } } = authService.onAuthStateChange(
-      (event) => {
+      async (event, _session) => {
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
           loadSession();
         }

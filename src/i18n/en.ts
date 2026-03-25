@@ -16,6 +16,7 @@ export const en: Record<string, string> = {
   'nav.settings': 'Settings',
 
   // Common
+  'common.comingSoon': 'This module will be available in the next phase.',
   'common.save': 'Save',
   'common.cancel': 'Cancel',
   'common.delete': 'Delete',

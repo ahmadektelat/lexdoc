@@ -6,7 +6,7 @@ description: >
   Lean team (devils-advocate, implementer, code-reviewer) — no clarifier,
   no architect, no iterative gates.
 argument-hint: "[bug description]"
-disable-model-invocation: true
+disable-model-invocation: false
 allowed-tools: Agent, TeamCreate, TeamDelete, TaskCreate, TaskUpdate, TaskList, TaskGet, SendMessage, Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 

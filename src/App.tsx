@@ -9,6 +9,7 @@ import { Toaster } from 'sonner';
 import { AppShell } from '@/components/layout/AppShell';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { WelcomeScreen } from '@/components/auth/WelcomeScreen';
 import { Login } from '@/components/auth/Login';
@@ -101,10 +102,11 @@ export default function App() {
 }
 
 function SectionPlaceholder({ section }: { section: string }) {
+  const { t } = useLanguage();
   return (
     <div className="p-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-foreground mb-4">{section}</h1>
-      <p className="text-muted-foreground">מודול זה יועבר בשלב הבא.</p>
+      <h1 className="text-2xl font-bold text-foreground mb-4">{t(`nav.${section}`)}</h1>
+      <p className="text-muted-foreground">{t('common.comingSoon')}</p>
     </div>
   );
 }
