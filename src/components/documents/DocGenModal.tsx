@@ -1,5 +1,6 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-26 12:00 IST (Jerusalem)
+// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
+//          - Moved cachedLogoBase64 to module level (review fix)
 //          - Upgraded download and save from .txt to .pdf using dynamic import of shared PDF utility
 //          - Fixed filename to use ISO date format instead of toLocaleDateString('he-IL')
 
@@ -182,6 +183,9 @@ const TEMPLATE_GENERATORS: Record<string, (v: TemplateVars) => string> = {
   custom: generateCustomTemplate,
 };
 
+// Logo base64 cache — loaded once per session
+let cachedLogoBase64: string | null | undefined;
+
 export function DocGenModal({
   clientId,
   clientName,
@@ -221,9 +225,6 @@ export function DocGenModal({
 
   const templateLabel = TEMPLATES.find((tpl) => tpl.id === templateId);
   const [isGenerating, setIsGenerating] = useState(false);
-
-  // Logo cache for PDF generation
-  let cachedLogoBase64: string | null | undefined;
 
   function buildFileName(ext: string): string {
     const isoDate = new Date().toISOString().slice(0, 10);

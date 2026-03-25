@@ -1,11 +1,11 @@
 // CREATED: 2026-03-26
-// UPDATED: 2026-03-26 11:00 IST (Jerusalem)
+// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
+//          - Removed unused Navigate import (review fix)
 //          - Initial implementation — full settings page with 5 sections
 //          - Client-side logo file validation (security requirement)
 //          - Guards defaultFee against undefined (per review)
 
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { firmService } from '@/services/firmService';

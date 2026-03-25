@@ -1,5 +1,6 @@
 // CREATED: 2026-03-23
-// UPDATED: 2026-03-26 10:30 IST (Jerusalem)
+// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
+//          - Used invoices.pdfGenerating i18n key on download button spinner (review fix)
 //          - Replaced buildInvoiceText + handlePrint with PDF generation via jsPDF
 //          - Uses dynamic import() for PDF modules (lazy loading)
 
@@ -293,12 +294,13 @@ export function InvoicesTab({
             size="icon"
             className="h-8 w-8"
             disabled={isPrinting}
+            title={isPrinting ? t('invoices.pdfGenerating') : undefined}
             onClick={(e) => {
               e.stopPropagation();
               handlePrint(row.original);
             }}
           >
-            <Download className="h-4 w-4" />
+            {isPrinting ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <Download className="h-4 w-4" />}
           </Button>
           {!row.original.paid && can('billing.edit') && (
             <Button

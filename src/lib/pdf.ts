@@ -1,5 +1,7 @@
 // CREATED: 2026-03-26
-// UPDATED: 2026-03-26 10:00 IST (Jerusalem)
+// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
+//          - Removed fontRegistered optimization; register font on each doc instance (review fix)
+//          - Fixed domain validation to prevent subdomain spoofing (review fix)
 //          - Initial implementation — shared PDF utility for invoice and document generation
 //          - Uses fetch() + FileReader for logo-to-base64 (per security review)
 //          - Validates logo URL domain before fetching (per security review)
@@ -15,8 +17,6 @@ const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
 // Expected Supabase storage domain prefix for logo URL validation
 const SUPABASE_STORAGE_DOMAIN = 'huexcyhjmbpsvopaoxms.supabase.co';
 
-let fontRegistered = false;
-
 /**
  * Creates a pre-configured jsPDF instance with A4 portrait,
  * Hebrew font (if available), and RTL-friendly defaults.
@@ -24,19 +24,15 @@ let fontRegistered = false;
 export function createPdfDoc(): jsPDF {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-  // Register Hebrew font if available and not yet registered
-  if (NOTO_SANS_HEBREW_REGULAR && !fontRegistered) {
+  // Register Hebrew font on each new doc instance
+  if (NOTO_SANS_HEBREW_REGULAR) {
     try {
       doc.addFileToVFS('NotoSansHebrew-Regular.ttf', NOTO_SANS_HEBREW_REGULAR);
       doc.addFont('NotoSansHebrew-Regular.ttf', 'NotoSansHebrew', 'normal');
-      fontRegistered = true;
+      doc.setFont('NotoSansHebrew', 'normal');
     } catch {
       // Font registration failed — fall back to default
     }
-  }
-
-  if (fontRegistered) {
-    doc.setFont('NotoSansHebrew', 'normal');
   }
 
   doc.setFontSize(10);
@@ -105,7 +101,7 @@ export async function fetchImageAsBase64(url: string | undefined): Promise<strin
   // Validate URL domain before fetching (security requirement)
   try {
     const parsed = new URL(url);
-    if (!parsed.hostname.endsWith(SUPABASE_STORAGE_DOMAIN)) {
+    if (parsed.hostname !== SUPABASE_STORAGE_DOMAIN && !parsed.hostname.endsWith('.' + SUPABASE_STORAGE_DOMAIN)) {
       return null;
     }
   } catch {
