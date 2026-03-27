@@ -7,7 +7,8 @@ set -e
 echo "Building..."
 npm run build
 
-echo "Copying vercel.json to dist/..."
+echo "Preparing dist/..."
+mv dist/app.html dist/index.html
 cp vercel.json dist/vercel.json
 
 echo "Deploying to Vercel..."
