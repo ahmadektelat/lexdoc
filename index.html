@@ -4257,7 +4257,7 @@ function App(p) {
                                 React.createElement("p", { style: { fontSize: 12, color: MUT } }, c.caseNum)),
                             React.createElement("span", { style: { color: ACC, fontSize: 13 } }, "פתח")));
                     }))),
-                !filtered && view === "dash" && React.createElement(DashView, { firm: firm, days: days, setView: setView, setClient: setClient }),
+                !filtered && view === "dash" && React.createElement(DashView, { firm: firm, days: days, setView: setView, setClient: setClient, onRenew: p.onRenew }),
                 !filtered && view === "clients" && React.createElement(ClientsView, { setClient: setClient, setView: setView, toast: toast }),
                 !filtered && view === "client" && client && React.createElement(ClientView, { client: client, firm: firm, toast: toast }),
                 !filtered && view === "crm" && React.createElement(CrmView, { toast: toast }),
@@ -4274,6 +4274,20 @@ function App(p) {
 function DashView(p) {
     var firm = p.firm;
     var days = daysLeft(firm && firm.expiry ? firm.expiry : "2026-12-31");
+    var [showRenew, setShowRenew] = useState(false);
+    function handleRenew(plan) {
+        sLoad(function(d) {
+            var updated = Object.assign({}, d, {
+                plan: plan.id,
+                planLabel: plan.label,
+                expiry: addMonths(plan.months)
+            });
+            sSave(updated, function() {
+                if (p.onRenew) p.onRenew(updated);
+                setShowRenew(false);
+            });
+        });
+    }
     return (React.createElement("div", { className: "fade" },
         React.createElement("h1", { style: { fontSize: 20, fontWeight: 800, color: TXT, marginBottom: 4 } }, "ברוך הבא, " + firm.firmName),
         React.createElement("p", { style: { color: MUT, fontSize: 13, marginBottom: 18 } }, firm.city + " | ח.פ. " + firm.regNum),
@@ -4298,7 +4312,20 @@ function DashView(p) {
             React.createElement("div", null,
                 React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#7ec8f0", marginBottom: 2 } }, "מנוי " + firm.planLabel + " - פעיל"),
                 React.createElement("p", { style: { fontSize: 12, color: "rgba(150,200,255,0.6)" } }, days + " ימים נותרים | עד " + fmtDate(firm.expiry))),
-            React.createElement("button", { style: { background: "linear-gradient(135deg,#1a6fb5,#4a9eff)", border: "none", borderRadius: 8, padding: "7px 16px", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "חידוש מנוי")))));
+            React.createElement("button", { onClick: function() { setShowRenew(true); }, style: { background: "linear-gradient(135deg,#1a6fb5,#4a9eff)", border: "none", borderRadius: 8, padding: "7px 16px", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "חידוש מנוי"))),
+        showRenew && React.createElement("div", { style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 } },
+            React.createElement("div", { style: { background: SURF, border: "1px solid " + BDR, borderRadius: 16, padding: 28, maxWidth: 480, width: "100%", direction: "rtl" } },
+                React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 } },
+                    React.createElement("h2", { style: { fontSize: 17, fontWeight: 800, color: TXT } }, "חידוש / שדרוג מנוי"),
+                    React.createElement("button", { onClick: function() { setShowRenew(false); }, style: { background: "none", border: "none", color: MUT, fontSize: 20, cursor: "pointer", lineHeight: 1 } }, "×")),
+                React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 } },
+                    PLANS.map(function(plan) {
+                        return React.createElement("div", { key: plan.id, style: { background: CARD, border: "1px solid " + BDR, borderRadius: 12, padding: "16px 12px", textAlign: "center" } },
+                            React.createElement("p", { style: { fontWeight: 700, fontSize: 14, color: TXT, marginBottom: 8 } }, plan.label),
+                            React.createElement("p", { style: { fontSize: 22, fontWeight: 800, color: ACC, marginBottom: 2 } }, "₪" + plan.price),
+                            React.createElement("p", { style: { fontSize: 11, color: MUT, marginBottom: 14 } }, plan.period),
+                            React.createElement("button", { onClick: function() { handleRenew(plan); }, style: { width: "100%", background: "linear-gradient(135deg,#1a6fb5,#4a9eff)", border: "none", borderRadius: 8, padding: "8px 0", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "בחר"));
+                    }))))));
 }
 function StaffPicker(p) {
     var [open, setOpen] = useState(false);
@@ -4713,6 +4740,7 @@ function Root() {
             return React.createElement(App, {
                 firm: firm,
                 onLogout: function() { setAuthed(false); setFirm(null); setScreen("welcome"); },
+                onRenew: function(updated) { setFirm(updated); },
                 theme: theme,
                 onTheme: applyTheme
             });
