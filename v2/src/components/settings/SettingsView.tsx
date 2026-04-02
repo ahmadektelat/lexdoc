@@ -1,16 +1,14 @@
 // CREATED: 2026-03-26
-// UPDATED: 2026-03-26 15:00 IST (Jerusalem)
-//          - Removed unused Navigate import (review fix)
-//          - Initial implementation — full settings page with 5 sections
-//          - Client-side logo file validation (security requirement)
-//          - Guards defaultFee against undefined (per review)
+// UPDATED: 2026-04-02 12:00 IST (Jerusalem)
+//          - Added plan renewal/upgrade cards to subscription section
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { firmService } from '@/services/firmService';
-import { agorotToShekel, shekelToAgorot } from '@/lib/money';
-import { daysLeft, formatDate } from '@/lib/dates';
+import { agorotToShekel, shekelToAgorot, formatMoney } from '@/lib/money';
+import { daysLeft, formatDate, addMonths } from '@/lib/dates';
+import { SUBSCRIPTION_PLANS } from '@/lib/constants';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { FormField } from '@/components/shared/FormField';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -29,6 +27,7 @@ const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
 export function SettingsView() {
   const { t } = useLanguage();
   const firmData = useAuthStore((s) => s.firmData);
+  const firmId = useAuthStore((s) => s.firmId);
   const role = useAuthStore((s) => s.role);
   const can = useAuthStore((s) => s.can);
 
@@ -42,6 +41,7 @@ export function SettingsView() {
   const [defaultFeeShekel, setDefaultFeeShekel] = useState('0');
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isRenewing, setIsRenewing] = useState<string | null>(null);
 
   // Initialize form from firmData
   useEffect(() => {
@@ -92,6 +92,29 @@ export function SettingsView() {
       toast.error(t('settings.saveFailed'));
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSelectPlan = async (plan: (typeof SUBSCRIPTION_PLANS)[number]) => {
+    if (!firmId || !firmData?.id) return;
+    setIsRenewing(plan.id);
+    try {
+      const newExpiry = addMonths(new Date(), plan.months).toISOString();
+      const { error } = await firmService.updatePlan(firmId, plan.id, plan.label, newExpiry);
+      if (error) {
+        toast.error(t('settings.saveFailed'));
+        return;
+      }
+      useAuthStore.getState().setPlan(plan.id, newExpiry);
+      const updated = await firmService.getFirmById(firmData.id);
+      if (updated && role) {
+        useAuthStore.getState().setFirmData(updated, role);
+      }
+      toast.success(t('settings.renewSuccess'));
+    } catch {
+      toast.error(t('settings.saveFailed'));
+    } finally {
+      setIsRenewing(null);
     }
   };
 
@@ -354,6 +377,32 @@ export function SettingsView() {
                   </p>
                 </>
               )}
+
+              {/* Plan renewal cards */}
+              <div className="pt-2">
+                <p className="text-sm font-medium mb-3">{t('settings.renewPlan')}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {SUBSCRIPTION_PLANS.map((plan) => (
+                    <Card key={plan.id} className="text-center border">
+                      <CardContent className="p-4 space-y-3">
+                        <p className="font-semibold text-sm">{t(plan.label)}</p>
+                        <p className="text-xl font-bold">{formatMoney(plan.price)}</p>
+                        <p className="text-xs text-muted-foreground">{t('auth.expired.perMonth')}</p>
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleSelectPlan(plan)}
+                          disabled={isRenewing !== null}
+                        >
+                          {isRenewing === plan.id
+                            ? t('common.loading')
+                            : t('auth.expired.selectPlan')}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

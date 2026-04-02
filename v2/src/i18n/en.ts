@@ -990,6 +990,8 @@ export const en: Record<string, string> = {
   'settings.noPermission': 'No permission to edit settings',
   'settings.feeCurrency': '₪',
   'settings.billingDefaults': 'Billing Defaults',
+  'settings.renewPlan': 'Renew / Upgrade Plan',
+  'settings.renewSuccess': 'Subscription renewed successfully',
 
   // Documents import
   'docs.importTitle': 'Upload Documents',

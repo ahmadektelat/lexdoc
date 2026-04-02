@@ -990,6 +990,8 @@ export const ar: Record<string, string> = {
   'settings.noPermission': 'لا يوجد إذن لتعديل الإعدادات',
   'settings.feeCurrency': '₪',
   'settings.billingDefaults': 'إعدادات الفواتير',
+  'settings.renewPlan': 'تجديد / ترقية الاشتراك',
+  'settings.renewSuccess': 'تم تجديد الاشتراك بنجاح',
 
   // Documents import
   'docs.importTitle': 'رفع مستندات',
