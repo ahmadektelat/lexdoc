@@ -990,6 +990,8 @@ export const he: Record<string, string> = {
   'settings.noPermission': 'אין הרשאה לערוך הגדרות',
   'settings.feeCurrency': '₪',
   'settings.billingDefaults': 'הגדרות חיוב',
+  'settings.renewPlan': 'חידוש / שדרוג מנוי',
+  'settings.renewSuccess': 'המנוי חודש בהצלחה',
 
   // Documents import
   'docs.importTitle': 'העלאת מסמכים',
